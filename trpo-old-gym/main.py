@@ -49,7 +49,6 @@ env = gym.make(args.env_name)
 num_inputs = env.observation_space.shape[0]
 num_actions = env.action_space.shape[0]
 
-
 #env.seed(args.seed)
 torch.manual_seed(args.seed)
 
@@ -145,14 +144,15 @@ for i_episode in count(1):
     reward_batch = 0
     num_episodes = 0
     while num_steps < args.batch_size:
-        state = env.reset()[0]
+        state = env.reset()
         state = running_state(state)
 
         reward_sum = 0
         for t in range(10000): # Don't infinite loop while learning
             action = select_action(state)
             action = action.data[0].numpy()
-            next_state, reward, done, _,_ = env.step(action)
+
+            next_state, reward, done, _ = env.step(action)
             reward_sum += reward
 
             next_state = running_state(next_state)
