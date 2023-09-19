@@ -148,7 +148,7 @@ for i_episode in count(1):
         state = running_state(state)
 
         reward_sum = 0
-        for t in range(10000): # Don't infinite loop while learning
+        for t in range(10000): # Don't infinite loop while learning #50 for reacher
             action = select_action(state)
             action = action.data[0].numpy()
 
