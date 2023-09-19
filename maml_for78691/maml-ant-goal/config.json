@@ -1,8 +1,8 @@
 {
-  "env-name": "HalfCheetahVel-v2",
+  "env-name": "AntPos-v1",
   "env-kwargs": {
-    "low": 0.0,
-    "high": 2.0,
+    "low": -3.0,
+    "high": 3.0,
     "normalization_scale": 10.0,
     "max_episode_steps": 100
   },
@@ -24,10 +24,10 @@
   "cg-damping": 1e-05,
   "ls-max-steps": 15,
   "ls-backtrack-ratio": 0.8,
-  "config": "configs/maml/halfcheetah-vel.yaml",
-  "output_folder": "maml-halfcheetah-vel",
+  "config": "configs/maml/ant-goal.yaml",
+  "output_folder": "maml-ant-goal",
   "seed": 1,
-  "num_workers": 6,
+  "num_workers": 8,
   "use_cuda": false,
   "device": "cpu"
 }
