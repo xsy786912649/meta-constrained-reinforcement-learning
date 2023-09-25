@@ -6,10 +6,11 @@ import torch.nn as nn
 class Policy(nn.Module):
     def __init__(self, num_inputs, num_outputs):
         super(Policy, self).__init__()
-        self.affine1 = nn.Linear(num_inputs, 64)
-        self.affine2 = nn.Linear(64, 64)
+        self.affine1 = nn.Linear(num_inputs, 128)
+        self.affine2 = nn.Linear(128, 128)
+        self.affine3 = nn.Linear(128, 128)
 
-        self.action_mean = nn.Linear(64, num_outputs)
+        self.action_mean = nn.Linear(128, num_outputs)
         #self.action_mean.weight.data.mul_(1.0)
         #self.action_mean.bias.data.mul_(0.0)
 
@@ -22,6 +23,7 @@ class Policy(nn.Module):
     def forward(self, x):
         x = torch.tanh(self.affine1(x))
         x = torch.tanh(self.affine2(x))
+        x = torch.tanh(self.affine3(x))
 
         action_mean = self.action_mean(x)
         action_log_std = self.action_log_std.expand_as(action_mean)
@@ -33,15 +35,17 @@ class Policy(nn.Module):
 class Value(nn.Module):
     def __init__(self, num_inputs):
         super(Value, self).__init__()
-        self.affine1 = nn.Linear(num_inputs, 64)
-        self.affine2 = nn.Linear(64, 64)
-        self.value_head = nn.Linear(64, 1)
+        self.affine1 = nn.Linear(num_inputs, 128)
+        self.affine2 = nn.Linear(128, 128)
+        self.affine3 = nn.Linear(128, 128)
+        self.value_head = nn.Linear(128, 1)
         #self.value_head.weight.data.mul_(0.1)
         #self.value_head.bias.data.mul_(0.0)
 
     def forward(self, x):
         x = torch.tanh(self.affine1(x))
         x = torch.tanh(self.affine2(x))
+        x = torch.tanh(self.affine3(x))
 
         state_values = self.value_head(x)
         return state_values
