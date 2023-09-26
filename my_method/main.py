@@ -39,11 +39,15 @@ parser.add_argument('--render', action='store_true',
                     help='render the environment')
 parser.add_argument('--log-interval', type=int, default=1, metavar='N',
                     help='interval between training status logs (default: 1)')
-parser.add_argument('--max-length', type=int, default=1000, metavar='N',
-                    help='max length of a path (default: 1000)')
+parser.add_argument('--max-length', type=int, default=10000, metavar='N',
+                    help='max length of a path (default: 10000)')
 args = parser.parse_args()
 
 torch.manual_seed(args.seed)
+#if args.env_name=="HalfCheetah-v4":
+#    env = gym.make(args.env_name,exclude_current_positions_from_observation=False)
+#else:
+#    env = gym.make(args.env_name)
 env = gym.make(args.env_name)
 num_inputs = env.observation_space.shape[0]
 num_actions = env.action_space.shape[0]
@@ -73,7 +77,6 @@ def sample_data_for_task_specific(reward_setting):
             action = action.data[0].numpy()
             next_state, reward, done, truncated, info = env.step(action)
             reward_sum += reward
-            next_state_original= deepcopy(next_state)
             next_state = running_state(next_state)
             path_number = i
 
@@ -83,10 +86,8 @@ def sample_data_for_task_specific(reward_setting):
             state = next_state
             if done or truncated:
                 break
-        
-        env.reset()
-        env.state = env.unwrapped.state = next_state_original
-        state = running_state(next_state_original)
+    
+        env._elapsed_steps=0
         for t in range(args.max_length):
             action = select_action(state)
             action = action.data[0].numpy()

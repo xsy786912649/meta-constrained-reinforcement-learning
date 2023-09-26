@@ -11,6 +11,7 @@ from running_state import ZFilter
 from torch.autograd import Variable
 from trpo import trpo_step
 from utils import *
+from copy import deepcopy
 
 torch.utils.backcompat.broadcast_warning.enabled = True
 torch.utils.backcompat.keepdim_warning.enabled = True
@@ -20,7 +21,7 @@ torch.set_default_tensor_type('torch.DoubleTensor')
 parser = argparse.ArgumentParser(description='PyTorch actor-critic example')
 parser.add_argument('--gamma', type=float, default=0.995, metavar='G',
                     help='discount factor (default: 0.995)')
-parser.add_argument('--env-name', default="Reacher-v4", metavar='G',
+parser.add_argument('--env-name', default="HalfCheetah-v4", metavar='G',
                     help='name of the environment to run')
 parser.add_argument('--tau', type=float, default=0.97, metavar='G',
                     help='gae (default: 0.97)')
@@ -32,19 +33,26 @@ parser.add_argument('--damping', type=float, default=0e-1, metavar='G',
                     help='damping (default: 0e-1)')
 parser.add_argument('--seed', type=int, default=543, metavar='N',
                     help='random seed (default: 1)')
-parser.add_argument('--batch-size', type=int, default=15, metavar='N',
-                    help='batch-size (default: 15)')
+parser.add_argument('--batch-size', type=int, default=25, metavar='N',
+                    help='batch-size (default: 25)')
 parser.add_argument('--render', action='store_true',
                     help='render the environment')
 parser.add_argument('--log-interval', type=int, default=1, metavar='N',
-                    help='interval between training status logs (default: 1)')
-parser.add_argument('--max-length', type=int, default=1000, metavar='N',
-                    help='max length of a path (default: 1000)')
+                    help='interval between training status logs (default: 10)')
+parser.add_argument('--max-length', type=int, default=10000, metavar='N',
+                    help='max length of a path (default: 10000)')
 args = parser.parse_args()
 
+#if args.env_name=="HalfCheetah-v4":
+#    env = gym.make(args.env_name,exclude_current_positions_from_observation=False)
+#else:
+#    env = gym.make(args.env_name)
 env = gym.make(args.env_name)
+
 num_inputs = env.observation_space.shape[0]
 num_actions = env.action_space.shape[0]
+
+#env.seed(args.seed)
 torch.manual_seed(args.seed)
 
 policy_net = Policy(num_inputs, num_actions)
@@ -168,7 +176,7 @@ if __name__ == "__main__":
             for t in range(args.max_length):
                 action = select_action(state)
                 action = action.data[0].numpy()
-                next_state, reward, done, _,_ = env.step(action)
+                next_state, reward, done, truncated, info = env.step(action)
                 reward_sum += reward
                 next_state = running_state(next_state)
                 path_number = i
@@ -177,11 +185,14 @@ if __name__ == "__main__":
                 if args.render:
                     env.render()
                 state = next_state
+                if done or truncated:
+                    break
             
+            env._elapsed_steps=0
             for t in range(args.max_length):
                 action = select_action(state)
                 action = action.data[0].numpy()
-                next_state, reward, done, _,_ = env.step(action)
+                next_state, reward, done, truncated, info = env.step(action)
                 next_state = running_state(next_state)
                 path_number = i
 
@@ -189,6 +200,8 @@ if __name__ == "__main__":
                 if args.render:
                     env.render()
                 state = next_state
+                if done or truncated:
+                    break
 
             num_episodes += 1
             reward_batch += reward_sum
