@@ -37,7 +37,7 @@ parser.add_argument('--batch-size', type=int, default=15, metavar='N',
 parser.add_argument('--render', action='store_true',
                     help='render the environment')
 parser.add_argument('--log-interval', type=int, default=1, metavar='N',
-                    help='interval between training status logs (default: 10)')
+                    help='interval between training status logs (default: 1)')
 parser.add_argument('--max-length', type=int, default=1000, metavar='N',
                     help='max length of a path (default: 1000)')
 args = parser.parse_args()
