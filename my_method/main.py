@@ -178,9 +178,11 @@ if __name__ == "__main__":
             print('Episode {}\tAverage reward {:.2f}'.format(i_episode, accumulated_raward_batch))
     
             task_specific_value_net = Value(num_inputs)
+            for i,param in enumerate(task_specific_value_net.parameters()):
+                param.data.copy_(list(meta_value_net.parameters())[i].data)
             task_specific_value_net = update_task_specific_valuenet(task_specific_value_net,meta_value_net,batch,batch_extra,args.batch_size)
 
-            compute_adavatage
+            compute_adavatage()
 
             task_specific_adaptation()
 
