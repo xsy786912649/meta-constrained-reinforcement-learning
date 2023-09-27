@@ -186,4 +186,9 @@ if __name__ == "__main__":
 
             task_specific_adaptation()
 
-            update_meta_valuenet()
+            task_meta_gradient_computation()
+
+        update_meta_policy()
+
+        update_meta_valuenet()
+
