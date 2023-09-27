@@ -33,14 +33,14 @@ parser.add_argument('--damping', type=float, default=0e-1, metavar='G',
                     help='damping (default: 0e-1)')
 parser.add_argument('--seed', type=int, default=543, metavar='N',
                     help='random seed (default: 1)')
-parser.add_argument('--batch-size', type=int, default=25, metavar='N',
-                    help='batch-size (default: 25)')
+parser.add_argument('--batch-size', type=int, default=20, metavar='N',
+                    help='batch-size (default: 20)')
 parser.add_argument('--render', action='store_true',
                     help='render the environment')
 parser.add_argument('--log-interval', type=int, default=1, metavar='N',
                     help='interval between training status logs (default: 10)')
-parser.add_argument('--max-length', type=int, default=10000, metavar='N',
-                    help='max length of a path (default: 10000)')
+parser.add_argument('--max-length', type=int, default=200, metavar='N',
+                    help='max length of a path (default: 200)')
 args = parser.parse_args()
 
 #if args.env_name=="HalfCheetah-v4":
@@ -177,6 +177,7 @@ if __name__ == "__main__":
                 action = select_action(state)
                 action = action.data[0].numpy()
                 next_state, reward, done, truncated, info = env.step(action)
+                reward=-abs(info['x_velocity']-1.0)
                 reward_sum += reward
                 next_state = running_state(next_state)
                 path_number = i
@@ -193,6 +194,7 @@ if __name__ == "__main__":
                 action = select_action(state)
                 action = action.data[0].numpy()
                 next_state, reward, done, truncated, info = env.step(action)
+                reward=-abs(info['x_velocity']-1.0)
                 next_state = running_state(next_state)
                 path_number = i
 
