@@ -163,6 +163,68 @@ def update_task_specific_valuenet(value_net,meta_value_net,batch,batch_extra,bat
 
     return value_net
 
+def compute_adavatage(value_net,batch,batch_extra,batch_size):
+    rewards = torch.Tensor(batch.reward)
+    path_numbers = torch.Tensor(batch.path_number)
+    actions = torch.Tensor(np.concatenate(batch.action, 0))
+    states = torch.Tensor(batch.state)
+
+    rewards_extra = torch.Tensor(batch_extra.reward)
+    path_numbers_extra = torch.Tensor(batch_extra.path_number)
+    actions_extra = torch.Tensor(np.concatenate(batch_extra.action, 0))
+    states_extra = torch.Tensor(batch_extra.state)
+
+    values = value_net(Variable(states))
+    returns = torch.Tensor(actions.size(0),1)
+    deltas = torch.Tensor(actions.size(0),1)
+    advantages = torch.Tensor(actions.size(0),1)
+
+    prev_return=torch.zeros(batch_size,1)
+    prev_value=torch.zeros(batch_size,1)
+    prev_advantage = 0
+
+    k=batch_size-1
+    for i in reversed(range(rewards_extra.size(0))):
+        if not int(path_numbers_extra[i].item())==k:
+            prev_value[k,0] = value_net(Variable(states_extra[i+1])).data[0]
+            k=k-1
+            assert k==path_numbers_extra[i].item()
+        prev_return[k,0]=rewards[i]+ args.gamma * prev_return[k,0] 
+    
+    for i in reversed(range(rewards.size(0))):
+        returns[i] = rewards[i] + args.gamma * prev_return[int(path_numbers[i].item()),0]
+        deltas[i] = rewards[i] + args.gamma * prev_value[int(path_numbers[i].item()),0]  - values.data[i]
+        advantages[i] = deltas[i] + args.gamma * args.tau * prev_advantage 
+
+        prev_return[int(path_numbers[i].item()),0] = returns[i, 0]
+        prev_value[int(path_numbers[i].item()),0] = values.data[i, 0]
+        prev_advantage = advantages[i, 0]
+
+    targets = Variable(returns)
+
+    # Original code uses the same LBFGS to optimize the value loss
+    def get_value_loss(flat_params):
+        set_flat_params_to(value_net, torch.Tensor(flat_params))
+        for param in value_net.parameters():
+            if param.grad is not None:
+                param.grad.data.fill_(0)
+
+        values_ = value_net(Variable(states))
+
+        value_loss = (values_ - targets).pow(2).mean()
+
+        # weight decay
+        for param in value_net.parameters():
+            value_loss += param.pow(2).sum() * args.l2_reg
+        value_loss.backward()
+        return (value_loss.data.double().numpy(), get_flat_grad_from(value_net).data.double().numpy())
+
+    flat_params, _, opt_info = scipy.optimize.fmin_l_bfgs_b(get_value_loss, get_flat_params_from(value_net).double().numpy(), maxiter=25)
+    set_flat_params_to(value_net, torch.Tensor(flat_params))
+
+    return advantages
+
+
 
 if __name__ == "__main__":
 
@@ -182,9 +244,11 @@ if __name__ == "__main__":
                 param.data.copy_(list(meta_value_net.parameters())[i].data)
             task_specific_value_net = update_task_specific_valuenet(task_specific_value_net,meta_value_net,batch,batch_extra,args.batch_size)
 
-            compute_adavatage()
+            advantages=compute_adavatage(task_specific_value_net,batch,batch_extra,args.batch_size)
+            advantages_normalize_constant=advantages.std()
+            advantages_normalize = (advantages - advantages.mean()) / advantages.std()
 
-            task_specific_adaptation()
+            task_specific_adaptation(advantages,meta_policy_net)
 
             task_meta_gradient_computation()
 
