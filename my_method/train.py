@@ -23,8 +23,8 @@ parser.add_argument('--env-name', default="HalfCheetah-v4", metavar='G',
                     help='name of the environment to run')
 parser.add_argument('--tau', type=float, default=0.97, metavar='G',
                     help='gae (default: 0.97)')
-parser.add_argument('--meta-reg', type=float, default=1e-3, metavar='G',
-                    help='meta regularization regression (default: 1e-3)')
+parser.add_argument('--meta-reg', type=float, default=33.0, metavar='G',
+                    help='meta regularization regression (default: 33.0)')
 parser.add_argument('--max-kl', type=float, default=1e-2, metavar='G',
                     help='max kl value (default: 1e-2)')
 parser.add_argument('--damping', type=float, default=0e-1, metavar='G',
@@ -204,6 +204,63 @@ def compute_adavatage(value_net,batch,batch_extra,batch_size):
 
     return advantages
 
+def update_meta_valuenet(value_net,previous_value_net,data_pool_for_meta_value_net,batch_size):
+
+    target=[]
+
+    for task_number in range(len(data_pool_for_meta_value_net)):
+        batch_now=data_pool_for_meta_value_net[task_number][0]
+        batch_extra_now=data_pool_for_meta_value_net[task_number][1]
+
+        rewards = torch.Tensor(batch_now.reward)
+        path_numbers = torch.Tensor(batch_now.path_number)
+        actions = torch.Tensor(np.concatenate(batch_now.action, 0))
+        states = torch.Tensor(batch_now.state)
+
+        rewards_extra = torch.Tensor(batch_extra_now.reward)
+        path_numbers_extra = torch.Tensor(batch_extra_now.path_number)
+        actions_extra = torch.Tensor(np.concatenate(batch_extra_now.action, 0))
+        states_extra = torch.Tensor(batch_extra_now.state)
+
+        returns = torch.Tensor(actions.size(0),1)
+        prev_return=torch.zeros(batch_size,1)
+
+        k=batch_size-1
+        for i in reversed(range(rewards_extra.size(0))):
+            if not int(path_numbers_extra[i].item())==k:
+                k=k-1
+                assert k==path_numbers_extra[i].item()
+            prev_return[k,0]=rewards[i]+ args.gamma * prev_return[k,0] 
+        
+        for i in reversed(range(rewards.size(0))):
+            returns[i] = rewards[i] + args.gamma * prev_return[int(path_numbers[i].item()),0]
+            prev_return[int(path_numbers[i].item()),0] = returns[i, 0]
+        target.append( Variable(returns) )
+
+    # Original code uses the same LBFGS to optimize the value loss
+    def get_value_loss(flat_params):
+        set_flat_params_to(value_net, torch.Tensor(flat_params))
+        for param in value_net.parameters():
+            if param.grad is not None:
+                param.grad.data.fill_(0)
+
+        value_loss=0.0
+        for task_number in range(len(data_pool_for_meta_value_net)):
+            values_ = value_net(Variable(data_pool_for_meta_value_net[task_number][0].state))
+            value_loss = value_loss + (values_ - target[task_number]).pow(2).mean()
+        value_loss = value_loss*1.0/len(data_pool_for_meta_value_net)
+
+        for i,param in enumerate(value_net.parameters()):
+            value_loss += (param-list(previous_value_net.parameter())[i].data).pow(2).sum() * args.meta_reg
+        value_loss.backward()
+        return (value_loss.data.double().numpy(), get_flat_grad_from(value_net).data.double().numpy())
+
+    for i in range(1):
+        flat_params, _, opt_info = scipy.optimize.fmin_l_bfgs_b(get_value_loss, get_flat_params_from(previous_value_net).double().numpy(), maxiter=25)
+        set_flat_params_to(value_net, torch.Tensor(flat_params))
+        previous_value_net=value_net
+
+    return value_net
 
 
 if __name__ == "__main__":
@@ -236,6 +293,7 @@ if __name__ == "__main__":
             after_batch,after_batch_extra,after_accumulated_raward_batch=sample_data_for_task_specific(target_v,task_specific_policy)
             data_pool_for_meta_value_net.append([after_batch,after_batch_extra])
             print('(after adaptation) Episode {}\tAverage reward {:.2f}'.format(i_episode, after_accumulated_raward_batch))
+            
             task_meta_gradient_computation()
 
         update_meta_policy()
@@ -243,5 +301,5 @@ if __name__ == "__main__":
         meta_value_net_copy = Value(num_inputs)
         for i,param in enumerate(meta_value_net_copy.parameters()):
             param.data.copy_(list(meta_value_net.parameters())[i].data)
-        update_meta_valuenet(meta_value_net,meta_value_net,data_pool_for_meta_value_net)
+        meta_value_net=update_meta_valuenet(meta_value_net,meta_value_net_copy,data_pool_for_meta_value_net,args.batch_size)
 
