@@ -161,7 +161,7 @@ def update_task_specific_valuenet(value_net,previous_value_net,batch,batch_extra
         value_loss.backward()
         return (value_loss.data.double().numpy(), get_flat_grad_from(value_net).data.double().numpy())
 
-    for i in range(2):
+    for i in range(3):
         flat_params, _, opt_info = scipy.optimize.fmin_l_bfgs_b(get_value_loss, get_flat_params_from(previous_value_net).double().numpy(), maxiter=25)
         set_flat_params_to(value_net, torch.Tensor(flat_params))
         previous_value_net=value_net
