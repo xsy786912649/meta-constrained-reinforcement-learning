@@ -9,6 +9,7 @@ from replay_memory import Memory
 from running_state import ZFilter
 from torch.autograd import Variable
 from utils import *
+from trpo import one_step_trpo
 
 from copy import deepcopy
 
