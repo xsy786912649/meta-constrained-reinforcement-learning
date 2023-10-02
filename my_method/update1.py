@@ -9,7 +9,7 @@ from models import *
 from replay_memory import Memory
 from running_state import ZFilter
 from torch.autograd import Variable
-from trpo import trpo_step
+from trpo import trpo_step,one_step_trpo
 from utils import *
 from copy import deepcopy
 
@@ -27,6 +27,8 @@ parser.add_argument('--tau', type=float, default=0.97, metavar='G',
                     help='gae (default: 0.97)')
 parser.add_argument('--l2-reg', type=float, default=1e-3, metavar='G',
                     help='l2 regularization regression (default: 1e-3)')
+parser.add_argument('--meta-lambda', type=float, default=0.5, metavar='G',
+                    help='meta meta-lambda (default: 0.5)') 
 parser.add_argument('--max-kl', type=float, default=1e-2, metavar='G',
                     help='max kl value (default: 1e-2)')
 parser.add_argument('--damping', type=float, default=0e-1, metavar='G',
@@ -156,6 +158,9 @@ def update_params(batch,batch_extra,batch_size):
         return kl.sum(1, keepdim=True)
 
     trpo_step(policy_net, get_loss, get_kl, args.max_kl, args.damping)
+    #one_step_trpo(policy_net, get_loss, get_kl,args.meta_lambda) 
+
+    return 
 
 running_state = ZFilter((num_inputs,), clip=5)
 running_reward = ZFilter((1,), demean=False, clip=10)

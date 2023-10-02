@@ -25,6 +25,8 @@ parser.add_argument('--tau', type=float, default=0.97, metavar='G',
                     help='gae (default: 0.97)')
 parser.add_argument('--meta-reg', type=float, default=33.0, metavar='G',
                     help='meta regularization regression (default: 33.0)')
+parser.add_argument('--meta-lambda', type=float, default=0.5, metavar='G',
+                    help='meta meta-lambda (default: 0.5)') 
 parser.add_argument('--max-kl', type=float, default=1e-2, metavar='G',
                     help='max kl value (default: 1e-2)')
 parser.add_argument('--damping', type=float, default=0e-1, metavar='G',
@@ -244,7 +246,7 @@ def update_meta_valuenet(value_net,previous_value_net,data_pool_for_meta_value_n
             if param.grad is not None:
                 param.grad.data.fill_(0)
 
-        value_loss=0.0
+        value_loss=torch.tensor(0.0,requires_grad=True)
         for task_number in range(len(data_pool_for_meta_value_net)):
             values_ = value_net(Variable(data_pool_for_meta_value_net[task_number][0].state))
             value_loss = value_loss + (values_ - target[task_number]).pow(2).mean()
@@ -261,6 +263,50 @@ def update_meta_valuenet(value_net,previous_value_net,data_pool_for_meta_value_n
         previous_value_net=value_net
 
     return value_net
+
+def task_specific_adaptation(task_specific_policy,meta_policy_net_copy,batch,advantages): 
+    actions = torch.Tensor(np.concatenate(batch.action, 0))
+    states = torch.Tensor(batch.state)
+
+    action_means, action_log_stds, action_stds = task_specific_policy(Variable(states))
+    fixed_log_prob = normal_log_density(Variable(actions), action_means, action_log_stds, action_stds).data.clone()
+
+    def get_loss():
+        action_means, action_log_stds, action_stds = task_specific_policy(Variable(states))
+        log_prob = normal_log_density(Variable(actions), action_means, action_log_stds, action_stds)
+        action_loss = -Variable(advantages) * torch.exp(log_prob - Variable(fixed_log_prob))
+        return action_loss.mean()
+
+    def get_kl():
+        mean1, log_std1, std1 = task_specific_policy(Variable(states))
+        mean_previous, log_std_previous, std_previous = meta_policy_net_copy(Variable(states))
+
+        mean0 = Variable(mean_previous.data)
+        log_std0 = Variable(log_std_previous.data)
+        std0 = Variable(std_previous.data)
+        kl = log_std1 - log_std0 + (std0.pow(2) + (mean0 - mean1).pow(2)) / (2.0 * std1.pow(2)) - 0.5
+        return kl.sum(1, keepdim=True)
+    
+    def get_kl2():
+        mean1, log_std1, std1 = task_specific_policy(Variable(states))
+        mean_previous, log_std_previous, std_previous = meta_policy_net_copy(Variable(states))
+
+        mean0 = Variable(mean_previous.data)
+        log_std0 = Variable(log_std_previous.data)
+        std0 = Variable(std_previous.data)
+
+        kl = log_std0 - log_std1 + (std1.pow(2) + (mean1 - mean0).pow(2)) / (2.0 * std0.pow(2)) - 0.5
+        return kl.sum(1, keepdim=True)
+    
+    def get_kl3():
+        policy_dictance=torch.tensor(0.0,requires_grad=True)
+        for i,param in enumerate(task_specific_policy.parameters()):
+            policy_dictance += (param-list(meta_policy_net_copy.parameter())[i].data).pow(2).sum() 
+        return policy_dictance
+
+    one_step_trpo(task_specific_policy, get_loss, get_kl,args.meta_lambda) 
+
+    return 
 
 
 if __name__ == "__main__":
@@ -288,15 +334,21 @@ if __name__ == "__main__":
             advantages_normalize_constant=advantages.std()
             advantages_normalize = (advantages - advantages.mean()) / advantages.std()
 
-            task_specific_policy=task_specific_adaptation(advantages,meta_policy_net)
+            task_specific_policy=Policy(num_inputs, num_actions)
+            meta_policy_net_copy=Policy(num_inputs, num_actions)
+            for i,param in enumerate(task_specific_policy.parameters()):
+                param.data.copy_(list(meta_policy_net.parameters())[i].data)
+            for i,param in enumerate(meta_policy_net_copy.parameters()):
+                param.data.copy_(list(meta_policy_net.parameters())[i].data)
+            task_specific_policy=task_specific_adaptation(task_specific_policy,meta_policy_net_copy,batch,advantages)
 
             after_batch,after_batch_extra,after_accumulated_raward_batch=sample_data_for_task_specific(target_v,task_specific_policy)
             data_pool_for_meta_value_net.append([after_batch,after_batch_extra])
             print('(after adaptation) Episode {}\tAverage reward {:.2f}'.format(i_episode, after_accumulated_raward_batch))
             
-            task_meta_gradient_computation()
+            task_meta_gradient_computation() 
 
-        update_meta_policy()
+        update_meta_policy() 
 
         meta_value_net_copy = Value(num_inputs)
         for i,param in enumerate(meta_value_net_copy.parameters()):

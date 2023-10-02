@@ -82,3 +82,15 @@ def trpo_step(model, get_loss, get_kl, max_kl, damping):
     set_flat_params_to(model, new_params)
 
     return loss
+
+
+def one_step_trpo(model, get_loss, get_kl,meta_lambda):
+    optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
+    for i in range(25):
+        optimizer.zero_grad()
+        loss = get_loss()+meta_lambda*get_kl().mean()
+        grads = torch.autograd.grad(loss, model.parameters(), create_graph=True)
+        loss.backward()
+        optimizer.step()
+
+    return
