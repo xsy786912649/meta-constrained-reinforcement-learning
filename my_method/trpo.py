@@ -89,7 +89,7 @@ def one_step_trpo(model, get_loss, get_kl,meta_lambda):
     for i in range(25):
         optimizer.zero_grad()
         loss = get_loss()+meta_lambda*get_kl().mean()
-        grads = torch.autograd.grad(loss, model.parameters(), create_graph=True)
+        #grads = torch.autograd.grad(loss, model.parameters(), create_graph=True)
         loss.backward()
         optimizer.step()
 
