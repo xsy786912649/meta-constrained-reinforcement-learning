@@ -316,11 +316,13 @@ if __name__ == "__main__":
     meta_value_net = Value(num_inputs)
 
     for i_episode in range(200):
+        print("i_episode: ",i_episode)
         data_pool_for_meta_value_net=[]
         for task_number in range(args.task_batch_size):
             target_v=setting_reward()
             batch,batch_extra,accumulated_raward_batch=sample_data_for_task_specific(target_v,meta_policy_net)
             data_pool_for_meta_value_net.append([batch,batch_extra])
+            print("task_number: ",task_number)
             print('(before adaptation) Episode {}\tAverage reward {:.2f}'.format(i_episode, accumulated_raward_batch))
     
             task_specific_value_net = Value(num_inputs)
@@ -331,7 +333,9 @@ if __name__ == "__main__":
                 param.data.copy_(list(meta_value_net.parameters())[i].data)
             task_specific_value_net = update_task_specific_valuenet(task_specific_value_net,meta_value_net_copy,batch,batch_extra,args.batch_size)
             
-            advantages=compute_adavatage(task_specific_value_net,batch,batch_extra,args.batch_size)
+            batch_2,batch_extra_2,_=sample_data_for_task_specific(target_v,meta_policy_net)
+            data_pool_for_meta_value_net.append([batch_2,batch_extra_2])
+            advantages=compute_adavatage(task_specific_value_net,batch_2,batch_extra_2,args.batch_size)
             advantages_normalize_constant=advantages.std()
             advantages_normalize = (advantages - advantages.mean()) / advantages.std()
 
@@ -341,7 +345,7 @@ if __name__ == "__main__":
                 param.data.copy_(list(meta_policy_net.parameters())[i].data)
             for i,param in enumerate(meta_policy_net_copy.parameters()):
                 param.data.copy_(list(meta_policy_net.parameters())[i].data)
-            task_specific_policy=task_specific_adaptation(task_specific_policy,meta_policy_net_copy,batch,advantages)
+            task_specific_policy=task_specific_adaptation(task_specific_policy,meta_policy_net_copy,batch_2,advantages)
 
             after_batch,after_batch_extra,after_accumulated_raward_batch=sample_data_for_task_specific(target_v,task_specific_policy)
             data_pool_for_meta_value_net.append([after_batch,after_batch_extra])
