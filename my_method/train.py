@@ -26,8 +26,8 @@ parser.add_argument('--tau', type=float, default=0.97, metavar='G',
                     help='gae (default: 0.97)')
 parser.add_argument('--meta-reg', type=float, default=33.0, metavar='G',
                     help='meta regularization regression (default: 33.0)')
-parser.add_argument('--meta-lambda', type=float, default=0.5, metavar='G',
-                    help='meta meta-lambda (default: 0.5)') 
+parser.add_argument('--meta-lambda', type=float, default=0.25, metavar='G',
+                    help='meta meta-lambda (default: 0.25)') 
 parser.add_argument('--max-kl', type=float, default=1e-2, metavar='G',
                     help='max kl value (default: 1e-2)')
 parser.add_argument('--damping', type=float, default=0e-1, metavar='G',
@@ -157,7 +157,7 @@ def update_task_specific_valuenet(value_net,previous_value_net,batch,batch_extra
         value_loss = (values_ - targets).pow(2).mean()
 
         for i,param in enumerate(value_net.parameters()):
-            value_loss += (param-list(previous_value_net.parameter())[i].data).pow(2).sum() * args.meta_reg
+            value_loss += (param-list(previous_value_net.parameter())[i].clone().detach().data).pow(2).sum() * args.meta_reg
         value_loss.backward()
         return (value_loss.data.double().numpy(), get_flat_grad_from(value_net).data.double().numpy())
 
@@ -260,7 +260,7 @@ def update_meta_valuenet(value_net,previous_value_net,data_pool_for_meta_value_n
         value_loss = value_loss*1.0/len(data_pool_for_meta_value_net)
 
         for i,param in enumerate(value_net.parameters()):
-            value_loss += (param-list(previous_value_net.parameter())[i].data).pow(2).sum() * args.meta_reg
+            value_loss += (param-list(previous_value_net.parameter())[i].clone().detach().data).pow(2).sum() * args.meta_reg
         value_loss.backward()
         return (value_loss.data.double().numpy(), get_flat_grad_from(value_net).data.double().numpy())
 
@@ -288,9 +288,10 @@ def task_specific_adaptation(task_specific_policy,meta_policy_net_copy,batch,adv
         mean1, log_std1, std1 = task_specific_policy(Variable(states))
         mean_previous, log_std_previous, std_previous = meta_policy_net_copy(Variable(states))
 
-        mean0 = Variable(mean_previous.data)
-        log_std0 = Variable(log_std_previous.data)
-        std0 = Variable(std_previous.data)
+        mean0 = mean_previous.clone().detach().data.double()
+        log_std0 = log_std_previous.clone().detach().data.double()
+        std0 = std_previous.clone().detach().data.double()
+
         kl = log_std1 - log_std0 + (std0.pow(2) + (mean0 - mean1).pow(2)) / (2.0 * std1.pow(2)) - 0.5
         return kl.sum(1, keepdim=True)
     
@@ -298,9 +299,9 @@ def task_specific_adaptation(task_specific_policy,meta_policy_net_copy,batch,adv
         mean1, log_std1, std1 = task_specific_policy(Variable(states))
         mean_previous, log_std_previous, std_previous = meta_policy_net_copy(Variable(states))
 
-        mean0 = Variable(mean_previous.data)
-        log_std0 = Variable(log_std_previous.data)
-        std0 = Variable(std_previous.data)
+        mean0 = mean_previous.clone().detach().data.double()
+        log_std0 = log_std_previous.clone().detach().data.double()
+        std0 = std_previous.clone().detach().data.double()
 
         kl = log_std0 - log_std1 + (std1.pow(2) + (mean1 - mean0).pow(2)) / (2.0 * std0.pow(2)) - 0.5
         return kl.sum(1, keepdim=True)
@@ -308,7 +309,7 @@ def task_specific_adaptation(task_specific_policy,meta_policy_net_copy,batch,adv
     def get_kl3():
         policy_dictance=torch.tensor(0.0,requires_grad=True)
         for i,param in enumerate(task_specific_policy.parameters()):
-            policy_dictance += (param-list(meta_policy_net_copy.parameter())[i].data).pow(2).sum() 
+            policy_dictance += (param-list(meta_policy_net_copy.parameter())[i].clone().detach().data).pow(2).sum() 
         return policy_dictance
 
     one_step_trpo(task_specific_policy, get_loss, get_kl,args.meta_lambda) 
@@ -334,23 +335,24 @@ if __name__ == "__main__":
             task_specific_value_net = Value(num_inputs)
             meta_value_net_copy = Value(num_inputs)
             for i,param in enumerate(task_specific_value_net.parameters()):
-                param.data.copy_(list(meta_value_net.parameters())[i].data)
+                param.data.copy_(list(meta_value_net.parameters())[i].clone().detach().data)
             for i,param in enumerate(meta_value_net_copy.parameters()):
-                param.data.copy_(list(meta_value_net.parameters())[i].data)
+                param.data.copy_(list(meta_value_net.parameters())[i].clone().detach().data)
             task_specific_value_net = update_task_specific_valuenet(task_specific_value_net,meta_value_net_copy,batch,batch_extra,args.batch_size)
             
             batch_2,batch_extra_2,_=sample_data_for_task_specific(target_v,meta_policy_net)
             data_pool_for_meta_value_net.append([batch_2,batch_extra_2])
-            advantages=compute_adavatage(task_specific_value_net,batch_2,batch_extra_2,args.batch_size)
-            advantages_normalize_constant=advantages.std()
-            advantages_normalize = (advantages - advantages.mean()) / advantages.std()
+            advantages = compute_adavatage(task_specific_value_net,batch_2,batch_extra_2,args.batch_size)
+            advantages = (advantages - advantages.mean()) / 10.0
+            #advantages_normalize_constant=advantages.std()
+            #advantages_normalize = (advantages - advantages.mean()) / advantages.std() 
 
             task_specific_policy=Policy(num_inputs, num_actions)
             meta_policy_net_copy=Policy(num_inputs, num_actions)
             for i,param in enumerate(task_specific_policy.parameters()):
-                param.data.copy_(list(meta_policy_net.parameters())[i].data)
+                param.data.copy_(list(meta_policy_net.parameters())[i].clone().detach().data)
             for i,param in enumerate(meta_policy_net_copy.parameters()):
-                param.data.copy_(list(meta_policy_net.parameters())[i].data)
+                param.data.copy_(list(meta_policy_net.parameters())[i].clone().detach().data)
             task_specific_policy=task_specific_adaptation(task_specific_policy,meta_policy_net_copy,batch_2,advantages)
 
             after_batch,after_batch_extra,after_accumulated_raward_batch=sample_data_for_task_specific(target_v,task_specific_policy)
@@ -363,6 +365,6 @@ if __name__ == "__main__":
 
         meta_value_net_copy = Value(num_inputs)
         for i,param in enumerate(meta_value_net_copy.parameters()):
-            param.data.copy_(list(meta_value_net.parameters())[i].data)
+            param.data.copy_(list(meta_value_net.parameters())[i].clone().detach().data)
         meta_value_net=update_meta_valuenet(meta_value_net,meta_value_net_copy,data_pool_for_meta_value_net,args.batch_size)
 

@@ -27,10 +27,10 @@ parser.add_argument('--tau', type=float, default=0.97, metavar='G',
                     help='gae (default: 0.97)')
 parser.add_argument('--l2-reg', type=float, default=1e-3, metavar='G',
                     help='l2 regularization regression (default: 1e-3)')
-parser.add_argument('--meta-lambda', type=float, default=0.5, metavar='G',
-                    help='meta meta-lambda (default: 0.5)') 
-parser.add_argument('--max-kl', type=float, default=1e-2, metavar='G',
-                    help='max kl value (default: 1e-2)')
+parser.add_argument('--meta-lambda', type=float, default=0.25, metavar='G',
+                    help='meta meta-lambda (default: 0.25)') 
+parser.add_argument('--max-kl', type=float, default=3e-2, metavar='G',
+                    help='max kl value (default: 3e-2)')
 parser.add_argument('--damping', type=float, default=0e-1, metavar='G',
                     help='damping (default: 0e-1)')
 parser.add_argument('--seed', type=int, default=543, metavar='N',
@@ -137,7 +137,9 @@ def update_params(batch,batch_extra,batch_size):
     for i in range(1):
         advantages=update_advantage_function()
 
-    advantages = (advantages - advantages.mean()) / (advantages.std() )
+    print(advantages.std())
+    advantages = (advantages - advantages.mean()) / (10.0)
+    
 
     action_means, action_log_stds, action_stds = policy_net(Variable(states))
     fixed_log_prob = normal_log_density(Variable(actions), action_means, action_log_stds, action_stds).data.clone()
@@ -153,13 +155,13 @@ def update_params(batch,batch_extra,batch_size):
         action_loss = -Variable(advantages) * torch.exp(log_prob - Variable(fixed_log_prob))
         return action_loss.mean()
 
+    mean101, log_std101, std101 = policy_net(Variable(states))
+    mean0 = mean101.clone().detach().data.double()
+    log_std0 = log_std101.clone().detach().data.double()
+    std0 = std101.clone().detach().data.double()
 
     def get_kl():
-        mean1, log_std1, std1 = policy_net(Variable(states))
-
-        mean0 = Variable(mean1.data)
-        log_std0 = Variable(log_std1.data)
-        std0 = Variable(std1.data)
+        mean1, log_std1, std1 = policy_net(Variable(states))    
         kl = log_std1 - log_std0 + (std0.pow(2) + (mean0 - mean1).pow(2)) / (2.0 * std1.pow(2)) - 0.5
         return kl.sum(1, keepdim=True)
 
