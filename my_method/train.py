@@ -9,7 +9,7 @@ from replay_memory import Memory
 from running_state import ZFilter
 from torch.autograd import Variable
 from utils import *
-from trpo import one_step_trpo
+from trpo import one_step_trpo,conjugate_gradients
 
 from copy import deepcopy
 
@@ -157,7 +157,7 @@ def update_task_specific_valuenet(value_net,previous_value_net,batch,batch_extra
         value_loss = (values_ - targets).pow(2).mean()
 
         for i,param in enumerate(value_net.parameters()):
-            value_loss += (param-list(previous_value_net.parameter())[i].clone().detach().data).pow(2).sum() * args.meta_reg
+            value_loss += (param-list(previous_value_net.parameters())[i].clone().detach().data).pow(2).sum() * args.meta_reg
         value_loss.backward()
         return (value_loss.data.double().numpy(), get_flat_grad_from(value_net).data.double().numpy())
 
@@ -260,7 +260,7 @@ def update_meta_valuenet(value_net,previous_value_net,data_pool_for_meta_value_n
         value_loss = value_loss*1.0/len(data_pool_for_meta_value_net)
 
         for i,param in enumerate(value_net.parameters()):
-            value_loss += (param-list(previous_value_net.parameter())[i].clone().detach().data).pow(2).sum() * args.meta_reg
+            value_loss += (param-list(previous_value_net.parameters())[i].clone().detach().data).pow(2).sum() * args.meta_reg
         value_loss.backward()
         return (value_loss.data.double().numpy(), get_flat_grad_from(value_net).data.double().numpy())
 
@@ -318,7 +318,7 @@ def task_specific_adaptation(task_specific_policy,meta_policy_net_copy,batch,adv
     elif index==3:
         one_step_trpo(task_specific_policy, get_loss, get_kl3,args.meta_lambda3) 
 
-    return 
+    return task_specific_policy
 
 def kl_divergence(meta_policy_net1,task_specific_policy1,batch,index=1):
     if index==1:
@@ -353,6 +353,19 @@ def policy_gradient_obain(task_specific_policy,after_batch,after_advantages):
     policy_grad = [param2.grad.data.clone() for param2 in task_specific_policy.parameters()]
 
     return J_loss, policy_grad
+
+
+def loss_obain_new(task_specific_policy,meta_policy_net_copy,after_batch,after_advantages):
+    actions = torch.Tensor(np.concatenate(after_batch.action, 0))
+    states = torch.Tensor(after_batch.state)
+    fixed_action_means, fixed_action_log_stds, fixed_action_stds = meta_policy_net_copy(Variable(states))
+    fixed_log_prob = normal_log_density(Variable(actions), fixed_action_means, fixed_action_log_stds, fixed_action_stds).detach().data.clone()
+    afteradap_action_means, afteradap_action_log_stds, afteradap_action_stds = task_specific_policy(Variable(states))
+    log_prob = normal_log_density(Variable(actions), afteradap_action_means, afteradap_action_log_stds, afteradap_action_stds)
+    J_loss = (-Variable(after_advantages) * torch.exp(log_prob - Variable(fixed_log_prob))).mean()
+    
+    return J_loss
+
 
 if __name__ == "__main__":
 
@@ -397,11 +410,25 @@ if __name__ == "__main__":
             advantages_after = advantages_after - advantages_after.mean()
 
 
-            kl_phi_theta=kl_divergence(meta_policy_net,task_specific_policy,after_batch,index=1)
+            kl_phi_theta=kl_divergence(meta_policy_net,task_specific_policy,batch_2,index=1)
 
-            _, policy_gradient_2term= policy_gradient_obain(task_specific_policy,after_batch,advantages_after)
+            _, policy_gradient_main_term= policy_gradient_obain(task_specific_policy,after_batch,advantages_after)
 
-            
+            loss_for_1term=loss_obain_new(task_specific_policy,meta_policy_net_copy,batch_2,advantages)
+
+            #(\nabla_\phi^2 kl_phi_theta+loss_for_1term) x= policy_gradient_2term
+            def d_theta_2_kl_phi_theta_loss_for_1term(v):
+                grads = torch.autograd.grad(kl_phi_theta+loss_for_1term/args.meta_lambda, task_specific_policy.parameters(), create_graph=True,retain_graph=True)
+                flat_grad_kl = torch.cat([grad.view(-1) for grad in grads])
+                kl_v = (flat_grad_kl * Variable(v)).sum()
+                grads = torch.autograd.grad(kl_v, task_specific_policy.parameters(), create_graph=True,retain_graph=True)
+                flat_grad_grad_kl = torch.cat([grad.contiguous().view(-1) for grad in grads]).data
+                return flat_grad_grad_kl
+            policy_gradient_main_term_flat=torch.cat([grad.view(-1) for grad in policy_gradient_main_term]).data
+            x = conjugate_gradients(d_theta_2_kl_phi_theta_loss_for_1term, policy_gradient_main_term_flat, 10)
+
+            print(x)
+            input()
             
             task_meta_gradient_computation() 
 
