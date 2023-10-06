@@ -26,8 +26,8 @@ parser.add_argument('--tau', type=float, default=0.97, metavar='G',
                     help='gae (default: 0.97)')
 parser.add_argument('--meta-reg', type=float, default=33.0, metavar='G',
                     help='meta regularization regression (default: 33.0)')
-parser.add_argument('--meta-lambda', type=float, default=0.25, metavar='G',
-                    help='meta meta-lambda (default: 0.25)') 
+parser.add_argument('--meta-lambda', type=float, default=1.5, metavar='G',
+                    help='meta meta-lambda (default: 1.5)') 
 parser.add_argument('--max-kl', type=float, default=1e-2, metavar='G',
                     help='max kl value (default: 1e-2)')
 parser.add_argument('--damping', type=float, default=0e-1, metavar='G',
@@ -67,13 +67,13 @@ def select_action(state,policy_net):
     action = torch.normal(action_mean, action_std)
     return action
 
-def sample_data_for_task_specific(target_v,policy_net):
+def sample_data_for_task_specific(target_v,policy_net,batch_size):
     memory = Memory()
     memory_extra=Memory()
 
     accumulated_raward_batch = 0
     num_episodes = 0
-    for i in range(args.batch_size):
+    for i in range(batch_size):
         state = env.reset()[0]
         state = running_state(state)
 
@@ -271,11 +271,11 @@ def update_meta_valuenet(value_net,previous_value_net,data_pool_for_meta_value_n
 
     return value_net
 
-def task_specific_adaptation(task_specific_policy,meta_policy_net_copy,batch,advantages): 
+def task_specific_adaptation(task_specific_policy,meta_policy_net_copy,batch,advantages,index=1): 
     actions = torch.Tensor(np.concatenate(batch.action, 0))
     states = torch.Tensor(batch.state)
 
-    action_means, action_log_stds, action_stds = task_specific_policy(Variable(states))
+    action_means, action_log_stds, action_stds = meta_policy_net_copy(Variable(states))
     fixed_log_prob = normal_log_density(Variable(actions), action_means, action_log_stds, action_stds).data.clone()
 
     def get_loss():
@@ -311,11 +311,48 @@ def task_specific_adaptation(task_specific_policy,meta_policy_net_copy,batch,adv
         for i,param in enumerate(task_specific_policy.parameters()):
             policy_dictance += (param-list(meta_policy_net_copy.parameter())[i].clone().detach().data).pow(2).sum() 
         return policy_dictance
-
-    one_step_trpo(task_specific_policy, get_loss, get_kl,args.meta_lambda) 
+    if index==1:
+        one_step_trpo(task_specific_policy, get_loss, get_kl,args.meta_lambda) 
+    elif index==2:
+        one_step_trpo(task_specific_policy, get_loss, get_kl2,args.meta_lambda) 
+    elif index==3:
+        one_step_trpo(task_specific_policy, get_loss, get_kl3,args.meta_lambda3) 
 
     return 
 
+def kl_divergence(meta_policy_net1,task_specific_policy1,batch,index=1):
+    if index==1:
+        states = torch.Tensor(batch.state)
+        mean1, log_std1, std1 = task_specific_policy1(Variable(states))
+        mean0, log_std0, std0 = meta_policy_net1(Variable(states))
+        kl = log_std1 - log_std0 + (std0.pow(2) + (mean0 - mean1).pow(2)) / (2.0 * std1.pow(2)) - 0.5
+        return kl.sum(1, keepdim=True).mean()
+    elif index==2:
+        states = torch.Tensor(batch.state)
+        mean1, log_std1, std1 = task_specific_policy1(Variable(states))
+        mean0, log_std0, std0 = meta_policy_net1(Variable(states))
+        kl = log_std0 - log_std1 + (std1.pow(2) + (mean1 - mean0).pow(2)) / (2.0 * std0.pow(2)) - 0.5
+        return kl.sum(1, keepdim=True).mean()
+    elif index==3:
+        policy_dictance=torch.tensor(0.0,requires_grad=True)
+        for param,param1 in zip(task_specific_policy1.parameters(),meta_policy_net1.parameters()):
+            policy_dictance += (param-param1).pow(2).sum() 
+        return policy_dictance
+
+def policy_gradient_obain(task_specific_policy,after_batch,after_advantages):
+    actions = torch.Tensor(np.concatenate(after_batch.action, 0))
+    states = torch.Tensor(after_batch.state)
+    fixed_action_means, fixed_action_log_stds, fixed_action_stds = task_specific_policy(Variable(states))
+    fixed_log_prob = normal_log_density(Variable(actions), fixed_action_means, fixed_action_log_stds, fixed_action_stds).data.clone()
+    afteradap_action_means, afteradap_action_log_stds, afteradap_action_stds = task_specific_policy(Variable(states))
+    log_prob = normal_log_density(Variable(actions), afteradap_action_means, afteradap_action_log_stds, afteradap_action_stds)
+    J_loss = (-Variable(after_advantages) * torch.exp(log_prob - Variable(fixed_log_prob))).mean()
+    for param in task_specific_policy.parameters():
+        param.grad.zero_()
+    J_loss.backward(retain_graph=False)
+    policy_grad = [param2.grad.data.clone() for param2 in task_specific_policy.parameters()]
+
+    return J_loss, policy_grad
 
 if __name__ == "__main__":
 
@@ -327,7 +364,7 @@ if __name__ == "__main__":
         data_pool_for_meta_value_net=[]
         for task_number in range(args.task_batch_size):
             target_v=setting_reward()
-            batch,batch_extra,accumulated_raward_batch=sample_data_for_task_specific(target_v,meta_policy_net)
+            batch,batch_extra,accumulated_raward_batch=sample_data_for_task_specific(target_v,meta_policy_net,args.batch_size)
             data_pool_for_meta_value_net.append([batch,batch_extra])
             print("task_number: ",task_number)
             print('(before adaptation) Episode {}\tAverage reward {:.2f}'.format(i_episode, accumulated_raward_batch))
@@ -340,12 +377,10 @@ if __name__ == "__main__":
                 param.data.copy_(list(meta_value_net.parameters())[i].clone().detach().data)
             task_specific_value_net = update_task_specific_valuenet(task_specific_value_net,meta_value_net_copy,batch,batch_extra,args.batch_size)
             
-            batch_2,batch_extra_2,_=sample_data_for_task_specific(target_v,meta_policy_net)
+            batch_2,batch_extra_2,_=sample_data_for_task_specific(target_v,meta_policy_net,args.batch_size)
             data_pool_for_meta_value_net.append([batch_2,batch_extra_2])
             advantages = compute_adavatage(task_specific_value_net,batch_2,batch_extra_2,args.batch_size)
-            advantages = (advantages - advantages.mean()) / 10.0
-            #advantages_normalize_constant=advantages.std()
-            #advantages_normalize = (advantages - advantages.mean()) / advantages.std() 
+            advantages = advantages - advantages.mean()
 
             task_specific_policy=Policy(num_inputs, num_actions)
             meta_policy_net_copy=Policy(num_inputs, num_actions)
@@ -353,11 +388,23 @@ if __name__ == "__main__":
                 param.data.copy_(list(meta_policy_net.parameters())[i].clone().detach().data)
             for i,param in enumerate(meta_policy_net_copy.parameters()):
                 param.data.copy_(list(meta_policy_net.parameters())[i].clone().detach().data)
-            task_specific_policy=task_specific_adaptation(task_specific_policy,meta_policy_net_copy,batch_2,advantages)
+            task_specific_policy=task_specific_adaptation(task_specific_policy,meta_policy_net_copy,batch_2,advantages,index=1)
 
-            after_batch,after_batch_extra,after_accumulated_raward_batch=sample_data_for_task_specific(target_v,task_specific_policy)
+            after_batch,after_batch_extra,after_accumulated_raward_batch=sample_data_for_task_specific(target_v,task_specific_policy,args.batch_size)
             data_pool_for_meta_value_net.append([after_batch,after_batch_extra])
-            print('(after adaptation) Episode {}\tAverage reward {:.2f}'.format(i_episode, after_accumulated_raward_batch))
+            print('(after adaptation) Episode {}\tAverage reward {:.2f}'.format(i_episode, after_accumulated_raward_batch)) 
+            advantages_after = compute_adavatage(task_specific_value_net,after_batch,after_batch_extra,args.batch_size)
+            advantages_after = advantages_after - advantages_after.mean()
+
+
+            kl_phi_theta=kl_divergence(meta_policy_net,task_specific_policy,after_batch,index=1)
+
+            _, policy_gradient_2term= policy_gradient_obain(task_specific_policy,after_batch,advantages_after)
+
+            
+            
+
+            
             
             task_meta_gradient_computation() 
 
