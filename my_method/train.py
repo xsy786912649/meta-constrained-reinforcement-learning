@@ -26,15 +26,15 @@ parser.add_argument('--tau', type=float, default=0.97, metavar='G',
                     help='gae (default: 0.97)')
 parser.add_argument('--meta-reg', type=float, default=33.0, metavar='G',
                     help='meta regularization regression (default: 33.0)')
-parser.add_argument('--meta-lambda', type=float, default=2.5, metavar='G',
-                    help='meta meta-lambda (default: 2.5)') 
+parser.add_argument('--meta-lambda', type=float, default=5.0, metavar='G',
+                    help='meta meta-lambda (default: 5.0)') 
 parser.add_argument('--max-kl', type=float, default=1e-2, metavar='G',
                     help='max kl value (default: 1e-2)')
 parser.add_argument('--damping', type=float, default=0e-1, metavar='G',
                     help='damping (default: 0e-1)')
 parser.add_argument('--seed', type=int, default=543, metavar='N',
                     help='random seed (default: 1)')
-parser.add_argument('--batch-size', type=int, default=100, metavar='N',
+parser.add_argument('--batch-size', type=int, default=20, metavar='N',
                     help='batch-size (default: 20)')
 parser.add_argument('--task-batch-size', type=int, default=5, metavar='N',
                     help='task-batch-size (default: 5)')
