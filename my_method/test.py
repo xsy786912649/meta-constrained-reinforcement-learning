@@ -5,14 +5,14 @@ from train import *
 if __name__ == "__main__":
 
     meta_policy_net = torch.load("meta_policy_net.pkl")
-    meta_value_net = torch.save("meta_value_net.pkl")
+    meta_value_net = torch.load("meta_value_net.pkl")
 
 
     for task_number in range(args.task_batch_size):
         target_v=setting_reward()
         batch,batch_extra,accumulated_raward_batch=sample_data_for_task_specific(target_v,meta_policy_net,args.batch_size)
         print("task_number: ",task_number)
-        print('(before adaptation) Episode {}\tAverage reward {:.2f}'.format(i_episode, accumulated_raward_batch))
+        print('(before adaptation) \tAverage reward {:.2f}'.format( accumulated_raward_batch))
 
         task_specific_value_net = Value(num_inputs)
         meta_value_net_copy = Value(num_inputs)
@@ -41,7 +41,7 @@ if __name__ == "__main__":
 
             batch,batch_extra,accumulated_raward_batch=sample_data_for_task_specific(target_v,meta_policy_net,args.batch_size)
             print("task_number: ",task_number)
-            print('(adaptation {}) Episode {}\tAverage reward {:.2f}'.format(iteration_number+1,i_episode, accumulated_raward_batch))
+            print('(adaptation {}) \tAverage reward {:.2f}'.format(iteration_number+1, accumulated_raward_batch))
 
             task_specific_value_net = update_task_specific_valuenet(task_specific_value_net,previous_value_net,batch,batch_extra,args.batch_size)
             for i,param in enumerate(previous_value_net.parameters()):
