@@ -386,7 +386,7 @@ if __name__ == "__main__":
             target_v=setting_reward()
             batch,batch_extra,accumulated_raward_batch=sample_data_for_task_specific(target_v,meta_policy_net,args.batch_size)
             data_pool_for_meta_value_net.append([batch,batch_extra])
-            print("task_number: ",task_number)
+            print("task_number: ",task_number, " target_v: ", target_v)
             print('(before adaptation) Episode {}\tAverage reward {:.2f}'.format(i_episode, accumulated_raward_batch))
     
             task_specific_value_net = Value(num_inputs)
@@ -398,7 +398,7 @@ if __name__ == "__main__":
             task_specific_value_net = update_task_specific_valuenet(task_specific_value_net,meta_value_net_copy,batch,batch_extra,args.batch_size)
             
             batch_2,batch_extra_2,_=sample_data_for_task_specific(target_v,meta_policy_net,args.batch_size)
-            data_pool_for_meta_value_net.append([batch_2,batch_extra_2])
+            #data_pool_for_meta_value_net.append([batch_2,batch_extra_2])
             advantages = compute_adavatage(task_specific_value_net,batch_2,batch_extra_2,args.batch_size)
             advantages = advantages - advantages.mean()
 
@@ -411,11 +411,10 @@ if __name__ == "__main__":
             task_specific_policy=task_specific_adaptation(task_specific_policy,meta_policy_net_copy,batch_2,advantages,index=1)
 
             after_batch,after_batch_extra,after_accumulated_raward_batch=sample_data_for_task_specific(target_v,task_specific_policy,args.batch_size)
-            data_pool_for_meta_value_net.append([after_batch,after_batch_extra])
+            #data_pool_for_meta_value_net.append([after_batch,after_batch_extra])
             print('(after adaptation) Episode {}\tAverage reward {:.2f}'.format(i_episode, after_accumulated_raward_batch)) 
             advantages_after = compute_adavatage(task_specific_value_net,after_batch,after_batch_extra,args.batch_size)
             advantages_after = advantages_after - advantages_after.mean()
-
 
             kl_phi_theta=kl_divergence(meta_policy_net,task_specific_policy,batch_2,index=1)
 
@@ -448,6 +447,7 @@ if __name__ == "__main__":
         for i,param in enumerate(meta_policy_net.parameters()): 
             param.grad= -grads_update[i]
         optimizer.step()
+        optimizer.zero_grad()
 
         meta_value_net_copy = Value(num_inputs)
         for i,param in enumerate(meta_value_net_copy.parameters()):
