@@ -1,5 +1,5 @@
 import argparse
-
+import os
 import gym
 import scipy.optimize
 
@@ -24,10 +24,10 @@ parser.add_argument('--env-name', default="HalfCheetah-v4", metavar='G',
                     help='name of the environment to run')
 parser.add_argument('--tau', type=float, default=0.97, metavar='G',
                     help='gae (default: 0.97)')
-parser.add_argument('--meta-reg', type=float, default=33.0, metavar='G',
-                    help='meta regularization regression (default: 33.0)')
-parser.add_argument('--meta-lambda', type=float, default=5.0, metavar='G',
-                    help='meta meta-lambda (default: 5.0)') 
+parser.add_argument('--meta-reg', type=float, default=8.0, metavar='G',
+                    help='meta regularization regression (default: 5.0)')
+parser.add_argument('--meta-lambda', type=float, default=10.0, metavar='G',
+                    help='meta meta-lambda (default: 10.0)') 
 parser.add_argument('--max-kl', type=float, default=1e-2, metavar='G',
                     help='max kl value (default: 1e-2)')
 parser.add_argument('--damping', type=float, default=0e-1, metavar='G',
@@ -154,10 +154,10 @@ def update_task_specific_valuenet(value_net,previous_value_net,batch,batch_extra
                 param.grad.data.fill_(0)
 
         values_ = value_net(Variable(states))
-        value_loss = (values_ - targets).pow(2).mean()
+        value_loss = (values_ - targets).pow(2).mean() /args.meta_reg
 
         for i,param in enumerate(value_net.parameters()):
-            value_loss += (param-list(previous_value_net.parameters())[i].clone().detach().data).pow(2).sum() * args.meta_reg
+            value_loss += (param-list(previous_value_net.parameters())[i].clone().detach().data).pow(2).sum()
         value_loss.backward()
         return (value_loss.data.double().numpy(), get_flat_grad_from(value_net).data.double().numpy())
 
@@ -257,10 +257,10 @@ def update_meta_valuenet(value_net,previous_value_net,data_pool_for_meta_value_n
         for task_number in range(len(data_pool_for_meta_value_net)):
             values_ = value_net(Variable(torch.Tensor(data_pool_for_meta_value_net[task_number][0].state)))
             value_loss = value_loss + (values_ - target[task_number]).pow(2).mean()
-        value_loss = value_loss*1.0/len(data_pool_for_meta_value_net)
+        value_loss = value_loss*1.0/len(data_pool_for_meta_value_net) /args.meta_reg
 
         for i,param in enumerate(value_net.parameters()):
-            value_loss += (param-list(previous_value_net.parameters())[i].clone().detach().data).pow(2).sum() * args.meta_reg
+            value_loss += (param-list(previous_value_net.parameters())[i].clone().detach().data).pow(2).sum()
         value_loss.backward()
         return (value_loss.data.double().numpy(), get_flat_grad_from(value_net).data.double().numpy())
 
@@ -369,8 +369,12 @@ def loss_obain_new(task_specific_policy,meta_policy_net_copy,after_batch,after_a
 
 if __name__ == "__main__":
 
-    meta_policy_net = Policy(num_inputs, num_actions)
-    meta_value_net = Value(num_inputs)
+    if not os.path.exists("./meta_policy_net.pkl"):
+        meta_policy_net = Policy(num_inputs, num_actions)
+        meta_value_net = Value(num_inputs)
+    else:
+        meta_policy_net = torch.load("meta_policy_net.pkl")
+        meta_value_net = torch.load("meta_value_net.pkl")
 
     optimizer = torch.optim.Adam(meta_policy_net.parameters(), lr=0.003)
 
@@ -442,7 +446,7 @@ if __name__ == "__main__":
 
         optimizer.zero_grad()
         for i,param in enumerate(meta_policy_net.parameters()): 
-            param.grad= grads_update[i]
+            param.grad= -grads_update[i]
         optimizer.step()
 
         meta_value_net_copy = Value(num_inputs)
@@ -452,3 +456,34 @@ if __name__ == "__main__":
 
         torch.save(meta_policy_net, "meta_policy_net.pkl")
         torch.save(meta_value_net, "meta_value_net.pkl")
+
+        for task_number_test in range(1):
+            target_v=1.2
+            batch,batch_extra,accumulated_raward_batch=sample_data_for_task_specific(target_v,meta_policy_net,args.batch_size)
+            print("test_task: ")
+            print('(before adaptation) Episode {}\tAverage reward {:.2f}'.format(i_episode, accumulated_raward_batch))
+    
+            task_specific_value_net = Value(num_inputs)
+            meta_value_net_copy = Value(num_inputs)
+            for i,param in enumerate(task_specific_value_net.parameters()):
+                param.data.copy_(list(meta_value_net.parameters())[i].clone().detach().data)
+            for i,param in enumerate(meta_value_net_copy.parameters()):
+                param.data.copy_(list(meta_value_net.parameters())[i].clone().detach().data)
+            task_specific_value_net = update_task_specific_valuenet(task_specific_value_net,meta_value_net_copy,batch,batch_extra,args.batch_size)
+            
+            batch_2,batch_extra_2,_=sample_data_for_task_specific(target_v,meta_policy_net,args.batch_size)
+            advantages = compute_adavatage(task_specific_value_net,batch_2,batch_extra_2,args.batch_size)
+            advantages = advantages - advantages.mean()
+
+            task_specific_policy=Policy(num_inputs, num_actions)
+            meta_policy_net_copy=Policy(num_inputs, num_actions)
+            for i,param in enumerate(task_specific_policy.parameters()):
+                param.data.copy_(list(meta_policy_net.parameters())[i].clone().detach().data)
+            for i,param in enumerate(meta_policy_net_copy.parameters()):
+                param.data.copy_(list(meta_policy_net.parameters())[i].clone().detach().data)
+            task_specific_policy=task_specific_adaptation(task_specific_policy,meta_policy_net_copy,batch_2,advantages,index=1)
+
+            after_batch,after_batch_extra,after_accumulated_raward_batch=sample_data_for_task_specific(target_v,task_specific_policy,args.batch_size)
+            print('(after adaptation) Episode {}\tAverage reward {:.2f}'.format(i_episode, after_accumulated_raward_batch)) 
+
+
