@@ -255,7 +255,7 @@ def update_meta_valuenet(value_net,previous_value_net,data_pool_for_meta_value_n
 
         value_loss=torch.tensor(0.0,requires_grad=True)
         for task_number in range(len(data_pool_for_meta_value_net)):
-            values_ = value_net(Variable(data_pool_for_meta_value_net[task_number][0].state))
+            values_ = value_net(Variable(torch.Tensor(data_pool_for_meta_value_net[task_number][0].state)))
             value_loss = value_loss + (values_ - target[task_number]).pow(2).mean()
         value_loss = value_loss*1.0/len(data_pool_for_meta_value_net)
 
@@ -372,9 +372,12 @@ if __name__ == "__main__":
     meta_policy_net = Policy(num_inputs, num_actions)
     meta_value_net = Value(num_inputs)
 
+    optimizer = torch.optim.Adam(meta_policy_net.parameters(), lr=0.003)
+
     for i_episode in range(200):
         print("i_episode: ",i_episode)
         data_pool_for_meta_value_net=[]
+        grad_update=None
         for task_number in range(args.task_batch_size):
             target_v=setting_reward()
             batch,batch_extra,accumulated_raward_batch=sample_data_for_task_specific(target_v,meta_policy_net,args.batch_size)
@@ -421,18 +424,26 @@ if __name__ == "__main__":
                 grads = torch.autograd.grad(kl_phi_theta+loss_for_1term/args.meta_lambda, task_specific_policy.parameters(), create_graph=True,retain_graph=True)
                 flat_grad_kl = torch.cat([grad.view(-1) for grad in grads])
                 kl_v = (flat_grad_kl * Variable(v)).sum()
-                grads = torch.autograd.grad(kl_v, task_specific_policy.parameters(), create_graph=True,retain_graph=True)
-                flat_grad_grad_kl = torch.cat([grad.contiguous().view(-1) for grad in grads]).data
+                grads_new = torch.autograd.grad(kl_v, task_specific_policy.parameters(), create_graph=True,retain_graph=True)
+                flat_grad_grad_kl = torch.cat([grad.contiguous().view(-1) for grad in grads_new]).data
                 return flat_grad_grad_kl
             policy_gradient_main_term_flat=torch.cat([grad.view(-1) for grad in policy_gradient_main_term]).data
             x = conjugate_gradients(d_theta_2_kl_phi_theta_loss_for_1term, policy_gradient_main_term_flat, 10)
 
-            print(x)
-            input()
-            
-            task_meta_gradient_computation() 
+            kl_phi_theta_1=kl_divergence(meta_policy_net,task_specific_policy,batch_2,index=1)
+            grads_1 = torch.autograd.grad(kl_phi_theta_1, task_specific_policy.parameters(), create_graph=True,retain_graph=True)
+            flat_grad_kl_1 = torch.cat([grad.view(-1) for grad in grads_1])
+            kl_v_1 = (flat_grad_kl_1 * x).sum() 
+            grads_new_1 = torch.autograd.grad(kl_v_1, meta_policy_net.parameters(), create_graph=True,retain_graph=True)
+            if grad_update==None:
+                grads_update=[grad.clone().data*1.0/args.task_batch_size for grad in grads_new_1]
+            else:
+                grads_update=[grads_update[i]+ grad.clone().data*1.0/args.task_batch_size for i,grad in enumerate(grads_new_1)]
 
-        update_meta_policy() 
+        optimizer.zero_grad()
+        for i,param in enumerate(meta_policy_net.parameters()): 
+            param.grad= grads_update[i]
+        optimizer.step()
 
         meta_value_net_copy = Value(num_inputs)
         for i,param in enumerate(meta_value_net_copy.parameters()):
