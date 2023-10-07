@@ -26,8 +26,8 @@ parser.add_argument('--tau', type=float, default=0.97, metavar='G',
                     help='gae (default: 0.97)')
 parser.add_argument('--meta-reg', type=float, default=33.0, metavar='G',
                     help='meta regularization regression (default: 33.0)')
-parser.add_argument('--meta-lambda', type=float, default=1.5, metavar='G',
-                    help='meta meta-lambda (default: 1.5)') 
+parser.add_argument('--meta-lambda', type=float, default=2.5, metavar='G',
+                    help='meta meta-lambda (default: 2.5)') 
 parser.add_argument('--max-kl', type=float, default=1e-2, metavar='G',
                     help='max kl value (default: 1e-2)')
 parser.add_argument('--damping', type=float, default=0e-1, metavar='G',
@@ -161,7 +161,7 @@ def update_task_specific_valuenet(value_net,previous_value_net,batch,batch_extra
         value_loss.backward()
         return (value_loss.data.double().numpy(), get_flat_grad_from(value_net).data.double().numpy())
 
-    for i in range(3):
+    for i in range(5):
         flat_params, _, opt_info = scipy.optimize.fmin_l_bfgs_b(get_value_loss, get_flat_params_from(previous_value_net).double().numpy(), maxiter=25)
         set_flat_params_to(value_net, torch.Tensor(flat_params))
         previous_value_net=value_net
@@ -450,3 +450,5 @@ if __name__ == "__main__":
             param.data.copy_(list(meta_value_net.parameters())[i].clone().detach().data)
         meta_value_net=update_meta_valuenet(meta_value_net,meta_value_net_copy,data_pool_for_meta_value_net,args.batch_size)
 
+        torch.save(meta_policy_net, "meta_policy_net.pkl")
+        torch.save(meta_value_net, "meta_value_net.pkl")
