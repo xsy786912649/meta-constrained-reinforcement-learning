@@ -27,8 +27,8 @@ parser.add_argument('--tau', type=float, default=0.97, metavar='G',
                     help='gae (default: 0.97)')
 parser.add_argument('--l2-reg', type=float, default=1e-3, metavar='G',
                     help='l2 regularization regression (default: 1e-3)')
-parser.add_argument('--meta-lambda', type=float, default=1.5, metavar='G',
-                    help='meta meta-lambda (default: 1.5)') 
+parser.add_argument('--meta-lambda', type=float, default=2.5, metavar='G',
+                    help='meta meta-lambda (default: 2.5)') 
 parser.add_argument('--max-kl', type=float, default=3e-2, metavar='G',
                     help='max kl value (default: 3e-2)')
 parser.add_argument('--damping', type=float, default=0e-1, metavar='G',
@@ -191,7 +191,7 @@ if __name__ == "__main__":
                 action = select_action(state)
                 action = action.data[0].numpy()
                 next_state, reward, done, truncated, info = env.step(action)
-                reward=-abs(info['x_velocity']-1.0)
+                reward=-abs(info['x_velocity']-2.0)
                 reward_sum += reward
                 next_state = running_state(next_state)
                 path_number = i
@@ -208,7 +208,7 @@ if __name__ == "__main__":
                 action = select_action(state)
                 action = action.data[0].numpy()
                 next_state, reward, done, truncated, info = env.step(action)
-                reward=-abs(info['x_velocity']-1.0)
+                reward=-abs(info['x_velocity']-2.0)
                 next_state = running_state(next_state)
                 path_number = i
 
