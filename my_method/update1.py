@@ -1,5 +1,6 @@
 import argparse
 from itertools import count
+import os
 
 import gym
 import scipy.optimize
@@ -27,15 +28,15 @@ parser.add_argument('--tau', type=float, default=0.97, metavar='G',
                     help='gae (default: 0.97)')
 parser.add_argument('--l2-reg', type=float, default=1e-3, metavar='G',
                     help='l2 regularization regression (default: 1e-3)')
-parser.add_argument('--meta-lambda', type=float, default=10.0, metavar='G',
-                    help='meta meta-lambda (default: 2.5)') 
+parser.add_argument('--meta-lambda', type=float, default=0.6, metavar='G',
+                    help='meta meta-lambda (default: 0.6)') 
 parser.add_argument('--max-kl', type=float, default=3e-2, metavar='G',
                     help='max kl value (default: 3e-2)')
 parser.add_argument('--damping', type=float, default=0e-1, metavar='G',
                     help='damping (default: 0e-1)')
 parser.add_argument('--seed', type=int, default=543, metavar='N',
                     help='random seed (default: 1)')
-parser.add_argument('--batch-size', type=int, default=20, metavar='N',
+parser.add_argument('--batch-size', type=int, default=100, metavar='N',
                     help='batch-size (default: 20)')
 parser.add_argument('--render', action='store_true',
                     help='render the environment')
@@ -59,6 +60,14 @@ torch.manual_seed(args.seed)
 
 policy_net = Policy(num_inputs, num_actions)
 value_net = Value(num_inputs)
+
+
+if not os.path.exists("./meta_policy_net.pkl"):
+    policy_net = Policy(num_inputs, num_actions)
+    value_net = Value(num_inputs)
+else:
+    policy_net = torch.load("meta_policy_net.pkl")
+    #value_net = torch.load("meta_value_net.pkl")
 
 def select_action(state):
     state = torch.from_numpy(state).unsqueeze(0)
@@ -139,8 +148,7 @@ def update_params(batch,batch_extra,batch_size):
 
     print(advantages.std())
     print(advantages.mean())
-    #advantages = (advantages - advantages.mean())/advantages.std()
-    advantages = advantages - advantages.mean()
+    advantages = (advantages - advantages.mean())/torch.sqrt(advantages.std())
     
     action_means, action_log_stds, action_stds = policy_net(Variable(states))
     fixed_log_prob = normal_log_density(Variable(actions), action_means, action_log_stds, action_stds).data.clone()

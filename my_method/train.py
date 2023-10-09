@@ -24,18 +24,18 @@ parser.add_argument('--env-name', default="HalfCheetah-v4", metavar='G',
                     help='name of the environment to run')
 parser.add_argument('--tau', type=float, default=0.97, metavar='G',
                     help='gae (default: 0.97)')
-parser.add_argument('--meta-reg', type=float, default=8.0, metavar='G',
-                    help='meta regularization regression (default: 5.0)')
-parser.add_argument('--meta-lambda', type=float, default=10.0, metavar='G',
-                    help='meta meta-lambda (default: 10.0)') 
-parser.add_argument('--max-kl', type=float, default=1e-2, metavar='G',
-                    help='max kl value (default: 1e-2)')
+parser.add_argument('--meta-reg', type=float, default=0.1, metavar='G',
+                    help='meta regularization regression (default: 1.0)') 
+parser.add_argument('--meta-lambda', type=float, default=0.7, metavar='G', 
+                    help='meta meta-lambda (default: 1.5)')  # 1.5
+parser.add_argument('--max-kl', type=float, default=3e-2, metavar='G',
+                    help='max kl value (default: 3e-2)')
 parser.add_argument('--damping', type=float, default=0e-1, metavar='G',
                     help='damping (default: 0e-1)')
 parser.add_argument('--seed', type=int, default=543, metavar='N',
                     help='random seed (default: 1)')
-parser.add_argument('--batch-size', type=int, default=20, metavar='N',
-                    help='batch-size (default: 20)')
+parser.add_argument('--batch-size', type=int, default=100, metavar='N',
+                    help='batch-size (default: 20)') #20  
 parser.add_argument('--task-batch-size', type=int, default=5, metavar='N',
                     help='task-batch-size (default: 5)')
 parser.add_argument('--render', action='store_true',
@@ -154,14 +154,14 @@ def update_task_specific_valuenet(value_net,previous_value_net,batch,batch_extra
                 param.grad.data.fill_(0)
 
         values_ = value_net(Variable(states))
-        value_loss = (values_ - targets).pow(2).mean() /args.meta_reg
+        value_loss = (values_ - targets).pow(2).mean() 
 
         for i,param in enumerate(value_net.parameters()):
-            value_loss += (param-list(previous_value_net.parameters())[i].clone().detach().data).pow(2).sum()
+            value_loss += (param-list(previous_value_net.parameters())[i].clone().detach().data).pow(2).sum() * args.meta_reg
         value_loss.backward()
         return (value_loss.data.double().numpy(), get_flat_grad_from(value_net).data.double().numpy())
 
-    for i in range(5):
+    for i in range(1):
         flat_params, _, opt_info = scipy.optimize.fmin_l_bfgs_b(get_value_loss, get_flat_params_from(previous_value_net).double().numpy(), maxiter=25)
         set_flat_params_to(value_net, torch.Tensor(flat_params))
         previous_value_net=value_net
@@ -246,28 +246,15 @@ def update_meta_valuenet(value_net,previous_value_net,data_pool_for_meta_value_n
             prev_return[int(path_numbers[i].item()),0] = returns[i, 0]
         target.append( Variable(returns) )
 
-    # Original code uses the same LBFGS to optimize the value loss
-    def get_value_loss(flat_params):
-        set_flat_params_to(value_net, torch.Tensor(flat_params))
-        for param in value_net.parameters():
-            if param.grad is not None:
-                param.grad.data.fill_(0)
-
-        value_loss=torch.tensor(0.0,requires_grad=True)
-        for task_number in range(len(data_pool_for_meta_value_net)):
-            values_ = value_net(Variable(torch.Tensor(data_pool_for_meta_value_net[task_number][0].state)))
-            value_loss = value_loss + (values_ - target[task_number]).pow(2).mean()
-        value_loss = value_loss*1.0/len(data_pool_for_meta_value_net) /args.meta_reg
-
-        for i,param in enumerate(value_net.parameters()):
-            value_loss += (param-list(previous_value_net.parameters())[i].clone().detach().data).pow(2).sum()
-        value_loss.backward()
-        return (value_loss.data.double().numpy(), get_flat_grad_from(value_net).data.double().numpy())
-
-    for i in range(1):
-        flat_params, _, opt_info = scipy.optimize.fmin_l_bfgs_b(get_value_loss, get_flat_params_from(previous_value_net).double().numpy(), maxiter=25)
-        set_flat_params_to(value_net, torch.Tensor(flat_params))
-        previous_value_net=value_net
+    optimizer = torch.optim.SGD(value_net.parameters(), lr=0.008)
+    value_loss=torch.tensor(0.0,requires_grad=True)
+    for task_number in range(len(data_pool_for_meta_value_net)):
+        values_ = value_net(Variable(torch.Tensor(data_pool_for_meta_value_net[task_number][0].state)))
+        value_loss = value_loss + (values_ - target[task_number]).pow(2).mean()
+    value_loss = value_loss*1.0/len(data_pool_for_meta_value_net) 
+    optimizer.zero_grad()
+    value_loss.backward()
+    optimizer.step()
 
     return value_net
 
@@ -346,7 +333,9 @@ def policy_gradient_obain(task_specific_policy,after_batch,after_advantages):
     fixed_log_prob = normal_log_density(Variable(actions), fixed_action_means, fixed_action_log_stds, fixed_action_stds).data.clone()
     afteradap_action_means, afteradap_action_log_stds, afteradap_action_stds = task_specific_policy(Variable(states))
     log_prob = normal_log_density(Variable(actions), afteradap_action_means, afteradap_action_log_stds, afteradap_action_stds)
-    J_loss = (-Variable(after_advantages) * torch.exp(log_prob - Variable(fixed_log_prob))).mean()
+    AAAAA=torch.exp(log_prob - Variable(fixed_log_prob))
+    bbbbb=torch.min(Variable(after_advantages)*AAAAA,Variable(after_advantages)*AAAAA*torch.clamp(AAAAA,0.8,1.2))
+    J_loss = (-bbbbb).mean()
     for param in task_specific_policy.parameters():
         param.grad.zero_()
     J_loss.backward(retain_graph=False)
@@ -400,7 +389,7 @@ if __name__ == "__main__":
             batch_2,batch_extra_2,_=sample_data_for_task_specific(target_v,meta_policy_net,args.batch_size)
             #data_pool_for_meta_value_net.append([batch_2,batch_extra_2])
             advantages = compute_adavatage(task_specific_value_net,batch_2,batch_extra_2,args.batch_size)
-            advantages = advantages - advantages.mean()
+            advantages = (advantages - advantages.mean()) / torch.sqrt(advantages.std())
 
             task_specific_policy=Policy(num_inputs, num_actions)
             meta_policy_net_copy=Policy(num_inputs, num_actions)
@@ -414,7 +403,7 @@ if __name__ == "__main__":
             #data_pool_for_meta_value_net.append([after_batch,after_batch_extra])
             print('(after adaptation) Episode {}\tAverage reward {:.2f}'.format(i_episode, after_accumulated_raward_batch)) 
             advantages_after = compute_adavatage(task_specific_value_net,after_batch,after_batch_extra,args.batch_size)
-            advantages_after = advantages_after - advantages_after.mean()
+            advantages_after = (advantages_after - advantages_after.mean()) / torch.sqrt(advantages_after.std())
 
             kl_phi_theta=kl_divergence(meta_policy_net,task_specific_policy,batch_2,index=1)
 
@@ -473,7 +462,7 @@ if __name__ == "__main__":
             
             batch_2,batch_extra_2,_=sample_data_for_task_specific(target_v,meta_policy_net,args.batch_size)
             advantages = compute_adavatage(task_specific_value_net,batch_2,batch_extra_2,args.batch_size)
-            advantages = advantages - advantages.mean()
+            advantages = (advantages - advantages.mean())  / torch.sqrt(advantages.std())
 
             task_specific_policy=Policy(num_inputs, num_actions)
             meta_policy_net_copy=Policy(num_inputs, num_actions)
