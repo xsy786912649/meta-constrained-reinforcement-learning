@@ -34,7 +34,7 @@ parser.add_argument('--damping', type=float, default=0e-1, metavar='G',
                     help='damping (default: 0e-1)')
 parser.add_argument('--seed', type=int, default=543, metavar='N',
                     help='random seed (default: 1)')
-parser.add_argument('--batch-size', type=int, default=100, metavar='N',
+parser.add_argument('--batch-size', type=int, default=50, metavar='N',
                     help='batch-size (default: 20)') #20  
 parser.add_argument('--task-batch-size', type=int, default=5, metavar='N',
                     help='task-batch-size (default: 5)')
@@ -367,7 +367,7 @@ if __name__ == "__main__":
 
     optimizer = torch.optim.Adam(meta_policy_net.parameters(), lr=0.003)
 
-    for i_episode in range(200):
+    for i_episode in range(300):
         print("i_episode: ",i_episode)
         data_pool_for_meta_value_net=[]
         grad_update=None
@@ -475,5 +475,5 @@ if __name__ == "__main__":
 
             after_batch,after_batch_extra,after_accumulated_raward_batch=sample_data_for_task_specific(target_v,task_specific_policy,args.batch_size)
             print('(after adaptation) Episode {}\tAverage reward {:.2f}'.format(i_episode, after_accumulated_raward_batch)) 
-
+            print("----------------------------------------")
 
