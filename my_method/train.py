@@ -24,7 +24,7 @@ parser.add_argument('--env-name', default="HalfCheetah-v4", metavar='G',
                     help='name of the environment to run')
 parser.add_argument('--tau', type=float, default=0.97, metavar='G',
                     help='gae (default: 0.97)')
-parser.add_argument('--meta-reg', type=float, default=0.1, metavar='G',
+parser.add_argument('--meta-reg', type=float, default=0.01, metavar='G',
                     help='meta regularization regression (default: 1.0)') 
 parser.add_argument('--meta-lambda', type=float, default=0.7, metavar='G', 
                     help='meta meta-lambda (default: 1.5)')  # 1.5
@@ -389,7 +389,8 @@ if __name__ == "__main__":
             batch_2,batch_extra_2,_=sample_data_for_task_specific(target_v,meta_policy_net,args.batch_size)
             #data_pool_for_meta_value_net.append([batch_2,batch_extra_2])
             advantages = compute_adavatage(task_specific_value_net,batch_2,batch_extra_2,args.batch_size)
-            advantages = (advantages - advantages.mean()) / torch.sqrt(advantages.std())
+            advantages2 = (advantages ) / torch.sqrt(advantages.std())
+            advantages1 = (advantages - advantages.mean()) / torch.sqrt(advantages.std())
 
             task_specific_policy=Policy(num_inputs, num_actions)
             meta_policy_net_copy=Policy(num_inputs, num_actions)
@@ -397,7 +398,7 @@ if __name__ == "__main__":
                 param.data.copy_(list(meta_policy_net.parameters())[i].clone().detach().data)
             for i,param in enumerate(meta_policy_net_copy.parameters()):
                 param.data.copy_(list(meta_policy_net.parameters())[i].clone().detach().data)
-            task_specific_policy=task_specific_adaptation(task_specific_policy,meta_policy_net_copy,batch_2,advantages,index=1)
+            task_specific_policy=task_specific_adaptation(task_specific_policy,meta_policy_net_copy,batch_2,advantages1,index=1)
 
             after_batch,after_batch_extra,after_accumulated_raward_batch=sample_data_for_task_specific(target_v,task_specific_policy,args.batch_size)
             #data_pool_for_meta_value_net.append([after_batch,after_batch_extra])
@@ -409,7 +410,7 @@ if __name__ == "__main__":
 
             _, policy_gradient_main_term= policy_gradient_obain(task_specific_policy,after_batch,advantages_after)
 
-            loss_for_1term=loss_obain_new(task_specific_policy,meta_policy_net_copy,batch_2,advantages)
+            loss_for_1term=loss_obain_new(task_specific_policy,meta_policy_net_copy,batch_2,advantages2)
 
             #(\nabla_\phi^2 kl_phi_theta+loss_for_1term) x= policy_gradient_2term
             def d_theta_2_kl_phi_theta_loss_for_1term(v):
@@ -425,7 +426,7 @@ if __name__ == "__main__":
             kl_phi_theta_1=kl_divergence(meta_policy_net,task_specific_policy,batch_2,index=1)
             grads_1 = torch.autograd.grad(kl_phi_theta_1, task_specific_policy.parameters(), create_graph=True,retain_graph=True)
             flat_grad_kl_1 = torch.cat([grad.view(-1) for grad in grads_1])
-            kl_v_1 = (flat_grad_kl_1 * x).sum() 
+            kl_v_1 = (flat_grad_kl_1 * x.data).sum() 
             grads_new_1 = torch.autograd.grad(kl_v_1, meta_policy_net.parameters(), create_graph=True,retain_graph=True)
             if grad_update==None:
                 grads_update=[grad.clone().data*1.0/args.task_batch_size for grad in grads_new_1]
@@ -449,7 +450,7 @@ if __name__ == "__main__":
         for task_number_test in range(1):
             target_v=1.2
             batch,batch_extra,accumulated_raward_batch=sample_data_for_task_specific(target_v,meta_policy_net,args.batch_size)
-            print("test_task: ")
+            print("test_task: ", " target_v: ", target_v)
             print('(before adaptation) Episode {}\tAverage reward {:.2f}'.format(i_episode, accumulated_raward_batch))
     
             task_specific_value_net = Value(num_inputs)

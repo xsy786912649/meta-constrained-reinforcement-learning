@@ -65,8 +65,8 @@ value_net = Value(num_inputs)
 if not os.path.exists("./meta_policy_net.pkl"):
     policy_net = Policy(num_inputs, num_actions)
     value_net = Value(num_inputs)
-else:
-    policy_net = torch.load("meta_policy_net.pkl")
+#else:
+    #policy_net = torch.load("meta_policy_net.pkl")
     #value_net = torch.load("meta_value_net.pkl")
 
 def select_action(state):
@@ -199,7 +199,7 @@ if __name__ == "__main__":
                 action = select_action(state)
                 action = action.data[0].numpy()
                 next_state, reward, done, truncated, info = env.step(action)
-                reward=-abs(info['x_velocity']-2.0)
+                reward=-abs(info['x_velocity']-1.2)
                 reward_sum += reward
                 next_state = running_state(next_state)
                 path_number = i
@@ -216,7 +216,7 @@ if __name__ == "__main__":
                 action = select_action(state)
                 action = action.data[0].numpy()
                 next_state, reward, done, truncated, info = env.step(action)
-                reward=-abs(info['x_velocity']-2.0)
+                reward=-abs(info['x_velocity']-1.2)
                 next_state = running_state(next_state)
                 path_number = i
 
