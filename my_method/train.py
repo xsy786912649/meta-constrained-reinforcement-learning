@@ -365,12 +365,12 @@ if __name__ == "__main__":
         meta_policy_net = torch.load("meta_policy_net.pkl")
         meta_value_net = torch.load("meta_value_net.pkl")
 
-    optimizer = torch.optim.Adam(meta_policy_net.parameters(), lr=0.003)
+    optimizer = torch.optim.Adam(meta_policy_net.parameters(), lr=0.0003)
 
     for i_episode in range(300):
         print("i_episode: ",i_episode)
         data_pool_for_meta_value_net=[]
-        grad_update=None
+        grads_update=None
         for task_number in range(args.task_batch_size):
             target_v=setting_reward()
             batch,batch_extra,accumulated_raward_batch=sample_data_for_task_specific(target_v,meta_policy_net,args.batch_size)
@@ -410,7 +410,7 @@ if __name__ == "__main__":
 
             _, policy_gradient_main_term= policy_gradient_obain(task_specific_policy,after_batch,advantages_after)
 
-            loss_for_1term=loss_obain_new(task_specific_policy,meta_policy_net_copy,batch_2,advantages2)
+            loss_for_1term=loss_obain_new(task_specific_policy,meta_policy_net,batch_2,advantages2)
             
             #(\nabla_\phi^2 kl_phi_theta+loss_for_1term) x= policy_gradient_2term
             def d_theta_2_kl_phi_theta_loss_for_1term(v):
@@ -418,7 +418,7 @@ if __name__ == "__main__":
                 flat_grad_kl = torch.cat([grad.view(-1) for grad in grads])
                 kl_v = (flat_grad_kl * Variable(v)).sum()
                 grads_new = torch.autograd.grad(kl_v, task_specific_policy.parameters(), create_graph=True,retain_graph=True)
-                flat_grad_grad_kl = torch.cat([grad.contiguous().view(-1) for grad in grads_new]).data
+                flat_grad_grad_kl = torch.cat([grad.contiguous().view(-1) for grad in grads_new]).data.clone()
                 return flat_grad_grad_kl
             policy_gradient_main_term_flat=torch.cat([grad.view(-1) for grad in policy_gradient_main_term]).data
             x = conjugate_gradients(d_theta_2_kl_phi_theta_loss_for_1term, policy_gradient_main_term_flat, 10)
@@ -428,7 +428,7 @@ if __name__ == "__main__":
             flat_grad_kl_1 = torch.cat([grad.view(-1) for grad in grads_1])
             kl_v_1 = (flat_grad_kl_1 * x.data).sum() 
             grads_new_1 = torch.autograd.grad(kl_v_1, meta_policy_net.parameters(), create_graph=True,retain_graph=True)
-            if grad_update==None:
+            if grads_update==None:
                 grads_update=[grad.clone().data*1.0/args.task_batch_size for grad in grads_new_1]
             else:
                 grads_update=[grads_update[i]+ grad.clone().data*1.0/args.task_batch_size for i,grad in enumerate(grads_new_1)]
