@@ -93,7 +93,7 @@ def one_step_trpo(model, get_loss, get_kl,meta_lambda):
         #print("get_loss ", get_loss())
         #print("get_kl ",get_kl().mean())
         assert get_kl().mean().clone().detach().numpy()<5.0
-        if get_kl().mean().clone().detach().numpy()>0.05:
+        if get_kl().mean().clone().detach().numpy()>0.2:
             break
         loss.backward()
         optimizer.step()

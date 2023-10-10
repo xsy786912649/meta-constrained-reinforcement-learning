@@ -26,8 +26,8 @@ parser.add_argument('--tau', type=float, default=0.97, metavar='G',
                     help='gae (default: 0.97)')
 parser.add_argument('--meta-reg', type=float, default=0.01, metavar='G',
                     help='meta regularization regression (default: 1.0)') 
-parser.add_argument('--meta-lambda', type=float, default=0.7, metavar='G', 
-                    help='meta meta-lambda (default: 1.5)')  # 1.5
+parser.add_argument('--meta-lambda', type=float, default=0.5, metavar='G', 
+                    help='meta meta-lambda (default: 0.5)')  # 0.5
 parser.add_argument('--max-kl', type=float, default=3e-2, metavar='G',
                     help='max kl value (default: 3e-2)')
 parser.add_argument('--damping', type=float, default=0e-1, metavar='G',
@@ -366,6 +366,7 @@ if __name__ == "__main__":
         meta_value_net = torch.load("meta_value_net.pkl")
 
     optimizer = torch.optim.Adam(meta_policy_net.parameters(), lr=0.003)
+    #optimizer = torch.optim.SGD(meta_policy_net.parameters(), lr=0.003)
 
     for i_episode in range(300):
         print("i_episode: ",i_episode)
@@ -389,8 +390,8 @@ if __name__ == "__main__":
             batch_2,batch_extra_2,_=sample_data_for_task_specific(target_v,meta_policy_net,args.batch_size)
             #data_pool_for_meta_value_net.append([batch_2,batch_extra_2])
             advantages = compute_adavatage(task_specific_value_net,batch_2,batch_extra_2,args.batch_size)
-            advantages2 = (advantages ) / torch.sqrt(advantages.std())
-            advantages1 = (advantages - advantages.mean()) / torch.sqrt(advantages.std())
+            advantages2 = (advantages ) / torch.sqrt(advantages.std()) 
+            advantages1 = (advantages - advantages.mean()) / torch.sqrt(advantages.std()) 
 
             task_specific_policy=Policy(num_inputs, num_actions)
             meta_policy_net_copy=Policy(num_inputs, num_actions)
@@ -433,7 +434,7 @@ if __name__ == "__main__":
             else:
                 grads_update=[grads_update[i]+ grad.clone().data*1.0/args.task_batch_size for i,grad in enumerate(grads_new_1)]
 
-        optimizer.zero_grad()
+        optimizer.zero_grad() 
         for i,param in enumerate(meta_policy_net.parameters()): 
             param.grad= -grads_update[i]
         optimizer.step()
