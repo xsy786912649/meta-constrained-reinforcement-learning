@@ -26,7 +26,7 @@ parser.add_argument('--tau', type=float, default=0.97, metavar='G',
                     help='gae (default: 0.97)')
 parser.add_argument('--meta-reg', type=float, default=0.01, metavar='G',
                     help='meta regularization regression (default: 1.0)') 
-parser.add_argument('--meta-lambda', type=float, default=0.7, metavar='G', 
+parser.add_argument('--meta-lambda', type=float, default=0.5, metavar='G', 
                     help='meta meta-lambda (default: 0.5)')  # 0.5
 parser.add_argument('--max-kl', type=float, default=3e-2, metavar='G',
                     help='max kl value (default: 3e-2)')
@@ -411,7 +411,7 @@ if __name__ == "__main__":
             _, policy_gradient_main_term= policy_gradient_obain(task_specific_policy,after_batch,advantages_after)
 
             loss_for_1term=loss_obain_new(task_specific_policy,meta_policy_net_copy,batch_2,advantages2)
-
+            
             #(\nabla_\phi^2 kl_phi_theta+loss_for_1term) x= policy_gradient_2term
             def d_theta_2_kl_phi_theta_loss_for_1term(v):
                 grads = torch.autograd.grad(kl_phi_theta+loss_for_1term/args.meta_lambda, task_specific_policy.parameters(), create_graph=True,retain_graph=True)
@@ -475,5 +475,5 @@ if __name__ == "__main__":
 
             after_batch,after_batch_extra,after_accumulated_raward_batch=sample_data_for_task_specific(target_v,task_specific_policy,args.batch_size)
             print('(after adaptation) Episode {}\tAverage reward {:.2f}'.format(i_episode, after_accumulated_raward_batch)) 
-            print("----------------------------------------")
+            print("-----------------------------------------")
 
