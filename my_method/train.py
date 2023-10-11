@@ -365,7 +365,7 @@ if __name__ == "__main__":
         meta_policy_net = torch.load("meta_policy_net.pkl")
         meta_value_net = torch.load("meta_value_net.pkl")
 
-    optimizer = torch.optim.Adam(meta_policy_net.parameters(), lr=0.0003)
+    optimizer = torch.optim.Adam(meta_policy_net.parameters(), lr=0.003)
 
     for i_episode in range(300):
         print("i_episode: ",i_episode)
