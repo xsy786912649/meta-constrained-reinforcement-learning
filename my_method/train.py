@@ -26,7 +26,7 @@ parser.add_argument('--tau', type=float, default=0.97, metavar='G',
                     help='gae (default: 0.97)')
 parser.add_argument('--meta-reg', type=float, default=0.01, metavar='G',
                     help='meta regularization regression (default: 1.0)') 
-parser.add_argument('--meta-lambda', type=float, default=0.5, metavar='G', 
+parser.add_argument('--meta-lambda', type=float, default=4.0, metavar='G', 
                     help='meta meta-lambda (default: 0.5)')  # 0.5
 parser.add_argument('--max-kl', type=float, default=3e-2, metavar='G',
                     help='max kl value (default: 3e-2)')
@@ -266,10 +266,11 @@ def task_specific_adaptation(task_specific_policy,meta_policy_net_copy,batch,adv
     fixed_log_prob = normal_log_density(Variable(actions), action_means, action_log_stds, action_stds).data.clone()
 
     def get_loss():
-        action_means, action_log_stds, action_stds = task_specific_policy(Variable(states))
-        log_prob = normal_log_density(Variable(actions), action_means, action_log_stds, action_stds)
-        action_loss = -Variable(advantages) * torch.exp(log_prob - Variable(fixed_log_prob))
-        return action_loss.mean()
+        action_means1, action_log_stds1, action_stds1 = task_specific_policy(Variable(states))
+        log_prob = normal_log_density(Variable(actions), action_means1, action_log_stds1, action_stds1)
+        aaaa=torch.exp(log_prob - Variable(fixed_log_prob))
+        action_loss = -Variable(advantages) *  torch.special.expit(2.0*aaaa-2.0)*2 
+        return action_loss.mean()     
 
     def get_kl():
         mean1, log_std1, std1 = task_specific_policy(Variable(states))
@@ -351,7 +352,8 @@ def loss_obain_new(task_specific_policy,meta_policy_net_copy,after_batch,after_a
     fixed_log_prob = normal_log_density(Variable(actions), fixed_action_means, fixed_action_log_stds, fixed_action_stds).detach().data.clone()
     afteradap_action_means, afteradap_action_log_stds, afteradap_action_stds = task_specific_policy(Variable(states))
     log_prob = normal_log_density(Variable(actions), afteradap_action_means, afteradap_action_log_stds, afteradap_action_stds)
-    J_loss = (-Variable(after_advantages) * torch.exp(log_prob - Variable(fixed_log_prob))).mean()
+    aaaaa=torch.exp(log_prob - Variable(fixed_log_prob))
+    J_loss = (-Variable(after_advantages) * torch.special.expit(2.0*aaaaa-2.0)*2 ).mean()
     
     return J_loss
 

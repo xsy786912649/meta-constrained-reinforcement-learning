@@ -28,8 +28,8 @@ parser.add_argument('--tau', type=float, default=0.97, metavar='G',
                     help='gae (default: 0.97)')
 parser.add_argument('--l2-reg', type=float, default=1e-3, metavar='G',
                     help='l2 regularization regression (default: 1e-3)')
-parser.add_argument('--meta-lambda', type=float, default=0.5, metavar='G',
-                    help='meta meta-lambda (default: 0.5)') 
+parser.add_argument('--meta-lambda', type=float, default=4.0, metavar='G',
+                    help='meta meta-lambda (default: 4.0)') 
 parser.add_argument('--max-kl', type=float, default=3e-2, metavar='G',
                     help='max kl value (default: 3e-2)')
 parser.add_argument('--damping', type=float, default=0e-1, metavar='G',
@@ -161,7 +161,7 @@ def update_params(batch,batch_extra,batch_size):
             action_means, action_log_stds, action_stds = policy_net(Variable(states))
                 
         log_prob = normal_log_density(Variable(actions), action_means, action_log_stds, action_stds)
-        action_loss = -Variable(advantages) * torch.exp(log_prob - Variable(fixed_log_prob))
+        action_loss = -Variable(advantages) * torch.special.expit(2.0*torch.exp(log_prob - Variable(fixed_log_prob))-2.0)*2 
         return action_loss.mean()
 
     mean101, log_std101, std101 = policy_net(Variable(states))
@@ -170,7 +170,7 @@ def update_params(batch,batch_extra,batch_size):
     std0 = std101.clone().detach().data.double()
 
     def get_kl():
-        mean1, log_std1, std1 = policy_net(Variable(states))    
+        mean1, log_std1, std1 = policy_net(Variable(states))  
         kl = log_std1 - log_std0 + (std0.pow(2) + (mean0 - mean1).pow(2)) / (2.0 * std1.pow(2)) - 0.5
         return kl.sum(1, keepdim=True)
 
