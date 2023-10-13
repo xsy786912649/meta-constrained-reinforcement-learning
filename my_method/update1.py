@@ -61,13 +61,12 @@ torch.manual_seed(args.seed)
 policy_net = Policy(num_inputs, num_actions)
 value_net = Value(num_inputs)
 
-
 if not os.path.exists("./meta_policy_net.pkl"):
     policy_net = Policy(num_inputs, num_actions)
     value_net = Value(num_inputs)
-#else:
-    #policy_net = torch.load("meta_policy_net.pkl")
-    #value_net = torch.load("meta_value_net.pkl")
+else:
+    policy_net = torch.load("meta_policy_net.pkl")
+    value_net = torch.load("meta_value_net.pkl")
 
 def select_action(state):
     state = torch.from_numpy(state).unsqueeze(0)
