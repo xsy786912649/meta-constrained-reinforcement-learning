@@ -7,9 +7,10 @@ if __name__ == "__main__":
     meta_policy_net = torch.load("meta_policy_net.pkl")
     meta_value_net = torch.load("meta_value_net.pkl")
 
+    accumulated_raward_k_adaptation=[[],[],[],[]]
 
-    for task_number in range(args.task_batch_size):
-        target_v=setting_reward()
+    for task_number in range(20):
+        target_v=task_number*1.0/20
         batch,batch_extra,accumulated_raward_batch=sample_data_for_task_specific(target_v,meta_policy_net,args.batch_size)
         print("task_number: ",task_number, " target_v: ", target_v)
         print('(before adaptation) \tAverage reward {:.2f}'.format( accumulated_raward_batch))
@@ -30,13 +31,14 @@ if __name__ == "__main__":
         for i,param in enumerate(previous_policy_net.parameters()):
             param.data.copy_(list(meta_policy_net.parameters())[i].clone().detach().data)
 
-        for iteration_number in range(6):
+        for iteration_number in range(4):
             batch_2,batch_extra_2,accumulated_raward_batch=sample_data_for_task_specific(target_v,previous_policy_net,args.batch_size)
             print("task_number: ",task_number)
             print('(adaptation {}) \tAverage reward {:.2f}'.format(iteration_number, accumulated_raward_batch))
+            accumulated_raward_k_adaptation[iteration_number].append(accumulated_raward_batch)
             
             advantages = compute_adavatage(task_specific_value_net,batch_2,batch_extra_2,args.batch_size)
-            advantages = advantages - advantages.mean() / torch.sqrt(advantages.std())
+            advantages = (advantages - advantages.mean()) / torch.sqrt(advantages.std())
 
             task_specific_policy=Policy(num_inputs, num_actions)
             for i,param in enumerate(task_specific_policy.parameters()):

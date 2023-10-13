@@ -104,5 +104,6 @@ def one_step_trpo(model, get_loss, get_kl,meta_lambda):
         optimizer.step()
 
     print("get_kl ",get_kl().mean())
+    print(model.action_log_std)
 
     return
