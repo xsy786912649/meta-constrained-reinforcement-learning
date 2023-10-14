@@ -9,7 +9,7 @@ if __name__ == "__main__":
 
     accumulated_raward_k_adaptation=[[],[],[],[]]
 
-    for task_number in range(20):
+    for task_number in range(40):
         target_v=task_number*1.0/20
         batch,batch_extra,accumulated_raward_batch=sample_data_for_task_specific(target_v,meta_policy_net,args.batch_size)
         print("task_number: ",task_number, " target_v: ", target_v)
@@ -51,4 +51,16 @@ if __name__ == "__main__":
                 param.data.copy_(list(task_specific_value_net.parameters())[i].clone().detach().data)
             for i,param in enumerate(previous_policy_net.parameters()):
                 param.data.copy_(list(task_specific_policy.parameters())[i].clone().detach().data)
-            
+    
+    a0=np.array(accumulated_raward_k_adaptation[0])
+    a1=np.array(accumulated_raward_k_adaptation[1])
+    a2=np.array(accumulated_raward_k_adaptation[2])
+    a3=np.array(accumulated_raward_k_adaptation[3])
+    print(a0)
+    print(a0.mean())
+    print(a1)
+    print(a1.mean())
+    print(a2)
+    print(a2.mean())
+    print(a3)
+    print(a3.mean())
