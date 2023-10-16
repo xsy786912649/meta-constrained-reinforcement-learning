@@ -302,11 +302,11 @@ def task_specific_adaptation(task_specific_policy,meta_policy_net_copy,batch,adv
             policy_dictance += (param-list(meta_policy_net_copy.parameter())[i].clone().detach().data).pow(2).sum() 
         return policy_dictance
     if index==1:
-        one_step_trpo(task_specific_policy, get_loss, get_kl,args.meta_lambda) 
+        one_step_trpo(task_specific_policy, get_loss, get_kl,args.meta_lambda,args.lower_opt) 
     elif index==2:
-        one_step_trpo(task_specific_policy, get_loss, get_kl2,args.meta_lambda) 
+        one_step_trpo(task_specific_policy, get_loss, get_kl2,args.meta_lambda,args.lower_opt) 
     elif index==3:
-        one_step_trpo(task_specific_policy, get_loss, get_kl3,args.meta_lambda3) 
+        one_step_trpo(task_specific_policy, get_loss, get_kl3,args.meta_lambda3,args.lower_opt) 
 
     return task_specific_policy
 
