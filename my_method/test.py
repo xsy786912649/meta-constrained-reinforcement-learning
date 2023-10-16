@@ -38,7 +38,7 @@ if __name__ == "__main__":
             accumulated_raward_k_adaptation[iteration_number].append(accumulated_raward_batch)
             
             advantages = compute_adavatage(task_specific_value_net,batch_2,batch_extra_2,args.batch_size)
-            advantages = (advantages - advantages.mean()) / torch.sqrt(advantages.std())
+            advantages = (advantages - advantages.mean()) 
 
             task_specific_policy=Policy(num_inputs, num_actions)
             for i,param in enumerate(task_specific_policy.parameters()):

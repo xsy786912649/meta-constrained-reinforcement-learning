@@ -391,8 +391,8 @@ if __name__ == "__main__":
             batch_2,batch_extra_2,_=sample_data_for_task_specific(target_v,meta_policy_net,args.batch_size)
             #data_pool_for_meta_value_net.append([batch_2,batch_extra_2])
             advantages = compute_adavatage(task_specific_value_net,batch_2,batch_extra_2,args.batch_size)
-            advantages2 = (advantages ) / torch.sqrt(advantages.std()) 
-            advantages1 = (advantages - advantages.mean()) / torch.sqrt(advantages.std()) 
+            advantages2 = advantages
+            advantages1 = (advantages - advantages.mean()) 
 
             task_specific_policy=Policy(num_inputs, num_actions)
             meta_policy_net_copy=Policy(num_inputs, num_actions)
@@ -406,7 +406,7 @@ if __name__ == "__main__":
             #data_pool_for_meta_value_net.append([after_batch,after_batch_extra])
             print('(after adaptation) Episode {}\tAverage reward {:.2f}'.format(i_episode, after_accumulated_raward_batch)) 
             advantages_after = compute_adavatage(task_specific_value_net,after_batch,after_batch_extra,args.batch_size)
-            advantages_after = (advantages_after - advantages_after.mean()) / torch.sqrt(advantages_after.std())
+            advantages_after = (advantages_after - advantages_after.mean()) 
 
             kl_phi_theta=kl_divergence(meta_policy_net,task_specific_policy,batch_2,index=1)
 
@@ -465,7 +465,7 @@ if __name__ == "__main__":
             
             batch_2,batch_extra_2,_=sample_data_for_task_specific(target_v,meta_policy_net,args.batch_size)
             advantages = compute_adavatage(task_specific_value_net,batch_2,batch_extra_2,args.batch_size)
-            advantages = (advantages - advantages.mean())  / torch.sqrt(advantages.std())
+            advantages = (advantages - advantages.mean())  
 
             task_specific_policy=Policy(num_inputs, num_actions)
             meta_policy_net_copy=Policy(num_inputs, num_actions)
