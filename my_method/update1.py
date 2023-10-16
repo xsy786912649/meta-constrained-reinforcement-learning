@@ -174,7 +174,7 @@ def update_params(batch,batch_extra,batch_size):
         return kl.sum(1, keepdim=True)
 
     #trpo_step(policy_net, get_loss, get_kl, args.max_kl, args.damping)
-    one_step_trpo(policy_net, get_loss, get_kl,args.meta_lambda) 
+    one_step_trpo(policy_net, get_loss, get_kl,args.meta_lambda,lower_opt='Adam') 
 
     return 
 

@@ -44,6 +44,8 @@ parser.add_argument('--log-interval', type=int, default=1, metavar='N',
                     help='interval between training status logs (default: 1)')
 parser.add_argument('--max-length', type=int, default=200, metavar='N',
                     help='max length of a path (default: 200)')
+parser.add_argument('--lower-opt', type=int, default="Adam", metavar='N',
+                    help='lower-opt (default: Adam)')
 args = parser.parse_args()
 
 torch.manual_seed(args.seed)
