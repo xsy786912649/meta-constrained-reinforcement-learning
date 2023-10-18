@@ -123,15 +123,15 @@ def sample_data_for_task_specific(target_v,policy_net,batch_size):
 
 def update_task_specific_valuenet(value_net,previous_value_net,batch,batch_extra,batch_size):
 
-    rewards = torch.Tensor(batch.reward)
-    path_numbers = torch.Tensor(batch.path_number)
-    actions = torch.Tensor(np.concatenate(batch.action, 0))
-    states = torch.Tensor(batch.state)
+    rewards = torch.Tensor(np.array(batch.reward))
+    path_numbers = torch.Tensor(np.array(batch.path_number))
+    actions = torch.Tensor(np.array(np.concatenate(batch.action, 0)))
+    states = torch.Tensor(np.array(batch.state))
 
-    rewards_extra = torch.Tensor(batch_extra.reward)
-    path_numbers_extra = torch.Tensor(batch_extra.path_number)
-    actions_extra = torch.Tensor(np.concatenate(batch_extra.action, 0))
-    states_extra = torch.Tensor(batch_extra.state)
+    rewards_extra = torch.Tensor(np.array(batch_extra.reward))
+    path_numbers_extra = torch.Tensor(np.array(batch_extra.path_number))
+    actions_extra = torch.Tensor(np.array(np.concatenate(batch_extra.action, 0)))
+    states_extra = torch.Tensor(np.array(batch_extra.state))
 
     returns = torch.Tensor(actions.size(0),1)
     prev_return=torch.zeros(batch_size,1)
@@ -171,15 +171,15 @@ def update_task_specific_valuenet(value_net,previous_value_net,batch,batch_extra
     return value_net
 
 def compute_adavatage(value_net,batch,batch_extra,batch_size):
-    rewards = torch.Tensor(batch.reward)
-    path_numbers = torch.Tensor(batch.path_number)
-    actions = torch.Tensor(np.concatenate(batch.action, 0))
-    states = torch.Tensor(batch.state)
+    rewards = torch.Tensor(np.array(batch.reward))
+    path_numbers = torch.Tensor(np.array(batch.path_number))
+    actions = torch.Tensor(np.array(np.concatenate(batch.action, 0)))
+    states = torch.Tensor(np.array(batch.state))
 
-    rewards_extra = torch.Tensor(batch_extra.reward)
-    path_numbers_extra = torch.Tensor(batch_extra.path_number)
-    actions_extra = torch.Tensor(np.concatenate(batch_extra.action, 0))
-    states_extra = torch.Tensor(batch_extra.state)
+    rewards_extra = torch.Tensor(np.array(batch_extra.reward))
+    path_numbers_extra = torch.Tensor(np.array(batch_extra.path_number))
+    actions_extra = torch.Tensor(np.array(np.concatenate(batch_extra.action, 0)))
+    states_extra = torch.Tensor(np.array(batch_extra.state))
 
     values = value_net(Variable(states))
     returns = torch.Tensor(actions.size(0),1)
@@ -223,15 +223,15 @@ def update_meta_valuenet(value_net,previous_value_net,data_pool_for_meta_value_n
         batch_now=data_pool_for_meta_value_net[task_number][0]
         batch_extra_now=data_pool_for_meta_value_net[task_number][1]
 
-        rewards = torch.Tensor(batch_now.reward)
-        path_numbers = torch.Tensor(batch_now.path_number)
-        actions = torch.Tensor(np.concatenate(batch_now.action, 0))
-        states = torch.Tensor(batch_now.state)
+        rewards = torch.Tensor(np.array(batch_now.reward))
+        path_numbers = torch.Tensor(np.array(batch_now.path_number))
+        actions = torch.Tensor(np.array(np.concatenate(batch_now.action, 0)))
+        states = torch.Tensor(np.array(batch_now.state))
 
-        rewards_extra = torch.Tensor(batch_extra_now.reward)
-        path_numbers_extra = torch.Tensor(batch_extra_now.path_number)
-        actions_extra = torch.Tensor(np.concatenate(batch_extra_now.action, 0))
-        states_extra = torch.Tensor(batch_extra_now.state)
+        rewards_extra = torch.Tensor(np.array(batch_extra_now.reward))
+        path_numbers_extra = torch.Tensor(np.array(batch_extra_now.path_number))
+        actions_extra = torch.Tensor(np.array(np.concatenate(batch_extra_now.action, 0)))
+        states_extra = torch.Tensor(np.array(batch_extra_now.state))
 
         returns = torch.Tensor(actions.size(0),1)
         prev_return=torch.zeros(batch_size,1)
@@ -251,7 +251,7 @@ def update_meta_valuenet(value_net,previous_value_net,data_pool_for_meta_value_n
     optimizer = torch.optim.SGD(value_net.parameters(), lr=0.008)
     value_loss=torch.tensor(0.0,requires_grad=True)
     for task_number in range(len(data_pool_for_meta_value_net)):
-        values_ = value_net(Variable(torch.Tensor(data_pool_for_meta_value_net[task_number][0].state)))
+        values_ = value_net(Variable(torch.Tensor(np.array(data_pool_for_meta_value_net[task_number][0].state))))
         value_loss = value_loss + (values_ - target[task_number]).pow(2).mean()
     value_loss = value_loss*1.0/len(data_pool_for_meta_value_net) 
     optimizer.zero_grad()
@@ -262,7 +262,7 @@ def update_meta_valuenet(value_net,previous_value_net,data_pool_for_meta_value_n
 
 def task_specific_adaptation(task_specific_policy,meta_policy_net_copy,batch,advantages,index=1): 
     actions = torch.Tensor(np.concatenate(batch.action, 0))
-    states = torch.Tensor(batch.state)
+    states = torch.Tensor(np.array(batch.state))
 
     action_means, action_log_stds, action_stds = meta_policy_net_copy(Variable(states))
     fixed_log_prob = normal_log_density(Variable(actions), action_means, action_log_stds, action_stds).data.clone()
@@ -312,13 +312,13 @@ def task_specific_adaptation(task_specific_policy,meta_policy_net_copy,batch,adv
 
 def kl_divergence(meta_policy_net1,task_specific_policy1,batch,index=1):
     if index==1:
-        states = torch.Tensor(batch.state)
+        states = torch.Tensor(np.array(batch.state))
         mean1, log_std1, std1 = task_specific_policy1(Variable(states))
         mean0, log_std0, std0 = meta_policy_net1(Variable(states))
         kl = log_std1 - log_std0 + (std0.pow(2) + (mean0 - mean1).pow(2)) / (2.0 * std1.pow(2)) - 0.5
         return kl.sum(1, keepdim=True).mean()
     elif index==2:
-        states = torch.Tensor(batch.state)
+        states = torch.Tensor(np.array(batch.state))
         mean1, log_std1, std1 = task_specific_policy1(Variable(states))
         mean0, log_std0, std0 = meta_policy_net1(Variable(states))
         kl = log_std0 - log_std1 + (std1.pow(2) + (mean1 - mean0).pow(2)) / (2.0 * std0.pow(2)) - 0.5
@@ -330,8 +330,8 @@ def kl_divergence(meta_policy_net1,task_specific_policy1,batch,index=1):
         return policy_dictance
 
 def policy_gradient_obain(task_specific_policy,after_batch,after_advantages):
-    actions = torch.Tensor(np.concatenate(after_batch.action, 0))
-    states = torch.Tensor(after_batch.state)
+    actions = torch.Tensor(np.array(np.concatenate(after_batch.action, 0)))
+    states = torch.Tensor(np.array(after_batch.state))
     fixed_action_means, fixed_action_log_stds, fixed_action_stds = task_specific_policy(Variable(states))
     fixed_log_prob = normal_log_density(Variable(actions), fixed_action_means, fixed_action_log_stds, fixed_action_stds).data.clone()
     afteradap_action_means, afteradap_action_log_stds, afteradap_action_stds = task_specific_policy(Variable(states))
@@ -348,8 +348,8 @@ def policy_gradient_obain(task_specific_policy,after_batch,after_advantages):
 
 
 def loss_obain_new(task_specific_policy,meta_policy_net_copy,after_batch,after_advantages):
-    actions = torch.Tensor(np.concatenate(after_batch.action, 0))
-    states = torch.Tensor(after_batch.state)
+    actions = torch.Tensor(np.array(np.concatenate(after_batch.action, 0)))
+    states = torch.Tensor(np.array(after_batch.state))
     fixed_action_means, fixed_action_log_stds, fixed_action_stds = meta_policy_net_copy(Variable(states))
     fixed_log_prob = normal_log_density(Variable(actions), fixed_action_means, fixed_action_log_stds, fixed_action_stds).detach().data.clone()
     afteradap_action_means, afteradap_action_log_stds, afteradap_action_stds = task_specific_policy(Variable(states))

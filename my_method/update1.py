@@ -75,15 +75,15 @@ def select_action(state):
     return action
 
 def update_params(batch,batch_extra,batch_size):
-    rewards = torch.Tensor(batch.reward)
-    path_numbers = torch.Tensor(batch.path_number)
-    actions = torch.Tensor(np.concatenate(batch.action, 0))
-    states = torch.Tensor(batch.state)
+    rewards = torch.Tensor(np.array(batch.reward))
+    path_numbers = torch.Tensor(np.array(batch.path_number))
+    actions = torch.Tensor(np.array(np.concatenate(batch.action, 0)))
+    states = torch.Tensor(np.array(batch.state))
 
-    rewards_extra = torch.Tensor(batch_extra.reward)
-    path_numbers_extra = torch.Tensor(batch_extra.path_number)
-    actions_extra = torch.Tensor(np.concatenate(batch_extra.action, 0))
-    states_extra = torch.Tensor(batch_extra.state)
+    rewards_extra = torch.Tensor(np.array(batch_extra.reward))
+    path_numbers_extra = torch.Tensor(np.array(batch_extra.path_number))
+    actions_extra = torch.Tensor(np.array(np.concatenate(batch_extra.action, 0)))
+    states_extra = torch.Tensor(np.array(batch_extra.state))
 
     def update_advantage_function(): 
         values = value_net(Variable(states))
