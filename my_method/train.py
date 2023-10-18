@@ -24,7 +24,7 @@ parser.add_argument('--env-name', default="HalfCheetah-v4", metavar='G',
                     help='name of the environment to run')
 parser.add_argument('--tau', type=float, default=0.97, metavar='G',
                     help='gae (default: 0.97)')
-parser.add_argument('--meta-reg', type=float, default=0.01, metavar='G',
+parser.add_argument('--meta-reg', type=float, default=0.001, metavar='G',
                     help='meta regularization regression (default: 1.0)') 
 parser.add_argument('--meta-lambda', type=float, default=2.0, metavar='G', 
                     help='meta meta-lambda (default: 0.5)')  # 0.5
@@ -405,9 +405,15 @@ if __name__ == "__main__":
             task_specific_policy=task_specific_adaptation(task_specific_policy,meta_policy_net_copy,batch_2,advantages1,index=1)
 
             after_batch,after_batch_extra,after_accumulated_raward_batch=sample_data_for_task_specific(target_v,task_specific_policy,args.batch_size)
-            #data_pool_for_meta_value_net.append([after_batch,after_batch_extra])
             print('(after adaptation) Episode {}\tAverage reward {:.2f}'.format(i_episode, after_accumulated_raward_batch)) 
-            advantages_after = compute_adavatage(task_specific_value_net,after_batch,after_batch_extra,args.batch_size)
+
+            task_specific_value_net_afteradapt = Value(num_inputs)
+            for i,param in enumerate(task_specific_value_net_afteradapt.parameters()): 
+                param.data.copy_(list(task_specific_value_net.parameters())[i].clone().detach().data)
+            task_specific_value_net_afteradapt = update_task_specific_valuenet(task_specific_value_net_afteradapt,task_specific_value_net,after_batch,after_batch_extra,args.batch_size)
+
+            after_batch2,after_batch2_extra,_=sample_data_for_task_specific(target_v,task_specific_policy,args.batch_size)
+            advantages_after = compute_adavatage(task_specific_value_net_afteradapt,after_batch2,after_batch2_extra,args.batch_size)
             advantages_after = (advantages_after - advantages_after.mean()) 
 
             kl_phi_theta=kl_divergence(meta_policy_net,task_specific_policy,batch_2,index=1)
