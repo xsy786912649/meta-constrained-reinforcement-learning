@@ -9,8 +9,8 @@ if __name__ == "__main__":
 
     accumulated_raward_k_adaptation=[[],[],[],[]]
 
-    for task_number in range(40):
-        target_v=task_number*1.0/20
+    for task_number in range(20):
+        target_v=task_number*1.0/10
         batch,batch_extra,accumulated_raward_batch=sample_data_for_task_specific(target_v,meta_policy_net,args.batch_size)
         print("task_number: ",task_number, " target_v: ", target_v)
         print('(before adaptation) \tAverage reward {:.2f}'.format( accumulated_raward_batch))
