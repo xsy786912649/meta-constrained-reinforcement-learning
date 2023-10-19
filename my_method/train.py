@@ -425,17 +425,17 @@ if __name__ == "__main__":
             #(\nabla_\phi^2 kl_phi_theta+loss_for_1term) x= policy_gradient_2term
             def d_theta_2_kl_phi_theta_loss_for_1term(v):
                 grads = torch.autograd.grad(kl_phi_theta+loss_for_1term/args.meta_lambda, task_specific_policy.parameters(), create_graph=True,retain_graph=True)
-                flat_grad_kl = torch.cat([grad.view(-1) for grad in grads])
+                flat_grad_kl = torch.cat([grad.contiguous().view(-1) for grad in grads])
                 kl_v = (flat_grad_kl * Variable(v)).sum()
                 grads_new = torch.autograd.grad(kl_v, task_specific_policy.parameters(), create_graph=True,retain_graph=True)
                 flat_grad_grad_kl = torch.cat([grad.contiguous().view(-1) for grad in grads_new]).data.clone()
                 return flat_grad_grad_kl
-            policy_gradient_main_term_flat=torch.cat([grad.view(-1) for grad in policy_gradient_main_term]).data
+            policy_gradient_main_term_flat=torch.cat([grad.contiguous().view(-1) for grad in policy_gradient_main_term]).data
             x = conjugate_gradients(d_theta_2_kl_phi_theta_loss_for_1term, policy_gradient_main_term_flat, 10)
 
             kl_phi_theta_1=kl_divergence(meta_policy_net,task_specific_policy,batch_2,index=1)
             grads_1 = torch.autograd.grad(kl_phi_theta_1, task_specific_policy.parameters(), create_graph=True,retain_graph=True)
-            flat_grad_kl_1 = torch.cat([grad.view(-1) for grad in grads_1])
+            flat_grad_kl_1 = torch.cat([grad.contiguous().view(-1) for grad in grads_1])
             kl_v_1 = (flat_grad_kl_1 * x.data).sum() 
             grads_new_1 = torch.autograd.grad(kl_v_1, meta_policy_net.parameters(), create_graph=True,retain_graph=True)
             if grads_update==None:
