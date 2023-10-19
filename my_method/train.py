@@ -418,7 +418,7 @@ if __name__ == "__main__":
 
             kl_phi_theta=kl_divergence(meta_policy_net,task_specific_policy,batch_2,index=1)
 
-            _, policy_gradient_main_term= policy_gradient_obain(task_specific_policy,after_batch,advantages_after)
+            _, policy_gradient_main_term= policy_gradient_obain(task_specific_policy,after_batch2,advantages_after)
 
             loss_for_1term=loss_obain_new(task_specific_policy,meta_policy_net,batch_2,advantages2)
             
