@@ -89,7 +89,7 @@ def one_step_trpo(model, get_loss, get_kl,meta_lambda,lower_opt="Adam"):
         optimizer = torch.optim.Adam(model.parameters(), lr=0.0003)
         print("Adam")
     else:
-        optimizer = torch.optim.RMSprop(model.parameters(), lr=0.0001)
+        optimizer = torch.optim.RMSprop(model.parameters(), lr=0.0003)
         print("RMSprop")
     
     for i in range(200):
