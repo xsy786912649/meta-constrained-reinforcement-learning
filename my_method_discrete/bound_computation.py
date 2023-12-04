@@ -16,7 +16,7 @@ kls=[]
 if dis_i==2:
     lambda1 =0.5
 elif dis_i==1:
-    lambda1 =1.0
+    lambda1 =5.0
 
 for num_tasks in range(task_number):
 
@@ -27,11 +27,12 @@ for num_tasks in range(task_number):
     task_specific_theta = training_meta_theta
 
     print("----------------")
-    for i in range(10):
+    for i in range(15):
         total_reward,observations,qtable_meta_policy = sample_trajectorie(env, gamma, task_specific_theta)
-        print("total_reward (before adatation): ",total_reward)
+        print("total_reward: ",total_reward)
         if i==0:
             observations_meta=observations
+
         task_specific_policy=one_step_adaptation(task_specific_theta,qtable_meta_policy,lambda1,dis_i) 
         task_specific_theta=torch.log(task_specific_policy) 
 

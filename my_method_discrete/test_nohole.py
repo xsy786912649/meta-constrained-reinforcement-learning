@@ -8,11 +8,10 @@ from extra_function_nohole import *
 import random
 from meta_policy import *
 
-
 if dis_i==2:
     lambda1 =0.25
 elif dis_i==1:
-    lambda1 =1.0
+    lambda1 =0.5
 
 total_rewards_alltask_0=[]
 total_rewards_alltask_1=[]

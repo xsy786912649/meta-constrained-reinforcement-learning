@@ -24,8 +24,8 @@ def one_step_adaptation(meta_phi,qtable_meta_policy,lambda1,d_i=1):
         meta_policy=torch.softmax(meta_phi.data,dim=1)
         A_table_meta_policy=qtable_meta_policy-torch.sum(meta_policy*qtable_meta_policy,dim=1).reshape((16,1))
         task_specific_policy=meta_policy*lambda1/(lambda1-A_table_meta_policy+torch.sum(meta_policy*A_table_meta_policy,dim=1).reshape((16,1)))
-        for kkk in range(5): #iteratively solve the lower-level optimization problem
-            task_specific_policy=meta_policy*lambda1/(lambda1-A_table_meta_policy+torch.sum(task_specific_policy*A_table_meta_policy,dim=1).reshape((16,1)))
+        #for kkk in range(5): #iteratively solve the lower-level optimization problem
+        #    task_specific_policy=meta_policy*lambda1/(lambda1-A_table_meta_policy+torch.sum(task_specific_policy*A_table_meta_policy,dim=1).reshape((16,1)))
     return task_specific_policy
 
 def meta_gradient(task_specific_policy,task_specific_observations,A_table_task_specific,d_i=1):

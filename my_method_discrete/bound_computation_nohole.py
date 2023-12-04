@@ -12,7 +12,7 @@ from meta_policy import *
 if dis_i==2:
     lambda1 =0.25
 elif dis_i==1:
-    lambda1 =1.0
+    lambda1 =0.5
 
 task_specific_policies=[]
 total_rewards=[]
@@ -27,9 +27,9 @@ for num_tasks in range(task_number):
     task_specific_theta = training_meta_theta_no_hole
 
     print("----------------")
-    for i in range(10):
+    for i in range(15):
         total_reward,observations,qtable_meta_policy = sample_trajectorie(reward_map,env, gamma, task_specific_theta)
-        print("total_reward (before adatation): ",total_reward)
+        print("total_reward: ",total_reward)
         if i==0:
             observations_meta=observations
         task_specific_policy=one_step_adaptation(task_specific_theta,qtable_meta_policy,lambda1,dis_i) 
