@@ -7,7 +7,7 @@ import random
 
 gamma = 0.8
 
-dis_i=2
+dis_i=1
 if dis_i==2:
     lambda1 =4.0
 elif dis_i==1:
@@ -38,8 +38,9 @@ def meta_gradient(task_specific_policy,task_specific_observations,A_table_task_s
 if __name__ == "__main__":
 
     meta_phi = torch.zeros((16, 4),requires_grad=True)
-    optimizer = torch.optim.SGD([meta_phi], lr=1.0*5)
-    #optimizer = torch.optim.Adam([meta_phi], lr=0.03)
+    meta_phi.data=meta_phi.data+0.1
+    #optimizer = torch.optim.SGD([meta_phi], lr=1.0*5)
+    optimizer = torch.optim.Adam([meta_phi], lr=0.03)
 
     for i_episode in range(150):
         print("i_episode: ",i_episode)

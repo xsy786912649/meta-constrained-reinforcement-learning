@@ -12,7 +12,7 @@ from meta_policy import *
 if dis_i==2:
     lambda1 =0.25
 elif dis_i==1:
-    lambda1 =0.5
+    lambda1 =1.0
 
 task_specific_policies=[]
 total_rewards=[]
