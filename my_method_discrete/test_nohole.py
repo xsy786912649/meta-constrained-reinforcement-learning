@@ -24,7 +24,13 @@ for num_tasks in range(task_number):
     reward_map = np.load('maps_nohole/map'+str(num_tasks)+'.npy')
     env = gym.make("FrozenLake-v1",desc= ['SFFF', 'FFFF', 'FFFF', 'FFFG'], is_slippery=False)
 
-    task_specific_theta = training_meta_theta_no_hole
+    if dis_i==1:
+        task_specific_theta = training_meta_theta_no_hole_1
+    else:
+        task_specific_theta = training_meta_theta_no_hole_2
+    task_specific_theta=torch.zeros((16, 4))
+    lambda1=lambda1*10
+
     total_rewards=[]
     print("--------------")
     for i in range(5):
@@ -44,3 +50,7 @@ print(np.average(np.array(total_rewards_alltask_1)))
 print(np.average(np.array(total_rewards_alltask_2)))
 print(np.average(np.array(total_rewards_alltask_3)))
 print(np.average(np.array(total_rewards_alltask_4)))
+
+print(np.average(np.array(total_rewards_alltask_0)),np.average(np.array(total_rewards_alltask_1)),np.average(np.array(total_rewards_alltask_2)),np.average(np.array(total_rewards_alltask_3)),np.average(np.array(total_rewards_alltask_4)))
+
+

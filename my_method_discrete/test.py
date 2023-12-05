@@ -25,7 +25,13 @@ for num_tasks in range(task_number):
     map_name = map_name.tolist()
     env = gym.make("FrozenLake-v1",desc= map_name, is_slippery=False)
 
-    task_specific_theta = training_meta_theta
+    if dis_i==1:
+        task_specific_theta = training_meta_theta_1
+    else:
+        task_specific_theta = training_meta_theta_2
+    task_specific_theta=torch.zeros((16, 4))
+    lambda1=lambda1*2
+
     total_rewards=[]
     print("--------------")
     for i in range(5):
@@ -46,5 +52,6 @@ print(np.average(np.array(total_rewards_alltask_1)))
 print(np.average(np.array(total_rewards_alltask_2)))
 print(np.average(np.array(total_rewards_alltask_3)))
 print(np.average(np.array(total_rewards_alltask_4)))
-        
+
+print(np.average(np.array(total_rewards_alltask_0)),np.average(np.array(total_rewards_alltask_1)),np.average(np.array(total_rewards_alltask_2)),np.average(np.array(total_rewards_alltask_3)),np.average(np.array(total_rewards_alltask_4)))
 

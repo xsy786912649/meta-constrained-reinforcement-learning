@@ -4,15 +4,15 @@ import matplotlib.pyplot as plt
 import torch
 from extra_function import *
 import random
+import sys
 
-gamma = 0.8
-
-dis_i=1
+dis_i=int(sys.argv[1])
 if dis_i==2:
     lambda1 =5.0
 elif dis_i==1:
     lambda1 =10.0
 
+gamma = 0.8
 task_number=10
 
 

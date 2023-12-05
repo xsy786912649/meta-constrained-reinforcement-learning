@@ -1,5 +1,5 @@
 
-import cvxpy as cp
+
 import numpy as np
 import time
 import torch
@@ -23,13 +23,14 @@ plt.rc('axes', prop_cycle=default_cycler)
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
-iteration_number=(np.array(list(range(199)))+1)
+iteration_number=(np.array(list(range(5))))
 
 
 data1 = np.loadtxt('./ours_5shot_200mini.cvs', delimiter=',')
 ours_clean = data1[::4, 1][1:200]/100.0
 ours_pgd = data1[::4, 2][1:200]/100.0
 ours_b = data1[::4, 3][1:200]/100.0
+
 
 data2 = np.loadtxt('./MAML_moml_5shot_200mini.cvs', delimiter=',')
 maml_clean = data2[::4, 1][1:200]/100.0
@@ -41,9 +42,6 @@ protonet_clean = data3[::4, 1][1:200]/100.0
 protonet_pgd = data3[::4, 2][1:200]/100.0
 protonet_b = data3[::4, 3][1:200]/100.0
 
-boil_clean = (data3[::4, 1][1:200]+data2[::4, 1][1:200])/200.0+0.02*np.random.random_sample()
-boil_pgd = (data3[::4, 2][1:200]+data2[::4, 2][1:200])/200.0-0.02*np.random.random_sample()
-boil_b = (data3[::4, 3][1:200]+data2[::4, 3][1:200])/200.0-0.02*np.random.random_sample()
 
 plt.rcParams.update({'font.size': 24})
 plt.rcParams['font.sans-serif']=['Arial']
@@ -55,7 +53,7 @@ ax = plt.gca()
 plt.plot(axis,ours_clean,'-',label="CML (ours)")
 plt.plot(axis,protonet_clean,'-.',label="Protonet with MOML")
 plt.plot(axis,maml_clean,'--',label="MAML with MOML")
-plt.plot(axis,boil_clean,linestyle=(0,(3, 1, 1, 1, 1, 1)),label="BOIL with MOML")
+#plt.plot(axis,boil_clean,linestyle=(0,(3, 1, 1, 1, 1, 1)),label="BOIL with MOML")
 
 #plt.xticks(np.arange(0,iterations,40))
 plt.title('Dataset: mini-ImageNet (5-way 5-shot)',size=28)
@@ -77,7 +75,7 @@ ax = plt.gca()
 plt.plot(axis,ours_pgd,'-',label="CML (ours)")
 plt.plot(axis,protonet_pgd,'-.',label="Protonet with MOML")
 plt.plot(axis,maml_pgd,'--',label="MAML with MOML")
-plt.plot(axis,boil_pgd,linestyle=(0,(3, 1, 1, 1, 1, 1)),label="BOIL with MOML")
+#plt.plot(axis,boil_pgd,linestyle=(0,(3, 1, 1, 1, 1, 1)),label="BOIL with MOML")
 
 #plt.xticks(np.arange(0,iterations,40))
 plt.title('Dataset: mini-ImageNet (5-way 5-shot)',size=28)
@@ -99,7 +97,7 @@ ax = plt.gca()
 plt.plot(axis,ours_b,'-',label="CML (ours)")
 plt.plot(axis,protonet_b,'-.',label="Protonet with MOML")
 plt.plot(axis,maml_b,'--',label="MAML with MOML")
-plt.plot(axis,boil_b,linestyle=(0,(3, 1, 1, 1, 1, 1)),label="BOIL with MOML")
+#plt.plot(axis,boil_b,linestyle=(0,(3, 1, 1, 1, 1, 1)),label="BOIL with MOML")
 
 
 #plt.xticks(np.arange(0,iterations,40))
