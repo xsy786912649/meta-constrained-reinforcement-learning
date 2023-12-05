@@ -26,21 +26,17 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 iteration_number=(np.array(list(range(5))))
 
 
-data1 = np.loadtxt('./ours_5shot_200mini.cvs', delimiter=',')
-ours_clean = data1[::4, 1][1:200]/100.0
-ours_pgd = data1[::4, 2][1:200]/100.0
-ours_b = data1[::4, 3][1:200]/100.0
+data_no_2 = np.loadtxt("./results/result_nohole_d2.csv", delimiter=',')
+data_no_1 = np.loadtxt("./results/result_nohole_d1.csv", delimiter=',')
+data_hole_2 = np.loadtxt("./results/result_hole_d2.csv", delimiter=',')
+data_hole_1 = np.loadtxt("./results/result_hole_d1.csv", delimiter=',')
+
+data_no_2_from0 = np.loadtxt("./results/result_nohole_d2_from0.csv", delimiter=',')
+data_no_1_from0 = np.loadtxt("./results/result_nohole_d1_from0.csv", delimiter=',')
+data_hole_2_from0 = np.loadtxt("./results/result_hole_d2_from0.csv", delimiter=',')
+data_hole_1_from0 = np.loadtxt("./results/result_hole_d1_from0.csv", delimiter=',')
 
 
-data2 = np.loadtxt('./MAML_moml_5shot_200mini.cvs', delimiter=',')
-maml_clean = data2[::4, 1][1:200]/100.0
-maml_pgd = data2[::4, 2][1:200]/100.0
-maml_b = data2[::4, 3][1:200]/100.0
-
-data3 = np.loadtxt('./protonet_moml_5shot_200mini.cvs', delimiter=',')
-protonet_clean = data3[::4, 1][1:200]/100.0
-protonet_pgd = data3[::4, 2][1:200]/100.0
-protonet_b = data3[::4, 3][1:200]/100.0
 
 
 plt.rcParams.update({'font.size': 24})
@@ -59,7 +55,7 @@ plt.plot(axis,maml_clean,'--',label="MAML with MOML")
 plt.title('Dataset: mini-ImageNet (5-way 5-shot)',size=28)
 plt.xlabel('Round (task index)',size=28)
 plt.ylabel("Clean accuracy",size=28)
-plt.ylim(0.34,0.60)
+plt.ylim(0.0,2.0)
 #plt.legend(loc=4)
 plt.legend(loc=0, numpoints=1)
 plt.subplots_adjust(left=0.135, right=0.980, top=0.935, bottom=0.120)
@@ -81,7 +77,7 @@ plt.plot(axis,maml_pgd,'--',label="MAML with MOML")
 plt.title('Dataset: mini-ImageNet (5-way 5-shot)',size=28)
 plt.xlabel('Round (task index)',size=28)
 plt.ylabel("PGD accuracy",size=28)
-plt.ylim(0.21,0.51)
+plt.ylim(0.0,2.0)
 #plt.legend(loc=4)
 plt.legend(loc=0, numpoints=1)
 plt.subplots_adjust(left=0.135, right=0.980, top=0.935, bottom=0.120)
@@ -104,7 +100,7 @@ plt.plot(axis,maml_b,'--',label="MAML with MOML")
 plt.title('Dataset: mini-ImageNet (5-way 5-shot)',size=28)
 plt.xlabel('Round (task index)',size=28)
 plt.ylabel("B-score",size=28)
-plt.ylim(0.26,0.55)
+plt.ylim(0.0,2.0)
 #plt.legend(loc=4)
 plt.legend(loc=0, numpoints=1)
 plt.subplots_adjust(left=0.135, right=0.980, top=0.935, bottom=0.120)

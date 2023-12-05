@@ -30,8 +30,11 @@ for num_tasks in range(task_number):
         task_specific_theta = training_meta_theta_1
     else:
         task_specific_theta = training_meta_theta_2
+
+    '''
     task_specific_theta=torch.zeros((16, 4))
     lambda1=lambda1*2
+    '''
 
     total_rewards=[]
     print("--------------")
@@ -54,7 +57,7 @@ print(np.average(np.array(total_rewards_alltask_2)))
 print(np.average(np.array(total_rewards_alltask_3)))
 print(np.average(np.array(total_rewards_alltask_4)))
 
-'''
+
 if dis_i==2:
     with open("./results/result_hole_d2.csv","a+") as csvfile: 
         writer = csv.writer(csvfile)
@@ -63,8 +66,8 @@ elif dis_i==1:
     with open("./results/result_hole_d1.csv","a+") as csvfile: 
         writer = csv.writer(csvfile)
         writer.writerow([np.average(np.array(total_rewards_alltask_0)),np.average(np.array(total_rewards_alltask_1)),np.average(np.array(total_rewards_alltask_2)),np.average(np.array(total_rewards_alltask_3)),np.average(np.array(total_rewards_alltask_4))])
-'''
 
+'''
 if dis_i==2:
     with open("./results/result_hole_d2_from0.csv","a+") as csvfile: 
         writer = csv.writer(csvfile)
@@ -73,4 +76,4 @@ elif dis_i==1:
     with open("./results/result_hole_d1_from0.csv","a+") as csvfile: 
         writer = csv.writer(csvfile)
         writer.writerow([np.average(np.array(total_rewards_alltask_0)),np.average(np.array(total_rewards_alltask_1)),np.average(np.array(total_rewards_alltask_2)),np.average(np.array(total_rewards_alltask_3)),np.average(np.array(total_rewards_alltask_4))])
-
+'''
