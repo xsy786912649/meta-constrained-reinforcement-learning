@@ -164,11 +164,3 @@ plt.savefig('nohole_2.pdf')
 plt.show()
 
 
-axis=iteration_number
-plt.figure(figsize=(8*1.1,6*1.1))
-ax = plt.gca()
-plt.plot(axis,data_no_2_mean,'-',label="CML (ours)")
-plt.plot(axis,data_no_2_from0_mean,'-.',label="Protonet with MOML")
-plt.plot(axis,data_no_2_optimal,'--',label="MAML with MOML")
-#plt.plot(axis,boil_b,linestyle=(0,(3, 1, 1, 1, 1, 1)),label="BOIL with MOML")
-
