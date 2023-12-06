@@ -87,7 +87,7 @@ plt.subplots_adjust(left=0.129, right=0.993, top=0.902, bottom=0.154)
 leg = plt.gca().get_legend()
 ltext = leg.get_texts()
 #plt.setp(ltext, fontsize=18,fontweight='bold') #设置图例字体的大小和粗细
-plt.savefig('hole_1.pdf') 
+plt.savefig('./figures/hole_1.pdf') 
 plt.show()
 
 axis=iteration_number
@@ -111,7 +111,7 @@ plt.subplots_adjust(left=0.129, right=0.993, top=0.902, bottom=0.154)
 leg = plt.gca().get_legend()
 ltext = leg.get_texts()
 #plt.setp(ltext, fontsize=18,fontweight='bold') #设置图例字体的大小和粗细
-plt.savefig('nohole_1.pdf') 
+plt.savefig('./figures/nohole_1.pdf') 
 plt.show()
 
 axis=iteration_number
@@ -135,7 +135,7 @@ plt.subplots_adjust(left=0.129, right=0.993, top=0.902, bottom=0.154)
 leg = plt.gca().get_legend()
 ltext = leg.get_texts()
 #plt.setp(ltext, fontsize=18,fontweight='bold') #设置图例字体的大小和粗细
-plt.savefig('hole_2.pdf') 
+plt.savefig('./figures/hole_2.pdf') 
 plt.show()
 
 axis=iteration_number
@@ -159,6 +159,6 @@ plt.subplots_adjust(left=0.129, right=0.993, top=0.902, bottom=0.154)
 leg = plt.gca().get_legend()
 ltext = leg.get_texts()
 #plt.setp(ltext, fontsize=18,fontweight='bold') #设置图例字体的大小和粗细
-plt.savefig('nohole_2.pdf') 
+plt.savefig('./figures/nohole_2.pdf') 
 plt.show()
 
