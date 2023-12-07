@@ -86,7 +86,7 @@ plt.legend(loc=0, numpoints=1)
 plt.subplots_adjust(left=0.129, right=0.993, top=0.902, bottom=0.154)
 leg = plt.gca().get_legend()
 ltext = leg.get_texts()
-#plt.setp(ltext, fontsize=18,fontweight='bold') #设置图例字体的大小和粗细
+#plt.setp(ltext, fontsize=18,fontweight='bold') 
 plt.savefig('./figures/hole_1.pdf') 
 plt.show()
 
@@ -110,7 +110,7 @@ plt.legend(loc=0, numpoints=1)
 plt.subplots_adjust(left=0.129, right=0.993, top=0.902, bottom=0.154)
 leg = plt.gca().get_legend()
 ltext = leg.get_texts()
-#plt.setp(ltext, fontsize=18,fontweight='bold') #设置图例字体的大小和粗细
+#plt.setp(ltext, fontsize=18,fontweight='bold')
 plt.savefig('./figures/nohole_1.pdf') 
 plt.show()
 
@@ -134,7 +134,7 @@ plt.legend(loc=0, numpoints=1)
 plt.subplots_adjust(left=0.129, right=0.993, top=0.902, bottom=0.154)
 leg = plt.gca().get_legend()
 ltext = leg.get_texts()
-#plt.setp(ltext, fontsize=18,fontweight='bold') #设置图例字体的大小和粗细
+#plt.setp(ltext, fontsize=18,fontweight='bold') 
 plt.savefig('./figures/hole_2.pdf') 
 plt.show()
 
@@ -158,7 +158,20 @@ plt.legend(loc=0, numpoints=1)
 plt.subplots_adjust(left=0.129, right=0.993, top=0.902, bottom=0.154)
 leg = plt.gca().get_legend()
 ltext = leg.get_texts()
-#plt.setp(ltext, fontsize=18,fontweight='bold') #设置图例字体的大小和粗细
+#plt.setp(ltext, fontsize=18,fontweight='bold') 
 plt.savefig('./figures/nohole_2.pdf') 
 plt.show()
 
+fig, ax = plt.subplots(figsize=(8*1.1,6*1.1))
+y_data = [ 8.45, 1.032, 1.201]
+x_data = ('Starting \n from scratch', 'MAML with \n constraint penalty', 'Constrained \n meta-learning')
+std_err=[0.7,0.23,0.25]
+
+error_params=dict(elinewidth=4,capsize=5)
+
+bar = plt.bar(x_data, y_data, 0.2,yerr=std_err,error_kw=error_params)
+
+ax.set_ylabel("Adaptation time (s)",size=28)
+plt.subplots_adjust(left=0.090, right=0.930, top=0.935, bottom=0.120)
+plt.savefig('time_computation.pdf') 
+plt.show()
