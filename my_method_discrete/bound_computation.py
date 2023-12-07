@@ -16,7 +16,7 @@ kls=[]
 if dis_i==2:
     lambda1 =0.5
 elif dis_i==1:
-    lambda1 =5.0
+    lambda1 =1.0
 
 for num_tasks in range(task_number):
 
@@ -24,10 +24,13 @@ for num_tasks in range(task_number):
     map_name = map_name.tolist()
     env = gym.make("FrozenLake-v1",desc= map_name, is_slippery=False)
 
-    task_specific_theta = training_meta_theta
+    if dis_i==1:
+        task_specific_theta = training_meta_theta_1
+    else:
+        task_specific_theta = training_meta_theta_2
 
     print("----------------")
-    for i in range(15):
+    for i in range(10):
         total_reward,observations,qtable_meta_policy = sample_trajectorie(env, gamma, task_specific_theta)
         print("total_reward: ",total_reward)
         if i==0:
@@ -39,7 +42,11 @@ for num_tasks in range(task_number):
     task_specific_policies.append(task_specific_policy)
     total_rewards.append(total_reward)
 
-    meta_policy=torch.softmax(training_meta_theta,dim=1)
+    if dis_i==1:
+        meta_policy=torch.softmax(training_meta_theta_1,dim=1)
+    else:
+        meta_policy=torch.softmax(training_meta_theta_2,dim=1)
+
     if dis_i==2:     
         kl_this=KL(meta_policy,task_specific_policy,observations_meta)
         print(kl_this)

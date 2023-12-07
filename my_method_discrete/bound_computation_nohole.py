@@ -24,7 +24,10 @@ for num_tasks in range(task_number):
     reward_map = np.load('maps_nohole/map'+str(num_tasks)+'.npy')
     env = gym.make("FrozenLake-v1",desc= ['SFFF', 'FFFF', 'FFFF', 'FFFG'], is_slippery=False)
 
-    task_specific_theta = training_meta_theta_no_hole
+    if dis_i==1:
+        task_specific_theta = training_meta_theta_no_hole_1
+    else:
+        task_specific_theta = training_meta_theta_no_hole_2
 
     print("----------------")
     for i in range(15):
@@ -38,7 +41,11 @@ for num_tasks in range(task_number):
     task_specific_policies.append(task_specific_policy)
     total_rewards.append(total_reward)
 
-    meta_policy=torch.softmax(training_meta_theta_no_hole,dim=1)
+    if dis_i==1:
+        meta_policy=torch.softmax(training_meta_theta_no_hole_1,dim=1)
+    else:
+        meta_policy=torch.softmax(training_meta_theta_no_hole_2,dim=1)
+        
     if dis_i==2:     
         kl_this=KL(meta_policy,task_specific_policy,observations_meta)
         print(kl_this)

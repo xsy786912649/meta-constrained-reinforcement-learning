@@ -16,19 +16,35 @@ gamma = 0.8
 task_number=10
 
 
+def KL_1(a, b):
+    a=torch.clip(a,0.0001,1.0)
+    b=torch.clip(b,0.0001,1.0)
+    cc=torch.sum(a * torch.log(a) - a * torch.log(b))
+    return cc
+
 def one_step_adaptation(meta_phi,qtable_meta_policy,lambda1,d_i=1):
     if d_i==2:
         task_specific_theta=meta_phi.data+1/lambda1*qtable_meta_policy.data
         task_specific_policy=torch.softmax(task_specific_theta,dim=1)
     elif d_i==1:
         meta_policy=torch.softmax(meta_phi.data,dim=1)
-        A_table_meta_policy=qtable_meta_policy-torch.sum(meta_policy*qtable_meta_policy,dim=1).reshape((16,1))
-        print(A_table_meta_policy)
-
-
+        A_table_meta_policy=qtable_meta_policy-torch.sum(meta_policy*qtable_meta_policy,dim=1).reshape((16,1))        
         
-        
-        task_specific_policy=meta_policy*lambda1/(lambda1-A_table_meta_policy)
+        task_specific_policy_list=[]
+        for i in range(16):
+            
+            ccc=meta_phi[i].detach().clone().requires_grad_(True)
+            optimizer111 = torch.optim.SGD([ccc], lr=0.3*2)
+            optimizer111.zero_grad() 
+            for j in range(20):
+                optimizer111.zero_grad()
+                loss=torch.sum(-torch.softmax(ccc,dim=0)*A_table_meta_policy[i]+lambda1 * KL_1( meta_policy[i].detach().clone(),ccc) )
+                loss.backward()
+                optimizer111.step()
+            task_specific_policy_list.append(torch.softmax(ccc,dim=0).detach().data.reshape((-1)))
+
+        task_specific_policy=torch.stack(task_specific_policy_list, dim = 0)
+
         
     return task_specific_policy
 

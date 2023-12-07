@@ -12,7 +12,7 @@ import csv
 if dis_i==2:
     lambda1 =0.5
 elif dis_i==1:
-    lambda1 =4.0
+    lambda1 =1.0
 
 total_rewards_alltask_0=[]
 total_rewards_alltask_1=[]
