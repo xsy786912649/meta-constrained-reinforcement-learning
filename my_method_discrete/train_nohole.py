@@ -10,7 +10,7 @@ dis_i=int(sys.argv[1])
 if dis_i==2:
     lambda1 =4.0
 elif dis_i==1:
-    lambda1 =8.0
+    lambda1 =4.0
 
 gamma = 0.8
 task_number=20
@@ -35,12 +35,13 @@ def one_step_adaptation(meta_phi,qtable_meta_policy,lambda1,d_i=1):
             optimizer111.zero_grad() 
             for j in range(20):
                 optimizer111.zero_grad()
-                loss=torch.sum(-torch.softmax(ccc,dim=0)*A_table_meta_policy[i]+lambda1 * KL_1( meta_policy[i].detach().clone(),ccc) )
+                loss=torch.sum(-torch.softmax(ccc,dim=0)*A_table_meta_policy[i]/lambda1+ KL_1( meta_policy[i].detach().clone(),torch.softmax(ccc,dim=0)) )
                 loss.backward()
                 optimizer111.step()
+                optimizer111.zero_grad()
             task_specific_policy_list.append(torch.softmax(ccc,dim=0).detach().data.reshape((-1)))
 
-        task_specific_policy=torch.stack(task_specific_policy_list, dim = 0)
+        task_specific_policy=torch.stack(task_specific_policy_list, dim = 0).detach().clone()
     return task_specific_policy
 
 def meta_gradient(task_specific_policy,task_specific_observations,A_table_task_specific,d_i=1):

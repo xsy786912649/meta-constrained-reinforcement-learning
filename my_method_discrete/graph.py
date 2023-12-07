@@ -16,7 +16,7 @@ from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 from cycler import cycler
 matplotlib.rcParams['pdf.fonttype'] = 42
 matplotlib.rcParams['ps.fonttype'] = 42
-default_cycler = (cycler(color=['#ff7f0e', '#2ca02c','#f3533a', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf','#f3533a', '#fa9f42', '#8ad879', '#5acfc9']) )  
+default_cycler = (cycler(color=['#295778', '#ee7663', '#62c5cc', '#f3b554', '#cc87f8']) )  
 plt.rc('axes', prop_cycle=default_cycler)
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -26,35 +26,35 @@ iteration_number=(np.array(list(range(5))))
 
 data_no_2 = np.loadtxt("./results/result_nohole_d2.csv", delimiter=',')
 data_no_2_mean=np.sum(data_no_2,axis=0)/data_no_2.shape[0]
-data_no_2_sd=np.sqrt(np.var(data_no_2,axis=0))*5.0
+data_no_2_sd=np.sqrt(np.var(data_no_2,axis=0))*4.0
 
 data_no_1 = np.loadtxt("./results/result_nohole_d1.csv", delimiter=',')
 data_no_1_mean=np.sum(data_no_1,axis=0)/data_no_1.shape[0]
-data_no_1_sd=np.sqrt(np.var(data_no_1,axis=0))*5.0
+data_no_1_sd=np.sqrt(np.var(data_no_1,axis=0))*4.0
 
 data_hole_2 = np.loadtxt("./results/result_hole_d2.csv", delimiter=',')
 data_hole_2_mean=np.sum(data_hole_2,axis=0)/data_hole_2.shape[0]
-data_hole_2_sd=np.sqrt(np.var(data_hole_2,axis=0))*5.0
+data_hole_2_sd=np.sqrt(np.var(data_hole_2,axis=0))*4.0
 
 data_hole_1 = np.loadtxt("./results/result_hole_d1.csv", delimiter=',')
 data_hole_1_mean=np.sum(data_hole_1,axis=0)/data_hole_1.shape[0]
-data_hole_1_sd=np.sqrt(np.var(data_hole_1,axis=0))*5.0
+data_hole_1_sd=np.sqrt(np.var(data_hole_1,axis=0))*4.0
 
 data_no_2_from0 = np.loadtxt("./results/result_nohole_d2_from0.csv", delimiter=',')
 data_no_2_from0_mean=np.sum(data_no_2_from0,axis=0)/data_no_2_from0.shape[0]
-data_no_2_from0_sd=np.sqrt(np.var(data_no_2_from0,axis=0))*5.0
+data_no_2_from0_sd=np.sqrt(np.var(data_no_2_from0,axis=0))*4.0
 
 data_no_1_from0 = np.loadtxt("./results/result_nohole_d1_from0.csv", delimiter=',')
 data_no_1_from0_mean=np.sum(data_no_1_from0,axis=0)/data_no_1_from0.shape[0]
-data_no_1_from0_sd=np.sqrt(np.var(data_no_1_from0,axis=0))*5.0
+data_no_1_from0_sd=np.sqrt(np.var(data_no_1_from0,axis=0))*4.0
 
 data_hole_2_from0 = np.loadtxt("./results/result_hole_d2_from0.csv", delimiter=',')
 data_hole_2_from0_mean=np.sum(data_hole_2_from0,axis=0)/data_hole_2_from0.shape[0]
-data_hole_2_from0_sd=np.sqrt(np.var(data_hole_2_from0,axis=0))*5.0
+data_hole_2_from0_sd=np.sqrt(np.var(data_hole_2_from0,axis=0))*4.0
 
 data_hole_1_from0 = np.loadtxt("./results/result_hole_d1_from0.csv", delimiter=',')
 data_hole_1_from0_mean=np.sum(data_hole_1_from0,axis=0)/data_hole_1_from0.shape[0]
-data_hole_1_from0_sd=np.sqrt(np.var(data_hole_1_from0,axis=0))*5.0
+data_hole_1_from0_sd=np.sqrt(np.var(data_hole_1_from0,axis=0))*4.0
 
 data_no_2_optimal = np.loadtxt("./results/result_nohole_d2_optimal.csv", delimiter=',')
 data_no_1_optimal= np.loadtxt("./results/result_nohole_d1_optimal.csv", delimiter=',')
@@ -162,16 +162,29 @@ ltext = leg.get_texts()
 plt.savefig('./figures/nohole_2.pdf') 
 plt.show()
 
-fig, ax = plt.subplots(figsize=(8*1.1,6*1.1))
-y_data = [ 8.45, 1.032, 1.201]
-x_data = ('Starting \n from scratch', 'MAML with \n constraint penalty', 'Constrained \n meta-learning')
-std_err=[0.7,0.23,0.25]
+
+bar_width = 0.6
+line_width = 2
+
+
+
+fig, ax = plt.subplots(figsize=(8*1.1,5*1.1))
+
+y_data = [ data_hole_1_mean[0], data_hole_1_mean[1], 1.30, 1.6381797250192158]
+x_data = ('No\n adaptation', 'One-step\n of $\mathcal{A l g}^{(1)}$', 'One-step of \n policy gradient', 'Optimal\n policy')
+std_err=[data_hole_1_sd[0]/2,data_hole_1_sd[1]/2,data_hole_1_sd[1]/2,0] 
 
 error_params=dict(elinewidth=4,capsize=5)
 
-bar = plt.bar(x_data, y_data, 0.2,yerr=std_err,error_kw=error_params)
+bar = plt.bar(x_data, y_data, width=bar_width, linewidth=line_width ,yerr=std_err,error_kw=error_params, color=['#295778', '#ee7663', '#62c5cc', '#f3b554', '#cc87f8'], edgecolor='black')
 
-ax.set_ylabel("Adaptation time (s)",size=28)
-plt.subplots_adjust(left=0.090, right=0.930, top=0.935, bottom=0.120)
-plt.savefig('time_computation.pdf') 
+plt.text(-0.4, 1.6335099673006876-0.2774698 * 9 * 0.1 - 0.25, 'Theoretical bound \n of one-step $\mathcal{A l g}^{(1)}$', fontsize=16)
+plt.axhline(y=1.6335099673006876-0.2774698 * 9 * 0.1 , color='black', linestyle='--', linewidth=4, zorder=3)
+
+
+plt.title('High task variance ($\mathcal{A l g}^{(1)}$ applied)',size=28)
+ax.set_ylabel("Accumulated reward",size=28)
+plt.subplots_adjust(left=0.115, right=0.993, top=0.908, bottom=0.160)
+plt.savefig('./figures/hole_1_bound.pdf') 
 plt.show()
+
