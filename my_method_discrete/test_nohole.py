@@ -10,7 +10,7 @@ from meta_policy import *
 import csv
 
 if dis_i==2:
-    lambda1 =0.25
+    lambda1 =0.1
 elif dis_i==1:
     lambda1 =0.05
 
@@ -32,7 +32,7 @@ for num_tasks in range(task_number):
     
     '''
     task_specific_theta=torch.zeros((16, 4))
-    lambda1=lambda1*10
+    lambda1=lambda1*2
     '''
 
     total_rewards=[]

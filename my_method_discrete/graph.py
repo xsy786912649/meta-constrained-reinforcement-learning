@@ -67,12 +67,12 @@ plt.rcParams['font.sans-serif']=['Arial']
 plt.rcParams['axes.unicode_minus']=False 
 
 axis=iteration_number
-plt.figure(figsize=(8*1.1,5*1.1))
+plt.figure(figsize=(8*1.1,6*1.1))
 ax = plt.gca()
 plt.plot(axis,data_hole_1_mean,'-',marker="o",markersize=8, linewidth=2.5 ,label="BO-MRL (ours)")
-ax.fill_between(axis,data_hole_1_mean-data_hole_1_sd,data_hole_1_mean+data_hole_1_sd,alpha=0.2)
+ax.fill_between(axis,data_hole_1_mean-data_hole_1_sd,data_hole_1_mean+data_hole_1_sd,alpha=0.4)
 plt.plot(axis,data_hole_1_from0_mean,'-.',marker="x", linewidth=2.5,markersize=8,label="Random initialization")
-ax.fill_between(axis,data_hole_1_from0_mean-data_hole_1_from0_sd,data_hole_1_from0_mean+data_hole_1_from0_sd,alpha=0.2)
+ax.fill_between(axis,data_hole_1_from0_mean-data_hole_1_from0_sd,data_hole_1_from0_mean+data_hole_1_from0_sd,alpha=0.4)
 plt.plot(axis,data_hole_1_optimal,'--', linewidth=2.5 ,label="Optimal task-specific policies")
 #plt.plot(axis,boil_clean,linestyle=(0,(3, 1, 1, 1, 1, 1)),label="BOIL with MOML")
 
@@ -83,7 +83,7 @@ plt.ylabel("Accumulated reward",size=28)
 plt.ylim(-0.5,1.75)
 #plt.legend(loc=4)
 plt.legend(loc=0, numpoints=1)
-plt.subplots_adjust(left=0.129, right=0.993, top=0.902, bottom=0.154)
+plt.subplots_adjust(left=0.129, right=0.993, top=0.923, bottom=0.126)
 leg = plt.gca().get_legend()
 ltext = leg.get_texts()
 #plt.setp(ltext, fontsize=18,fontweight='bold') 
@@ -91,12 +91,12 @@ plt.savefig('./figures/hole_1.pdf')
 plt.show()
 
 axis=iteration_number
-plt.figure(figsize=(8*1.1,5*1.1))
+plt.figure(figsize=(8*1.1,6*1.1))
 ax = plt.gca()
 plt.plot(axis,data_no_1_mean,'-',marker="o",markersize=8, linewidth=2.5 ,label="BO-MRL (ours)")
-ax.fill_between(axis,data_no_1_mean-data_no_1_sd,data_no_1_mean+data_no_1_sd,alpha=0.2)
+ax.fill_between(axis,data_no_1_mean-data_no_1_sd,data_no_1_mean+data_no_1_sd,alpha=0.4)
 plt.plot(axis,data_no_1_from0_mean,'-.',marker="x", linewidth=2.5,markersize=8,label="Random initialization")
-ax.fill_between(axis,data_no_1_from0_mean-data_no_1_from0_sd,data_no_1_from0_mean+data_no_1_from0_sd,alpha=0.2)
+ax.fill_between(axis,data_no_1_from0_mean-data_no_1_from0_sd,data_no_1_from0_mean+data_no_1_from0_sd,alpha=0.4)
 plt.plot(axis,data_no_1_optimal,'--', linewidth=2.5 ,label="Optimal task-specific policies")
 #plt.plot(axis,boil_clean,linestyle=(0,(3, 1, 1, 1, 1, 1)),label="BOIL with MOML")
 
@@ -107,7 +107,7 @@ plt.ylabel("Accumulated reward",size=28)
 plt.ylim(-0.25,1.75)
 #plt.legend(loc=4)
 plt.legend(loc=0, numpoints=1)
-plt.subplots_adjust(left=0.129, right=0.993, top=0.902, bottom=0.154)
+plt.subplots_adjust(left=0.115, right=0.993, top=0.923, bottom=0.126)
 leg = plt.gca().get_legend()
 ltext = leg.get_texts()
 #plt.setp(ltext, fontsize=18,fontweight='bold')
@@ -115,12 +115,12 @@ plt.savefig('./figures/nohole_1.pdf')
 plt.show()
 
 axis=iteration_number
-plt.figure(figsize=(8*1.1,5*1.1))
+plt.figure(figsize=(8*1.1,6*1.1))
 ax = plt.gca()
 plt.plot(axis,data_hole_2_mean,'-',marker="o",markersize=8, linewidth=2.5,label="BO-MRL (ours)")
-ax.fill_between(axis,data_hole_2_mean-data_hole_2_sd,data_hole_2_mean+data_hole_2_sd,alpha=0.2)
+ax.fill_between(axis,data_hole_2_mean-data_hole_2_sd,data_hole_2_mean+data_hole_2_sd,alpha=0.4)
 plt.plot(axis,data_hole_2_from0_mean,'-.',marker="x",markersize=8, linewidth=2.5,label="Random initialization")
-ax.fill_between(axis,data_hole_2_from0_mean-data_hole_2_from0_sd,data_hole_2_from0_mean+data_hole_2_from0_sd,alpha=0.2)
+ax.fill_between(axis,data_hole_2_from0_mean-data_hole_2_from0_sd,data_hole_2_from0_mean+data_hole_2_from0_sd,alpha=0.4)
 plt.plot(axis,data_hole_2_optimal,'--' , linewidth=2.5 ,label="Optimal task-specific policies")
 #plt.plot(axis,boil_clean,linestyle=(0,(3, 1, 1, 1, 1, 1)),label="BOIL with MOML")
 
@@ -128,10 +128,10 @@ plt.plot(axis,data_hole_2_optimal,'--' , linewidth=2.5 ,label="Optimal task-spec
 plt.title('High task variance ($\mathcal{A l g}^{(2)}$ applied)',size=28)
 plt.xlabel('Number of policy adaptation steps',size=28)
 plt.ylabel("Accumulated reward",size=28)
-plt.ylim(-0.5,1.75)
+plt.ylim(-0.3,1.75)
 #plt.legend(loc=4)
 plt.legend(loc=0, numpoints=1)
-plt.subplots_adjust(left=0.129, right=0.993, top=0.902, bottom=0.154)
+plt.subplots_adjust(left=0.129, right=0.993, top=0.923, bottom=0.126)
 leg = plt.gca().get_legend()
 ltext = leg.get_texts()
 #plt.setp(ltext, fontsize=18,fontweight='bold') 
@@ -139,12 +139,12 @@ plt.savefig('./figures/hole_2.pdf')
 plt.show()
 
 axis=iteration_number
-plt.figure(figsize=(8*1.1,5*1.1))
+plt.figure(figsize=(8*1.1,6*1.1))
 ax = plt.gca()
 plt.plot(axis,data_no_2_mean,'-',marker="o",markersize=8, linewidth=2.5 ,label="BO-MRL (ours)")
-ax.fill_between(axis,data_no_2_mean-data_no_2_sd,data_no_2_mean+data_no_2_sd,alpha=0.2)
+ax.fill_between(axis,data_no_2_mean-data_no_2_sd,data_no_2_mean+data_no_2_sd,alpha=0.4)
 plt.plot(axis,data_no_2_from0_mean,'-.',marker="x", linewidth=2.5,markersize=8,label="Random initialization")
-ax.fill_between(axis,data_no_2_from0_mean-data_no_2_from0_sd,data_no_2_from0_mean+data_no_2_from0_sd,alpha=0.2)
+ax.fill_between(axis,data_no_2_from0_mean-data_no_2_from0_sd,data_no_2_from0_mean+data_no_2_from0_sd,alpha=0.4)
 plt.plot(axis,data_no_2_optimal,'--', linewidth=2.5 ,label="Optimal task-specific policies")
 #plt.plot(axis,boil_clean,linestyle=(0,(3, 1, 1, 1, 1, 1)),label="BOIL with MOML")
 
@@ -155,7 +155,7 @@ plt.ylabel("Accumulated reward",size=28)
 plt.ylim(-0.25,1.75)
 #plt.legend(loc=4)
 plt.legend(loc=0, numpoints=1)
-plt.subplots_adjust(left=0.129, right=0.993, top=0.902, bottom=0.154)
+plt.subplots_adjust(left=0.115, right=0.993, top=0.923, bottom=0.126)
 leg = plt.gca().get_legend()
 ltext = leg.get_texts()
 #plt.setp(ltext, fontsize=18,fontweight='bold') 
@@ -163,28 +163,134 @@ plt.savefig('./figures/nohole_2.pdf')
 plt.show()
 
 
-bar_width = 0.6
-line_width = 2
+bar_width = 0.5
+line_width = 1
 
 
 
-fig, ax = plt.subplots(figsize=(8*1.1,5*1.1))
+fig, ax = plt.subplots(figsize=(8*1.1,6*1.1))
 
 y_data = [ data_hole_1_mean[0], data_hole_1_mean[1], 1.30, 1.6381797250192158]
-x_data = ('No\n adaptation', 'One-step\n of $\mathcal{A l g}^{(1)}$', 'One-step of \n policy gradient', 'Optimal\n policy')
+x_data = ('No\n adaptation', 'One-step\n of $\mathcal{A l g}^{(1)}$', 'One-step of\n policy gradient', 'Optimal\n policy')
 std_err=[data_hole_1_sd[0]/2,data_hole_1_sd[1]/2,data_hole_1_sd[1]/2,0] 
 
 error_params=dict(elinewidth=4,capsize=5)
 
 bar = plt.bar(x_data, y_data, width=bar_width, linewidth=line_width ,yerr=std_err,error_kw=error_params, color=['#295778', '#ee7663', '#62c5cc', '#f3b554', '#cc87f8'], edgecolor='black')
 
-plt.text(-0.4, 1.6335099673006876-0.2774698 * 9 * 0.1 - 0.25, 'Theoretical bound \n of one-step $\mathcal{A l g}^{(1)}$', fontsize=16)
+plt.text(-0.28, 1.6335099673006876-0.2774698 * 9 * 0.1 - 0.25, 'Lower bound of\n one-step $\mathcal{A l g}^{(1)}$', fontsize=20)
 plt.axhline(y=1.6335099673006876-0.2774698 * 9 * 0.1 , color='black', linestyle='--', linewidth=4, zorder=3)
-
 
 plt.title('High task variance ($\mathcal{A l g}^{(1)}$ applied)',size=28)
 ax.set_ylabel("Accumulated reward",size=28)
-plt.subplots_adjust(left=0.115, right=0.993, top=0.908, bottom=0.160)
+plt.subplots_adjust(left=0.136, right=0.989, top=0.923, bottom=0.131)
 plt.savefig('./figures/hole_1_bound.pdf') 
 plt.show()
+
+
+fig, ax = plt.subplots(figsize=(8*1.1,6*1.1))
+
+y_data = [ data_hole_2_mean[0], data_hole_2_mean[1], 1.30, 1.6381797250192158]
+x_data = ('No\n adaptation', 'One-step\n of $\mathcal{A l g}^{(2)}$', 'One-step of\n policy gradient', 'Optimal\n policy')
+std_err=[data_hole_2_sd[0]/2,data_hole_2_sd[1]/2,data_hole_2_sd[1]/2,0] 
+
+error_params=dict(elinewidth=4,capsize=5)
+
+bar = plt.bar(x_data, y_data, width=bar_width, linewidth=line_width ,yerr=std_err,error_kw=error_params, color=['#295778', '#ee7663', '#62c5cc', '#f3b554', '#cc87f8'], edgecolor='black')
+
+plt.text(-0.28, 1.6381797250192158-0.6193449 * 9 * 0.1 - 0.25, 'Lower bound of\n one-step $\mathcal{A l g}^{(2)}$', fontsize=20)
+plt.axhline(y=1.6381797250192158-0.6193449 * 9 * 0.1 , color='black', linestyle='--', linewidth=4, zorder=3)
+
+plt.title('High task variance ($\mathcal{A l g}^{(2)}$ applied)',size=28)
+ax.set_ylabel("Accumulated reward",size=28)
+plt.subplots_adjust(left=0.136, right=0.989, top=0.923, bottom=0.131)
+plt.savefig('./figures/hole_2_bound.pdf') 
+plt.show()
+
+
+
+fig, ax = plt.subplots(figsize=(8*1.1,6*1.1))
+
+y_data = [ data_no_1_mean[0], data_no_1_mean[1], 1.5031502591632093, 1.6238083970192134]
+x_data = ('No\n adaptation', 'One-step\n of $\mathcal{A l g}^{(1)}$', 'One-step of\n policy gradient', 'Optimal\n policy')
+std_err=[data_no_1_sd[0]/2,data_no_1_sd[1]/2,data_no_1_sd[1]/2,0] 
+
+error_params=dict(elinewidth=4,capsize=5)
+
+bar = plt.bar(x_data, y_data, width=bar_width, linewidth=line_width ,yerr=std_err,error_kw=error_params, color=['#295778', '#ee7663', '#62c5cc', '#f3b554', '#cc87f8'], edgecolor='black')
+
+plt.text(-0.28, 1.6238083970192134-0.15265574 * 9* 0.1 +0.012  , 'Lower bound of\n one-step $\mathcal{A l g}^{(1)}$', fontsize=20)
+plt.axhline(y=1.6238083970192134-0.15265574 * 9* 0.1 , color='black', linestyle='--', linewidth=4, zorder=3)
+plt.ylim(1.35,1.64)
+
+plt.title('Low task variance ($\mathcal{A l g}^{(1)}$ applied)',size=28)
+ax.set_ylabel("Accumulated reward",size=28)
+plt.subplots_adjust(left=0.136, right=0.989, top=0.923, bottom=0.131)
+plt.savefig('./figures/nohole_1_bound.pdf') 
+plt.show()
+
+
+fig, ax = plt.subplots(figsize=(8*1.1,6*1.1))
+
+y_data = [ data_no_2_mean[0], data_no_2_mean[1], 1.5031502591632093, 1.6142083970192134]
+x_data = ('No\n adaptation', 'One-step\n of $\mathcal{A l g}^{(2)}$', 'One-step of\n policy gradient', 'Optimal\n policy')
+std_err=[data_no_2_sd[0]/2,data_no_2_sd[1]/2,data_no_2_sd[1]/2,0] 
+
+error_params=dict(elinewidth=4,capsize=5)
+
+bar = plt.bar(x_data, y_data, width=bar_width, linewidth=line_width ,yerr=std_err,error_kw=error_params, color=['#295778', '#ee7663', '#62c5cc', '#f3b554', '#cc87f8'], edgecolor='black')
+
+
+plt.text(0.32,  1.6142083970192134 - 0.35228756 * 9.0* 0.05 - 0.04  , 'Lower bound of\n one-step $\mathcal{A l g}^{(2)}$', fontsize=20)
+plt.axhline( y= 1.6142083970192134 - 0.35228756 * 9.0* 0.05, color='black', linestyle='--', linewidth=4, zorder=3)
+plt.ylim(1.35,1.64)
+
+plt.title('Low task variance ($\mathcal{A l g}^{(2)}$ applied)',size=28)
+ax.set_ylabel("Accumulated reward",size=28)
+plt.subplots_adjust(left=0.136, right=0.989, top=0.923, bottom=0.131)
+plt.savefig('./figures/nohole_2_bound.pdf') 
+plt.show() 
+
+
+'''--------------------------------------------------'''
+fig, ax = plt.subplots(figsize=(8*1.1,6*1.1))
+
+y_data = [0.41384084713453, 1.31245, 1.3049245332733332, 1.6335099673006876]
+x_data = ('No\n adaptation', 'One-step\n of $\mathcal{A l g}^{(3)}$', 'One-step of\n policy gradient', 'Optimal\n policy')
+std_err=[data_hole_2_sd[0]/2,data_hole_2_sd[1]/2,data_hole_2_sd[1]/2,0] 
+
+error_params=dict(elinewidth=4,capsize=5)
+
+bar = plt.bar(x_data, y_data, width=bar_width, linewidth=line_width ,yerr=std_err,error_kw=error_params, color=['#295778', '#ee7663', '#62c5cc', '#f3b554', '#cc87f8'], edgecolor='black')
+
+plt.text(0.32, 0.1933 + 0.05, 'Lower bound of\n one-step $\mathcal{A l g}^{(3)}$', fontsize=20)
+plt.axhline(y=0.1933 , color='black', linestyle='--', linewidth=4, zorder=3)
+
+plt.title('High task variance ($\mathcal{A l g}^{(3)}$ applied)',size=28)
+ax.set_ylabel("Accumulated reward",size=28)
+plt.subplots_adjust(left=0.136, right=0.989, top=0.923, bottom=0.131)
+plt.savefig('./figures/hole_3_bound.pdf') 
+plt.show()
+
+
+fig, ax = plt.subplots(figsize=(8*1.1,6*1.1))
+
+y_data = [ 1.491573045339209, 1.51521, 1.5031502591632093, 1.6142083970192134]
+x_data = ('No\n adaptation', 'One-step\n of $\mathcal{A l g}^{(3)}$', 'One-step of\n policy gradient', 'Optimal\n policy')
+std_err=[data_no_2_sd[0]/2,data_no_2_sd[1]/2,data_no_2_sd[1]/2,0] 
+
+error_params=dict(elinewidth=4,capsize=5)
+
+bar = plt.bar(x_data, y_data, width=bar_width, linewidth=line_width ,yerr=std_err,error_kw=error_params, color=['#295778', '#ee7663', '#62c5cc', '#f3b554', '#cc87f8'], edgecolor='black')
+
+
+plt.text(0.32,  0.9132  + 0.04  , 'Lower bound of\n one-step $\mathcal{A l g}^{(3)}$', fontsize=20)
+plt.axhline( y= 0.9132 , color='black', linestyle='--', linewidth=4, zorder=3)
+plt.ylim(0.8,1.64)
+
+plt.title('Low task variance ($\mathcal{A l g}^{(3)}$ applied)',size=28)
+ax.set_ylabel("Accumulated reward",size=28)
+plt.subplots_adjust(left=0.136, right=0.989, top=0.923, bottom=0.131)
+plt.savefig('./figures/nohole_3_bound.pdf') 
+plt.show() 
 
