@@ -59,3 +59,7 @@ print(np.average(np.array(total_rewards_alltask_1)))
 print(np.average(np.array(total_rewards_alltask_2)))
 print(np.average(np.array(total_rewards_alltask_3)))
 print(np.average(np.array(total_rewards_alltask_4)))
+
+with open("./results/result_nohole_gd.csv","a+") as csvfile: 
+    writer = csv.writer(csvfile)
+    writer.writerow([np.average(np.array(total_rewards_alltask_0)),np.average(np.array(total_rewards_alltask_1)),np.average(np.array(total_rewards_alltask_2)),np.average(np.array(total_rewards_alltask_3)),np.average(np.array(total_rewards_alltask_4))])

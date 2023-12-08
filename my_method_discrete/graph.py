@@ -56,6 +56,15 @@ data_hole_1_from0 = np.loadtxt("./results/result_hole_d1_from0.csv", delimiter='
 data_hole_1_from0_mean=np.sum(data_hole_1_from0,axis=0)/data_hole_1_from0.shape[0]
 data_hole_1_from0_sd=np.sqrt(np.var(data_hole_1_from0,axis=0))*4.0
 
+
+data_hole_gd = np.loadtxt("./results/result_hole_gd.csv", delimiter=',')
+data_hole_gd_mean=np.sum(data_hole_gd,axis=0)/data_hole_gd.shape[0]
+data_hole_gd_sd=np.sqrt(np.var(data_hole_gd,axis=0))*4.0
+
+data_nohole_gd = np.loadtxt("./results/result_nohole_gd.csv", delimiter=',')
+data_nohole_gd_mean=np.sum(data_nohole_gd,axis=0)/data_nohole_gd.shape[0]
+data_nohole_gd_sd=np.sqrt(np.var(data_nohole_gd,axis=0))*4.0
+
 data_no_2_optimal = np.loadtxt("./results/result_nohole_d2_optimal.csv", delimiter=',')
 data_no_1_optimal= np.loadtxt("./results/result_nohole_d1_optimal.csv", delimiter=',')
 data_hole_2_optimal = np.loadtxt("./results/result_hole_d2_optimal.csv", delimiter=',')
@@ -73,8 +82,10 @@ plt.plot(axis,data_hole_1_mean,'-',marker="o",markersize=8, linewidth=2.5 ,label
 ax.fill_between(axis,data_hole_1_mean-data_hole_1_sd,data_hole_1_mean+data_hole_1_sd,alpha=0.4)
 plt.plot(axis,data_hole_1_from0_mean,'-.',marker="x", linewidth=2.5,markersize=8,label="Random initialization")
 ax.fill_between(axis,data_hole_1_from0_mean-data_hole_1_from0_sd,data_hole_1_from0_mean+data_hole_1_from0_sd,alpha=0.4)
+plt.plot(axis,data_hole_gd_mean,'-',marker="1",markersize=8, linewidth=2.5 ,label="MAML")
+ax.fill_between(axis,data_hole_gd_mean-data_hole_gd_sd,data_hole_gd_mean+data_hole_gd_sd,alpha=0.4)
 plt.plot(axis,data_hole_1_optimal,'--', linewidth=2.5 ,label="Optimal task-specific policies")
-#plt.plot(axis,boil_clean,linestyle=(0,(3, 1, 1, 1, 1, 1)),label="BOIL with MOML")
+
 
 #plt.xticks(np.arange(0,iterations,40))
 plt.title('High task variance ($\mathcal{A l g}^{(1)}$ applied)',size=28)
@@ -97,6 +108,8 @@ plt.plot(axis,data_no_1_mean,'-',marker="o",markersize=8, linewidth=2.5 ,label="
 ax.fill_between(axis,data_no_1_mean-data_no_1_sd,data_no_1_mean+data_no_1_sd,alpha=0.4)
 plt.plot(axis,data_no_1_from0_mean,'-.',marker="x", linewidth=2.5,markersize=8,label="Random initialization")
 ax.fill_between(axis,data_no_1_from0_mean-data_no_1_from0_sd,data_no_1_from0_mean+data_no_1_from0_sd,alpha=0.4)
+plt.plot(axis,data_nohole_gd_mean,'-',marker="1",markersize=8, linewidth=2.5 ,label="MAML")
+ax.fill_between(axis,data_nohole_gd_mean-data_nohole_gd_sd,data_nohole_gd_mean+data_nohole_gd_sd,alpha=0.4)
 plt.plot(axis,data_no_1_optimal,'--', linewidth=2.5 ,label="Optimal task-specific policies")
 #plt.plot(axis,boil_clean,linestyle=(0,(3, 1, 1, 1, 1, 1)),label="BOIL with MOML")
 
@@ -121,6 +134,8 @@ plt.plot(axis,data_hole_2_mean,'-',marker="o",markersize=8, linewidth=2.5,label=
 ax.fill_between(axis,data_hole_2_mean-data_hole_2_sd,data_hole_2_mean+data_hole_2_sd,alpha=0.4)
 plt.plot(axis,data_hole_2_from0_mean,'-.',marker="x",markersize=8, linewidth=2.5,label="Random initialization")
 ax.fill_between(axis,data_hole_2_from0_mean-data_hole_2_from0_sd,data_hole_2_from0_mean+data_hole_2_from0_sd,alpha=0.4)
+plt.plot(axis,data_hole_gd_mean,'-',marker="1",markersize=8, linewidth=2.5 ,label="MAML")
+ax.fill_between(axis,data_hole_gd_mean-data_hole_gd_sd,data_hole_gd_mean+data_hole_gd_sd,alpha=0.4)
 plt.plot(axis,data_hole_2_optimal,'--' , linewidth=2.5 ,label="Optimal task-specific policies")
 #plt.plot(axis,boil_clean,linestyle=(0,(3, 1, 1, 1, 1, 1)),label="BOIL with MOML")
 
@@ -145,6 +160,8 @@ plt.plot(axis,data_no_2_mean,'-',marker="o",markersize=8, linewidth=2.5 ,label="
 ax.fill_between(axis,data_no_2_mean-data_no_2_sd,data_no_2_mean+data_no_2_sd,alpha=0.4)
 plt.plot(axis,data_no_2_from0_mean,'-.',marker="x", linewidth=2.5,markersize=8,label="Random initialization")
 ax.fill_between(axis,data_no_2_from0_mean-data_no_2_from0_sd,data_no_2_from0_mean+data_no_2_from0_sd,alpha=0.4)
+plt.plot(axis,data_nohole_gd_mean,'-',marker="1",markersize=8, linewidth=2.5 ,label="MAML")
+ax.fill_between(axis,data_nohole_gd_mean-data_nohole_gd_sd,data_nohole_gd_mean+data_nohole_gd_sd,alpha=0.4)
 plt.plot(axis,data_no_2_optimal,'--', linewidth=2.5 ,label="Optimal task-specific policies")
 #plt.plot(axis,boil_clean,linestyle=(0,(3, 1, 1, 1, 1, 1)),label="BOIL with MOML")
 
