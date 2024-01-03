@@ -5,7 +5,6 @@ from train import *
 if __name__ == "__main__":
 
     meta_policy_net = torch.load("meta_policy_net.pkl")
-    meta_value_net = torch.load("meta_value_net.pkl")
 
     "--------------------------------------------------for initialization of running_state------------------------------------------"
     for i in range(args.batch_size):

@@ -29,7 +29,7 @@ class Policy(nn.Module):
 
         return action_mean, action_log_std, action_std
 
-
+'''
 class Value(nn.Module):
     def __init__(self, num_inputs):
         super(Value, self).__init__()
@@ -45,3 +45,4 @@ class Value(nn.Module):
 
         state_values = self.value_head(x)
         return state_values
+'''

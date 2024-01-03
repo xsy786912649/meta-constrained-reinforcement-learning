@@ -121,56 +121,8 @@ def sample_data_for_task_specific(target_v,policy_net,batch_size):
 
     return batch,batch_extra,accumulated_raward_batch
 
-def update_task_specific_valuenet(value_net,previous_value_net,batch,batch_extra,batch_size):
 
-    rewards = torch.Tensor(np.array(batch.reward))
-    path_numbers = torch.Tensor(np.array(batch.path_number))
-    actions = torch.Tensor(np.array(np.concatenate(batch.action, 0)))
-    states = torch.Tensor(np.array(batch.state))
-
-    rewards_extra = torch.Tensor(np.array(batch_extra.reward))
-    path_numbers_extra = torch.Tensor(np.array(batch_extra.path_number))
-    actions_extra = torch.Tensor(np.array(np.concatenate(batch_extra.action, 0)))
-    states_extra = torch.Tensor(np.array(batch_extra.state))
-
-    returns = torch.Tensor(actions.size(0),1)
-    prev_return=torch.zeros(batch_size,1)
-
-    k=batch_size-1
-    for i in reversed(range(rewards_extra.size(0))):
-        if not int(path_numbers_extra[i].item())==k:
-            k=k-1
-            assert k==path_numbers_extra[i].item()
-        prev_return[k,0]=rewards[i]+ args.gamma * prev_return[k,0] 
-    
-    for i in reversed(range(rewards.size(0))):
-        returns[i] = rewards[i] + args.gamma * prev_return[int(path_numbers[i].item()),0]
-        prev_return[int(path_numbers[i].item()),0] = returns[i, 0]
-    targets = Variable(returns)
-
-    # Original code uses the same LBFGS to optimize the value loss
-    def get_value_loss(flat_params):
-        set_flat_params_to(value_net, torch.Tensor(flat_params))
-        for param in value_net.parameters():
-            if param.grad is not None:
-                param.grad.data.fill_(0)
-
-        values_ = value_net(Variable(states))
-        value_loss = (values_ - targets).pow(2).mean() 
-
-        for i,param in enumerate(value_net.parameters()):
-            value_loss += (param-list(previous_value_net.parameters())[i].clone().detach().data).pow(2).sum() * args.meta_reg
-        value_loss.backward()
-        return (value_loss.data.double().numpy(), get_flat_grad_from(value_net).data.double().numpy())
-
-    for i in range(1):
-        flat_params, _, opt_info = scipy.optimize.fmin_l_bfgs_b(get_value_loss, get_flat_params_from(previous_value_net).double().numpy(), maxiter=25)
-        set_flat_params_to(value_net, torch.Tensor(flat_params))
-        previous_value_net=value_net
-
-    return value_net
-
-def compute_adavatage(value_net,batch,batch_extra,batch_size):
+def compute_adavatage(batch,batch_extra,batch_size):
     rewards = torch.Tensor(np.array(batch.reward))
     path_numbers = torch.Tensor(np.array(batch.path_number))
     actions = torch.Tensor(np.array(np.concatenate(batch.action, 0)))
@@ -196,7 +148,7 @@ def compute_adavatage(value_net,batch,batch_extra,batch_size):
     k=batch_size-1
     for i in reversed(range(rewards_extra.size(0))):
         if not int(path_numbers_extra[i].item())==k:
-            prev_value[k,0] = value_net(Variable(states_extra[i+1])).data[0]
+            prev_value[k,0] = 0.0
             k=k-1
             assert k==path_numbers_extra[i].item()
         prev_return[k,0]=rewards[i]+ args.gamma * prev_return[k,0] 
@@ -214,51 +166,6 @@ def compute_adavatage(value_net,batch,batch_extra,batch_size):
         prev_advantage[int(path_numbers[i].item()),0] = advantages[i, 0]
 
     return advantages
-
-def update_meta_valuenet(value_net,previous_value_net,data_pool_for_meta_value_net,batch_size):
-
-    target=[]
-
-    for task_number in range(len(data_pool_for_meta_value_net)):
-        batch_now=data_pool_for_meta_value_net[task_number][0]
-        batch_extra_now=data_pool_for_meta_value_net[task_number][1]
-
-        rewards = torch.Tensor(np.array(batch_now.reward))
-        path_numbers = torch.Tensor(np.array(batch_now.path_number))
-        actions = torch.Tensor(np.array(np.concatenate(batch_now.action, 0)))
-        states = torch.Tensor(np.array(batch_now.state))
-
-        rewards_extra = torch.Tensor(np.array(batch_extra_now.reward))
-        path_numbers_extra = torch.Tensor(np.array(batch_extra_now.path_number))
-        actions_extra = torch.Tensor(np.array(np.concatenate(batch_extra_now.action, 0)))
-        states_extra = torch.Tensor(np.array(batch_extra_now.state))
-
-        returns = torch.Tensor(actions.size(0),1)
-        prev_return=torch.zeros(batch_size,1)
-
-        k=batch_size-1
-        for i in reversed(range(rewards_extra.size(0))):
-            if not int(path_numbers_extra[i].item())==k:
-                k=k-1
-                assert k==path_numbers_extra[i].item()
-            prev_return[k,0]=rewards[i]+ args.gamma * prev_return[k,0] 
-        
-        for i in reversed(range(rewards.size(0))):
-            returns[i] = rewards[i] + args.gamma * prev_return[int(path_numbers[i].item()),0]
-            prev_return[int(path_numbers[i].item()),0] = returns[i, 0]
-        target.append( Variable(returns) )
-
-    optimizer = torch.optim.SGD(value_net.parameters(), lr=0.008)
-    value_loss=torch.tensor(0.0,requires_grad=True)
-    for task_number in range(len(data_pool_for_meta_value_net)):
-        values_ = value_net(Variable(torch.Tensor(np.array(data_pool_for_meta_value_net[task_number][0].state))))
-        value_loss = value_loss + (values_ - target[task_number]).pow(2).mean()
-    value_loss = value_loss*1.0/len(data_pool_for_meta_value_net) 
-    optimizer.zero_grad()
-    value_loss.backward()
-    optimizer.step()
-
-    return value_net
 
 def task_specific_adaptation(task_specific_policy,meta_policy_net_copy,batch,advantages,index=1): 
     actions = torch.Tensor(np.concatenate(batch.action, 0))
@@ -366,12 +273,8 @@ if __name__ == "__main__":
 
     if not os.path.exists("./meta_policy_net.pkl"):
         meta_policy_net = Policy(num_inputs, num_actions)
-        meta_value_net = Value(num_inputs)
     else:
         meta_policy_net = torch.load("meta_policy_net.pkl")
-        meta_value_net = torch.load("meta_value_net.pkl")
-
-    optimizer = torch.optim.Adam(meta_policy_net.parameters(), lr=0.003)
 
     "--------------------------------------------------for initialization of running_state------------------------------------------"
     for i in range(args.batch_size):
@@ -382,6 +285,8 @@ if __name__ == "__main__":
             action = action.data[0].numpy()
             next_state, reward, done, truncated, info = env.step(action)
             next_state = running_state(next_state)
+
+    optimizer = torch.optim.Adam(meta_policy_net.parameters(), lr=0.003)
 
     for i_episode in range(500):
         print("i_episode: ",i_episode)
