@@ -196,7 +196,7 @@ def compute_adavatage(value_net,batch,batch_extra,batch_size):
     k=batch_size-1
     for i in reversed(range(rewards_extra.size(0))):
         if not int(path_numbers_extra[i].item())==k:
-            prev_value[k,0] = value_net(Variable(states_extra[i+1])).data[0]
+            prev_value[k,0] = value_net(Variable(states_extra[i-1])).data[0]
             k=k-1
             assert k==path_numbers_extra[i].item()
         prev_return[k,0]=rewards[i]+ args.gamma * prev_return[k,0] 
