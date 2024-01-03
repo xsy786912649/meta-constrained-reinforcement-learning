@@ -315,7 +315,7 @@ if __name__ == "__main__":
             policy_gradient_main_term_flat=torch.cat([grad.contiguous().view(-1) for grad in policy_gradient_main_term]).data
             x = conjugate_gradients(d_theta_2_kl_phi_theta_loss_for_1term, policy_gradient_main_term_flat, 10)
 
-            kl_phi_theta_1=kl_divergence(meta_policy_net,task_specific_policy,batch_2,index=1)
+            kl_phi_theta_1=kl_divergence(meta_policy_net,task_specific_policy,batch,index=1)
             grads_1 = torch.autograd.grad(kl_phi_theta_1, task_specific_policy.parameters(), create_graph=True,retain_graph=True)
             flat_grad_kl_1 = torch.cat([grad.contiguous().view(-1) for grad in grads_1])
             kl_v_1 = (flat_grad_kl_1 * x.data).sum() 
@@ -331,13 +331,7 @@ if __name__ == "__main__":
         optimizer.step()
         optimizer.zero_grad()
 
-        meta_value_net_copy = Value(num_inputs)
-        for i,param in enumerate(meta_value_net_copy.parameters()):
-            param.data.copy_(list(meta_value_net.parameters())[i].clone().detach().data)
-        meta_value_net=update_meta_valuenet(meta_value_net,meta_value_net_copy,data_pool_for_meta_value_net,args.batch_size)
-
         torch.save(meta_policy_net, "meta_policy_net.pkl")
-        torch.save(meta_value_net, "meta_value_net.pkl")
 
         for task_number_test in range(1):
             target_v=1.2
@@ -345,16 +339,7 @@ if __name__ == "__main__":
             print("test_task: ", " target_v: ", target_v)
             print('(before adaptation) Episode {}\tAverage reward {:.2f}'.format(i_episode, accumulated_raward_batch))
     
-            task_specific_value_net = Value(num_inputs)
-            meta_value_net_copy = Value(num_inputs)
-            for i,param in enumerate(task_specific_value_net.parameters()):
-                param.data.copy_(list(meta_value_net.parameters())[i].clone().detach().data)
-            for i,param in enumerate(meta_value_net_copy.parameters()):
-                param.data.copy_(list(meta_value_net.parameters())[i].clone().detach().data)
-            task_specific_value_net = update_task_specific_valuenet(task_specific_value_net,meta_value_net_copy,batch,batch_extra,args.batch_size)
-            
-            batch_2,batch_extra_2,_=sample_data_for_task_specific(target_v,meta_policy_net,args.batch_size)
-            q_values = compute_adavatage(batch_2,batch_extra_2,args.batch_size)
+            q_values = compute_adavatage(batch,batch_extra,args.batch_size)
             q_values = (q_values - q_values.mean())  
 
             task_specific_policy=Policy(num_inputs, num_actions)
@@ -363,7 +348,7 @@ if __name__ == "__main__":
                 param.data.copy_(list(meta_policy_net.parameters())[i].clone().detach().data)
             for i,param in enumerate(meta_policy_net_copy.parameters()):
                 param.data.copy_(list(meta_policy_net.parameters())[i].clone().detach().data)
-            task_specific_policy=task_specific_adaptation(task_specific_policy,meta_policy_net_copy,batch_2,q_values,index=1)
+            task_specific_policy=task_specific_adaptation(task_specific_policy,meta_policy_net_copy,batch,q_values,index=1)
 
             after_batch,after_batch_extra,after_accumulated_raward_batch=sample_data_for_task_specific(target_v,task_specific_policy,args.batch_size)
             print('(after adaptation) Episode {}\tAverage reward {:.2f}'.format(i_episode, after_accumulated_raward_batch)) 
