@@ -86,12 +86,10 @@ def update_params(batch,batch_extra,batch_size):
         
         returns = torch.Tensor(actions.size(0),1)
         prev_return=torch.zeros(batch_size,1)
-        prev_value=torch.zeros(batch_size,1)
 
         k=batch_size-1
         for i in reversed(range(rewards_extra.size(0))):
             if not int(path_numbers_extra[i].item())==k:
-                prev_value[k,0] = 0.0
                 k=k-1
                 assert k==path_numbers_extra[i].item()
             prev_return[k,0]=rewards[i]+ args.gamma * prev_return[k,0] 

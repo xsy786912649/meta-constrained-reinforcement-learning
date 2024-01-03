@@ -405,7 +405,6 @@ if __name__ == "__main__":
             batch_2,batch_extra_2,_=sample_data_for_task_specific(target_v,meta_policy_net,args.batch_size)
             #data_pool_for_meta_value_net.append([batch_2,batch_extra_2])
             advantages = compute_adavatage(task_specific_value_net,batch_2,batch_extra_2,args.batch_size)
-            advantages2 = advantages
             advantages1 = (advantages - advantages.mean()) 
 
             task_specific_policy=Policy(num_inputs, num_actions)
@@ -432,7 +431,7 @@ if __name__ == "__main__":
 
             _, policy_gradient_main_term= policy_gradient_obain(task_specific_policy,after_batch2,advantages_after)
 
-            loss_for_1term=loss_obain_new(task_specific_policy,meta_policy_net,batch_2,advantages2)
+            loss_for_1term=loss_obain_new(task_specific_policy,meta_policy_net,batch_2,advantages1)
             
             #(\nabla_\phi^2 kl_phi_theta+loss_for_1term) x= policy_gradient_2term
             def d_theta_2_kl_phi_theta_loss_for_1term(v):

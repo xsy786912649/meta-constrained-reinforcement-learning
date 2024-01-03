@@ -133,41 +133,24 @@ def compute_adavatage(batch,batch_extra,batch_size):
     actions_extra = torch.Tensor(np.array(np.concatenate(batch_extra.action, 0)))
     states_extra = torch.Tensor(np.array(batch_extra.state))
 
-    values = value_net(Variable(states))
     returns = torch.Tensor(actions.size(0),1)
-    deltas = torch.Tensor(actions.size(0),1)
-    advantages = torch.Tensor(actions.size(0),1)
-
-    prev_values = value_net(Variable(states_extra))
-    prev_value0=torch.zeros(batch_size,1)
     prev_return=torch.zeros(batch_size,1)
-    prev_value=torch.zeros(batch_size,1)
-    prev_delta=torch.zeros(batch_size,1)
-    prev_advantage=torch.zeros(batch_size,1)
 
     k=batch_size-1
     for i in reversed(range(rewards_extra.size(0))):
         if not int(path_numbers_extra[i].item())==k:
-            prev_value[k,0] = 0.0
             k=k-1
             assert k==path_numbers_extra[i].item()
         prev_return[k,0]=rewards[i]+ args.gamma * prev_return[k,0] 
-        prev_delta[k,0]=rewards[i]+ args.gamma * prev_value0[k,0]  - prev_values.data[i]
-        prev_advantage[k,0]=prev_delta[k,0]+ args.gamma * args.tau * prev_advantage[k,0]
-        prev_value0[k,0]=prev_values.data[i]
-    
+        
     for i in reversed(range(rewards.size(0))):
         returns[i] = rewards[i] + args.gamma * prev_return[int(path_numbers[i].item()),0]
-        deltas[i] = rewards[i] + args.gamma * prev_value[int(path_numbers[i].item()),0]  - values.data[i]
-        advantages[i] = deltas[i] + args.gamma * args.tau * prev_advantage[int(path_numbers[i].item()),0]
-
         prev_return[int(path_numbers[i].item()),0] = returns[i, 0]
-        prev_value[int(path_numbers[i].item()),0] = values.data[i, 0]
-        prev_advantage[int(path_numbers[i].item()),0] = advantages[i, 0]
 
-    return advantages
+    targets = Variable(returns)
+    return targets
 
-def task_specific_adaptation(task_specific_policy,meta_policy_net_copy,batch,advantages,index=1): 
+def task_specific_adaptation(task_specific_policy,meta_policy_net_copy,batch,q_values,index=1): 
     actions = torch.Tensor(np.concatenate(batch.action, 0))
     states = torch.Tensor(np.array(batch.state))
 
@@ -178,8 +161,8 @@ def task_specific_adaptation(task_specific_policy,meta_policy_net_copy,batch,adv
         action_means1, action_log_stds1, action_stds1 = task_specific_policy(Variable(states))
         log_prob = normal_log_density(Variable(actions), action_means1, action_log_stds1, action_stds1)
         aaaa=torch.exp(log_prob - Variable(fixed_log_prob))
-        action_loss = -Variable(advantages) *  torch.special.expit(2.0*aaaa-2.0)*2 
-        #action_loss = -Variable(advantages) * aaaa
+        action_loss = -Variable(q_values) *  torch.special.expit(2.0*aaaa-2.0)*2 
+        #action_loss = -Variable(q_values) * aaaa
         return action_loss.mean()     
 
     def get_kl():
@@ -237,7 +220,7 @@ def kl_divergence(meta_policy_net1,task_specific_policy1,batch,index=1):
             policy_dictance += (param-param1).pow(2).sum() 
         return policy_dictance
 
-def policy_gradient_obain(task_specific_policy,after_batch,after_advantages):
+def policy_gradient_obain(task_specific_policy,after_batch,after_q_values):
     actions = torch.Tensor(np.array(np.concatenate(after_batch.action, 0)))
     states = torch.Tensor(np.array(after_batch.state))
     fixed_action_means, fixed_action_log_stds, fixed_action_stds = task_specific_policy(Variable(states))
@@ -245,7 +228,7 @@ def policy_gradient_obain(task_specific_policy,after_batch,after_advantages):
     afteradap_action_means, afteradap_action_log_stds, afteradap_action_stds = task_specific_policy(Variable(states))
     log_prob = normal_log_density(Variable(actions), afteradap_action_means, afteradap_action_log_stds, afteradap_action_stds)
     AAAAA=torch.exp(log_prob - Variable(fixed_log_prob))
-    bbbbb=torch.min(Variable(after_advantages)*AAAAA,Variable(after_advantages)*AAAAA*torch.clamp(AAAAA,0.8,1.2))
+    bbbbb=torch.min(Variable(after_q_values)*AAAAA,Variable(after_q_values)*AAAAA*torch.clamp(AAAAA,0.8,1.2))
     J_loss = (-bbbbb).mean()
     for param in task_specific_policy.parameters():
         param.grad.zero_()
@@ -255,7 +238,7 @@ def policy_gradient_obain(task_specific_policy,after_batch,after_advantages):
     return J_loss, policy_grad
 
 
-def loss_obain_new(task_specific_policy,meta_policy_net_copy,after_batch,after_advantages):
+def loss_obain_new(task_specific_policy,meta_policy_net_copy,after_batch,after_q_values):
     actions = torch.Tensor(np.array(np.concatenate(after_batch.action, 0)))
     states = torch.Tensor(np.array(after_batch.state))
     fixed_action_means, fixed_action_log_stds, fixed_action_stds = meta_policy_net_copy(Variable(states))
@@ -263,8 +246,8 @@ def loss_obain_new(task_specific_policy,meta_policy_net_copy,after_batch,after_a
     afteradap_action_means, afteradap_action_log_stds, afteradap_action_stds = task_specific_policy(Variable(states))
     log_prob = normal_log_density(Variable(actions), afteradap_action_means, afteradap_action_log_stds, afteradap_action_stds)
     aaaaa=torch.exp(log_prob - Variable(fixed_log_prob))
-    J_loss = (-Variable(after_advantages) * torch.special.expit(2.0*aaaaa-2.0)*2 ).mean()
-    #J_loss = (-Variable(after_advantages) * torch.exp(log_prob - Variable(fixed_log_prob))).mean()
+    J_loss = (-Variable(after_q_values) * torch.special.expit(2.0*aaaaa-2.0)*2 ).mean()
+    #J_loss = (-Variable(after_q_values) * torch.exp(log_prob - Variable(fixed_log_prob))).mean()
     
     return J_loss
 
@@ -290,28 +273,16 @@ if __name__ == "__main__":
 
     for i_episode in range(500):
         print("i_episode: ",i_episode)
-        data_pool_for_meta_value_net=[]
         grads_update=None
         for task_number in range(args.task_batch_size):
             target_v=setting_reward()
             batch,batch_extra,accumulated_raward_batch=sample_data_for_task_specific(target_v,meta_policy_net,args.batch_size)
-            data_pool_for_meta_value_net.append([batch,batch_extra])
             print("task_number: ",task_number, " target_v: ", target_v)
             print('(before adaptation) Episode {}\tAverage reward {:.2f}'.format(i_episode, accumulated_raward_batch))
-    
-            task_specific_value_net = Value(num_inputs)
-            meta_value_net_copy = Value(num_inputs)
-            for i,param in enumerate(task_specific_value_net.parameters()):
-                param.data.copy_(list(meta_value_net.parameters())[i].clone().detach().data)
-            for i,param in enumerate(meta_value_net_copy.parameters()):
-                param.data.copy_(list(meta_value_net.parameters())[i].clone().detach().data)
-            task_specific_value_net = update_task_specific_valuenet(task_specific_value_net,meta_value_net_copy,batch,batch_extra,args.batch_size)
             
-            batch_2,batch_extra_2,_=sample_data_for_task_specific(target_v,meta_policy_net,args.batch_size)
-            #data_pool_for_meta_value_net.append([batch_2,batch_extra_2])
-            advantages = compute_adavatage(task_specific_value_net,batch_2,batch_extra_2,args.batch_size)
-            advantages2 = advantages
-            advantages1 = (advantages - advantages.mean()) 
+            q_values = compute_adavatage(batch,batch_extra,args.batch_size)
+            q_values2 = q_values
+            q_values1 = (q_values - q_values.mean()) 
 
             task_specific_policy=Policy(num_inputs, num_actions)
             meta_policy_net_copy=Policy(num_inputs, num_actions)
@@ -319,25 +290,19 @@ if __name__ == "__main__":
                 param.data.copy_(list(meta_policy_net.parameters())[i].clone().detach().data)
             for i,param in enumerate(meta_policy_net_copy.parameters()):
                 param.data.copy_(list(meta_policy_net.parameters())[i].clone().detach().data)
-            task_specific_policy=task_specific_adaptation(task_specific_policy,meta_policy_net_copy,batch_2,advantages1,index=1)
+            task_specific_policy=task_specific_adaptation(task_specific_policy,meta_policy_net_copy,batch,q_values1,index=1)
 
             after_batch,after_batch_extra,after_accumulated_raward_batch=sample_data_for_task_specific(target_v,task_specific_policy,args.batch_size)
             print('(after adaptation) Episode {}\tAverage reward {:.2f}'.format(i_episode, after_accumulated_raward_batch)) 
 
-            task_specific_value_net_afteradapt = Value(num_inputs)
-            for i,param in enumerate(task_specific_value_net_afteradapt.parameters()): 
-                param.data.copy_(list(task_specific_value_net.parameters())[i].clone().detach().data)
-            task_specific_value_net_afteradapt = update_task_specific_valuenet(task_specific_value_net_afteradapt,task_specific_value_net,after_batch,after_batch_extra,args.batch_size)
+            q_values_after = compute_adavatage(after_batch,after_batch_extra,args.batch_size)
+            q_values_after = (q_values_after - q_values_after.mean()) 
 
-            after_batch2,after_batch2_extra,_=sample_data_for_task_specific(target_v,task_specific_policy,args.batch_size)
-            advantages_after = compute_adavatage(task_specific_value_net_afteradapt,after_batch2,after_batch2_extra,args.batch_size)
-            advantages_after = (advantages_after - advantages_after.mean()) 
+            kl_phi_theta=kl_divergence(meta_policy_net,task_specific_policy,batch,index=1)
 
-            kl_phi_theta=kl_divergence(meta_policy_net,task_specific_policy,batch_2,index=1)
+            _, policy_gradient_main_term= policy_gradient_obain(task_specific_policy,after_batch,q_values_after)
 
-            _, policy_gradient_main_term= policy_gradient_obain(task_specific_policy,after_batch2,advantages_after)
-
-            loss_for_1term=loss_obain_new(task_specific_policy,meta_policy_net,batch_2,advantages2)
+            loss_for_1term=loss_obain_new(task_specific_policy,meta_policy_net,batch,q_values1)
             
             #(\nabla_\phi^2 kl_phi_theta+loss_for_1term) x= policy_gradient_2term
             def d_theta_2_kl_phi_theta_loss_for_1term(v):
@@ -389,8 +354,8 @@ if __name__ == "__main__":
             task_specific_value_net = update_task_specific_valuenet(task_specific_value_net,meta_value_net_copy,batch,batch_extra,args.batch_size)
             
             batch_2,batch_extra_2,_=sample_data_for_task_specific(target_v,meta_policy_net,args.batch_size)
-            advantages = compute_adavatage(task_specific_value_net,batch_2,batch_extra_2,args.batch_size)
-            advantages = (advantages - advantages.mean())  
+            q_values = compute_adavatage(batch_2,batch_extra_2,args.batch_size)
+            q_values = (q_values - q_values.mean())  
 
             task_specific_policy=Policy(num_inputs, num_actions)
             meta_policy_net_copy=Policy(num_inputs, num_actions)
@@ -398,7 +363,7 @@ if __name__ == "__main__":
                 param.data.copy_(list(meta_policy_net.parameters())[i].clone().detach().data)
             for i,param in enumerate(meta_policy_net_copy.parameters()):
                 param.data.copy_(list(meta_policy_net.parameters())[i].clone().detach().data)
-            task_specific_policy=task_specific_adaptation(task_specific_policy,meta_policy_net_copy,batch_2,advantages,index=1)
+            task_specific_policy=task_specific_adaptation(task_specific_policy,meta_policy_net_copy,batch_2,q_values,index=1)
 
             after_batch,after_batch_extra,after_accumulated_raward_batch=sample_data_for_task_specific(target_v,task_specific_policy,args.batch_size)
             print('(after adaptation) Episode {}\tAverage reward {:.2f}'.format(i_episode, after_accumulated_raward_batch)) 
