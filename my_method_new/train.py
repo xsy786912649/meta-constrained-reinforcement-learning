@@ -69,6 +69,12 @@ def select_action(state,policy_net):
     action = torch.normal(action_mean, action_std)
     return action
 
+def select_action_test(state,policy_net):
+    state = torch.from_numpy(state).unsqueeze(0)
+    action_mean, _, action_std = policy_net(Variable(state))
+    return action_mean
+
+
 def sample_data_for_task_specific(target_v,policy_net,batch_size):
     memory = Memory()
     memory_extra=Memory()
