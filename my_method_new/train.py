@@ -150,7 +150,7 @@ def compute_adavatage(batch,batch_extra,batch_size):
     targets = Variable(returns)
     return targets
 
-def task_specific_adaptation(task_specific_policy,meta_policy_net_copy,batch,q_values,index=1): 
+def task_specific_adaptation(task_specific_policy,meta_policy_net_copy,batch,q_values,index): 
     actions = torch.Tensor(np.concatenate(batch.action, 0))
     states = torch.Tensor(np.array(batch.state))
 
@@ -201,7 +201,7 @@ def task_specific_adaptation(task_specific_policy,meta_policy_net_copy,batch,q_v
 
     return task_specific_policy
 
-def kl_divergence(meta_policy_net1,task_specific_policy1,batch,index=1):
+def kl_divergence(meta_policy_net1,task_specific_policy1,batch,index):
     if index==1:
         states = torch.Tensor(np.array(batch.state))
         mean1, log_std1, std1 = task_specific_policy1(Variable(states))
@@ -251,7 +251,7 @@ def loss_obain_new(task_specific_policy,meta_policy_net_copy,after_batch,after_q
     
     return J_loss
 
-
+index=1
 model_lower="Adam"
 if args.lower_opt=="Adam":
     model_lower="Adam"
@@ -297,7 +297,7 @@ if __name__ == "__main__":
                 param.data.copy_(list(meta_policy_net.parameters())[i].clone().detach().data)
             for i,param in enumerate(meta_policy_net_copy.parameters()):
                 param.data.copy_(list(meta_policy_net.parameters())[i].clone().detach().data)
-            task_specific_policy=task_specific_adaptation(task_specific_policy,meta_policy_net_copy,batch,q_values1,index=1)
+            task_specific_policy=task_specific_adaptation(task_specific_policy,meta_policy_net_copy,batch,q_values1,index)
 
             after_batch,after_batch_extra,after_accumulated_raward_batch=sample_data_for_task_specific(target_v,task_specific_policy,args.batch_size*5) 
             print('(after adaptation) Episode {}\tAverage reward {:.2f}'.format(i_episode, after_accumulated_raward_batch)) 
@@ -305,7 +305,7 @@ if __name__ == "__main__":
             q_values_after = compute_adavatage(after_batch,after_batch_extra,args.batch_size*5) 
             q_values_after = (q_values_after - q_values_after.mean()) 
 
-            kl_phi_theta=kl_divergence(meta_policy_net,task_specific_policy,batch,index=1)
+            kl_phi_theta=kl_divergence(meta_policy_net,task_specific_policy,batch,index)
 
             _, policy_gradient_main_term= policy_gradient_obain(task_specific_policy,after_batch,q_values_after)
 
@@ -322,7 +322,7 @@ if __name__ == "__main__":
             policy_gradient_main_term_flat=torch.cat([grad.contiguous().view(-1) for grad in policy_gradient_main_term]).data
             x = conjugate_gradients(d_theta_2_kl_phi_theta_loss_for_1term, policy_gradient_main_term_flat, 10)
 
-            kl_phi_theta_1=kl_divergence(meta_policy_net,task_specific_policy,batch,index=1)
+            kl_phi_theta_1=kl_divergence(meta_policy_net,task_specific_policy,batch,index)
             grads_1 = torch.autograd.grad(kl_phi_theta_1, task_specific_policy.parameters(), create_graph=True,retain_graph=True)
             flat_grad_kl_1 = torch.cat([grad.contiguous().view(-1) for grad in grads_1])
             kl_v_1 = (flat_grad_kl_1 * x.data).sum() 
@@ -356,7 +356,7 @@ if __name__ == "__main__":
                 param.data.copy_(list(meta_policy_net.parameters())[i].clone().detach().data)
             for i,param in enumerate(meta_policy_net_copy.parameters()):
                 param.data.copy_(list(meta_policy_net.parameters())[i].clone().detach().data)
-            task_specific_policy=task_specific_adaptation(task_specific_policy,meta_policy_net_copy,batch,q_values,index=1)
+            task_specific_policy=task_specific_adaptation(task_specific_policy,meta_policy_net_copy,batch,q_values,index)
 
             after_batch,after_batch_extra,after_accumulated_raward_batch=sample_data_for_task_specific(target_v,task_specific_policy,args.batch_size)
             print('(after adaptation) Episode {}\tAverage reward {:.2f}'.format(i_episode, after_accumulated_raward_batch)) 

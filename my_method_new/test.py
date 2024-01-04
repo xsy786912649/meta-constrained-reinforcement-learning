@@ -39,7 +39,7 @@ if __name__ == "__main__":
             task_specific_policy=Policy(num_inputs, num_actions)
             for i,param in enumerate(task_specific_policy.parameters()):
                 param.data.copy_(list(previous_policy_net.parameters())[i].clone().detach().data)
-            task_specific_policy=task_specific_adaptation(task_specific_policy,previous_policy_net,batch,q_values,index=1)
+            task_specific_policy=task_specific_adaptation(task_specific_policy,previous_policy_net,batch,q_values,index)
 
             for i,param in enumerate(previous_policy_net.parameters()):
                 param.data.copy_(list(task_specific_policy.parameters())[i].clone().detach().data)
