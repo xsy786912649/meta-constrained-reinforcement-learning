@@ -28,7 +28,7 @@ parser.add_argument('--tau', type=float, default=0.97, metavar='G',
                     help='gae (default: 0.97)')
 parser.add_argument('--l2-reg', type=float, default=1e-3, metavar='G',
                     help='l2 regularization regression (default: 1e-3)')
-parser.add_argument('--meta-lambda', type=float, default=2.0, metavar='G',
+parser.add_argument('--meta-lambda', type=float, default=1.0, metavar='G',
                     help='meta meta-lambda (default: 2.0)') 
 parser.add_argument('--max-kl', type=float, default=3e-2, metavar='G',
                     help='max kl value (default: 3e-2)')
@@ -36,7 +36,7 @@ parser.add_argument('--damping', type=float, default=0e-1, metavar='G',
                     help='damping (default: 0e-1)')
 parser.add_argument('--seed', type=int, default=543, metavar='N',
                     help='random seed (default: 1)')
-parser.add_argument('--batch-size', type=int, default=100, metavar='N',
+parser.add_argument('--batch-size', type=int, default=20, metavar='N',
                     help='batch-size (default: 20)')
 parser.add_argument('--render', action='store_true',
                     help='render the environment')
@@ -60,10 +60,12 @@ torch.manual_seed(args.seed)
 
 policy_net = Policy(num_inputs, num_actions)
 
-if not os.path.exists("./meta_policy_net.pkl"):
+model_lower="Adam"
+if not os.path.exists("meta_policy_net_"+model_lower+".pkl"):
     policy_net = Policy(num_inputs, num_actions)
 else:
-    policy_net = torch.load("meta_policy_net.pkl")
+    print("gg")
+    policy_net = torch.load("meta_policy_net_"+model_lower+".pkl")
 
 def select_action(state):
     state = torch.from_numpy(state).unsqueeze(0)
@@ -167,7 +169,7 @@ if __name__ == "__main__":
                 action = select_action(state)
                 action = action.data[0].numpy()
                 next_state, reward, done, truncated, info = env.step(action)
-                reward=-abs(info['x_velocity']-1.20)
+                reward=-abs(info['x_velocity']-1.99)
                 reward_sum += reward
                 next_state = running_state(next_state)
                 path_number = i
@@ -184,7 +186,7 @@ if __name__ == "__main__":
                 action = select_action(state)
                 action = action.data[0].numpy()
                 next_state, reward, done, truncated, info = env.step(action)
-                reward=-abs(info['x_velocity']-1.20)
+                reward=-abs(info['x_velocity']-1.99)
                 next_state = running_state(next_state)
                 path_number = i
 
