@@ -7,7 +7,7 @@ if __name__ == "__main__":
     meta_policy_net = torch.load("meta_policy_net.pkl")
 
     "--------------------------------------------------for initialization of running_state------------------------------------------"
-    for i in range(args.batch_size):
+    for i in range(args.batch_size*5):
         state = env.reset()[0]
         state = running_state(state)
         for t in range(args.max_length):
@@ -22,8 +22,6 @@ if __name__ == "__main__":
         target_v=task_number*1.0/10
         batch,batch_extra,accumulated_raward_batch=sample_data_for_task_specific(target_v,meta_policy_net,args.batch_size)
         print("task_number: ",task_number, " target_v: ", target_v)
-        print('(before adaptation) \tAverage reward {:.2f}'.format( accumulated_raward_batch))
-
 
         previous_policy_net = Policy(num_inputs, num_actions)
         for i,param in enumerate(previous_policy_net.parameters()):
@@ -43,7 +41,6 @@ if __name__ == "__main__":
                 param.data.copy_(list(previous_policy_net.parameters())[i].clone().detach().data)
             task_specific_policy=task_specific_adaptation(task_specific_policy,previous_policy_net,batch,q_values,index=1)
 
-            batch_after,batch_extra_after,_=sample_data_for_task_specific(target_v,task_specific_policy,args.batch_size)
             for i,param in enumerate(previous_policy_net.parameters()):
                 param.data.copy_(list(task_specific_policy.parameters())[i].clone().detach().data)
     
