@@ -26,7 +26,7 @@ parser.add_argument('--tau', type=float, default=0.97, metavar='G',
                     help='gae (default: 0.97)')
 parser.add_argument('--meta-reg', type=float, default=0.001, metavar='G',
                     help='meta regularization regression (default: 1.0)') 
-parser.add_argument('--meta-lambda', type=float, default=2.0, metavar='G', 
+parser.add_argument('--meta-lambda', type=float, default=3.0, metavar='G', 
                     help='meta meta-lambda (default: 0.5)')  # 0.5
 parser.add_argument('--max-kl', type=float, default=3e-2, metavar='G',
                     help='max kl value (default: 3e-2)')
@@ -254,13 +254,22 @@ def loss_obain_new(task_specific_policy,meta_policy_net_copy,after_batch,after_q
 
 if __name__ == "__main__":
 
-    if not os.path.exists("./meta_policy_net.pkl"):
+    if args.lower_opt=="adam":
+        model_lower="Adam"
+    elif args.lower_opt=="adagrad":
+        model_lower="Adagrad"
+    elif args.lower_opt=="rmsprop":
+        model_lower="RMSprop"
+    elif args.lower_opt=="sgd":
+        model_lower="SGD"
+
+    if not os.path.exists("meta_policy_net"+model_lower+".pkl"):
         meta_policy_net = Policy(num_inputs, num_actions)
     else:
-        meta_policy_net = torch.load("meta_policy_net.pkl")
+        meta_policy_net = torch.load("meta_policy_net"+model_lower+".pkl")
 
     "--------------------------------------------------for initialization of running_state------------------------------------------"
-    for i in range(args.batch_size):
+    for i in range(args.batch_size*5):
         state = env.reset()[0]
         state = running_state(state)
         for t in range(args.max_length):
@@ -331,7 +340,8 @@ if __name__ == "__main__":
         optimizer.step()
         optimizer.zero_grad()
 
-        torch.save(meta_policy_net, "meta_policy_net.pkl")
+        torch.save(meta_policy_net, "meta_policy_net_"+model_lower+".pkl")
+        torch.save(meta_policy_net, "./check_point/meta_policy_net_"+model_lower+"_"+str(i_episode)+".pkl")
 
         for task_number_test in range(1):
             target_v=1.2
