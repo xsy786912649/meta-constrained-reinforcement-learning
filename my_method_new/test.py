@@ -4,7 +4,7 @@ from train import *
 
 if __name__ == "__main__":
 
-    meta_policy_net = torch.load("meta_policy_net.pkl")
+    meta_policy_net = torch.load("meta_policy_net_"+model_lower+".pkl")
 
     "--------------------------------------------------for initialization of running_state------------------------------------------"
     for i in range(args.batch_size*5):
@@ -48,11 +48,11 @@ if __name__ == "__main__":
     a1=np.array(accumulated_raward_k_adaptation[1])
     a2=np.array(accumulated_raward_k_adaptation[2])
     a3=np.array(accumulated_raward_k_adaptation[3])
-    print(a0)
+    #print(a0)
     print(a0.mean())
-    print(a1)
+    #print(a1)
     print(a1.mean())
-    print(a2)
+    #print(a2)
     print(a2.mean())
-    print(a3)
+    #print(a3)
     print(a3.mean())
