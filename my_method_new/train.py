@@ -34,8 +34,8 @@ parser.add_argument('--damping', type=float, default=0e-1, metavar='G',
                     help='damping (default: 0e-1)')
 parser.add_argument('--seed', type=int, default=543, metavar='N',
                     help='random seed (default: 1)')
-parser.add_argument('--batch-size', type=int, default=100, metavar='N',
-                    help='batch-size (default: 20)') #20  
+parser.add_argument('--batch-size', type=int, default=20, metavar='N',
+                    help='batch-size (default: 20)') 
 parser.add_argument('--task-batch-size', type=int, default=5, metavar='N',
                     help='task-batch-size (default: 5)')
 parser.add_argument('--render', action='store_true',
@@ -292,10 +292,10 @@ if __name__ == "__main__":
                 param.data.copy_(list(meta_policy_net.parameters())[i].clone().detach().data)
             task_specific_policy=task_specific_adaptation(task_specific_policy,meta_policy_net_copy,batch,q_values1,index=1)
 
-            after_batch,after_batch_extra,after_accumulated_raward_batch=sample_data_for_task_specific(target_v,task_specific_policy,args.batch_size)
+            after_batch,after_batch_extra,after_accumulated_raward_batch=sample_data_for_task_specific(target_v,task_specific_policy,args.batch_size*5) 
             print('(after adaptation) Episode {}\tAverage reward {:.2f}'.format(i_episode, after_accumulated_raward_batch)) 
 
-            q_values_after = compute_adavatage(after_batch,after_batch_extra,args.batch_size)
+            q_values_after = compute_adavatage(after_batch,after_batch_extra,args.batch_size*5) 
             q_values_after = (q_values_after - q_values_after.mean()) 
 
             kl_phi_theta=kl_divergence(meta_policy_net,task_specific_policy,batch,index=1)
