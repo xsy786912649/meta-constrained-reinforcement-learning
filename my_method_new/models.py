@@ -10,7 +10,7 @@ class Policy(nn.Module):
         self.affine2 = nn.Linear(128, 128)
 
         self.action_mean = nn.Linear(128, num_outputs)
-        self.action_mean.weight.data.mul_(1.0)
+        self.action_mean.weight.data.mul_(0.1)
         self.action_mean.bias.data.mul_(0.0)
 
         self.action_log_std = nn.Parameter(torch.zeros(1, num_outputs))
