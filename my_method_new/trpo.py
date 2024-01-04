@@ -85,22 +85,20 @@ def trpo_step(model, get_loss, get_kl, max_kl, damping):
     
 def one_step_trpo(model, get_loss, get_kl,meta_lambda,lower_opt="Adam"):
     #optimizer = torch.optim.SGD(model.parameters(), lr=0.3)
-    if lower_opt=="adam":
+    if lower_opt=="Adam":
         optimizer = torch.optim.Adam(model.parameters(), lr=0.003)
         print("Adam")
     elif lower_opt=="adagrad":
-        optimizer = torch.optim.Adagrad(model.parameters(), lr=0.01)
+        optimizer = torch.optim.Adagrad(model.parameters(), lr=0.02)
         print("Adagrad")
     elif lower_opt=="rmsprop":
         optimizer = torch.optim.RMSprop(model.parameters(), lr=0.001)
         print("RMSprop")
-    elif lower_opt=="sgd":
-        optimizer = torch.optim.SGD(model.parameters(), lr=0.3)
     
-    for i in range(200):
+    for i in range(100):
         optimizer.zero_grad()
         loss = get_loss()*1.0/meta_lambda+get_kl().mean()
-        print("total_loss ", get_loss()*1.0/meta_lambda+get_kl().mean())
+        print("total_loss ", loss)
         #print("get_kl ",get_kl().mean())
         if get_kl().mean().clone().detach().numpy()>3.0:
             break
