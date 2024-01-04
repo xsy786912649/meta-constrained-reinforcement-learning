@@ -26,7 +26,7 @@ parser.add_argument('--tau', type=float, default=0.97, metavar='G',
                     help='gae (default: 0.97)')
 parser.add_argument('--meta-reg', type=float, default=0.001, metavar='G',
                     help='meta regularization regression (default: 1.0)') 
-parser.add_argument('--meta-lambda', type=float, default=3.0, metavar='G', 
+parser.add_argument('--meta-lambda', type=float, default=5.0, metavar='G', 
                     help='meta meta-lambda (default: 0.5)')  # 0.5
 parser.add_argument('--max-kl', type=float, default=3e-2, metavar='G',
                     help='max kl value (default: 3e-2)')
@@ -253,15 +253,13 @@ def loss_obain_new(task_specific_policy,meta_policy_net_copy,after_batch,after_q
 
 
 if __name__ == "__main__":
-
-    if args.lower_opt=="adam":
+    model_lower="Adam"
+    if args.lower_opt=="Adam":
         model_lower="Adam"
     elif args.lower_opt=="adagrad":
         model_lower="Adagrad"
     elif args.lower_opt=="rmsprop":
         model_lower="RMSprop"
-    elif args.lower_opt=="sgd":
-        model_lower="SGD"
 
     if not os.path.exists("meta_policy_net"+model_lower+".pkl"):
         meta_policy_net = Policy(num_inputs, num_actions)
