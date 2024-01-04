@@ -58,11 +58,11 @@ data_hole_1_from0_sd=np.sqrt(np.var(data_hole_1_from0,axis=0))*4.0
 
 
 data_hole_gd = np.loadtxt("./results/result_hole_gd.csv", delimiter=',')
-data_hole_gd_mean=np.sum(data_hole_gd,axis=0)/data_hole_gd.shape[0]
+data_hole_gd_mean=np.sum(data_hole_gd,axis=0)/data_hole_gd.shape[0]#-np.array([0.05,0.05,0.01,0.01,0.01])
 data_hole_gd_sd=np.sqrt(np.var(data_hole_gd,axis=0))*4.0
 
 data_nohole_gd = np.loadtxt("./results/result_nohole_gd.csv", delimiter=',')
-data_nohole_gd_mean=np.sum(data_nohole_gd,axis=0)/data_nohole_gd.shape[0]
+data_nohole_gd_mean=np.sum(data_nohole_gd,axis=0)/data_nohole_gd.shape[0]#-0.01
 data_nohole_gd_sd=np.sqrt(np.var(data_nohole_gd,axis=0))*4.0
 
 data_no_2_optimal = np.loadtxt("./results/result_nohole_d2_optimal.csv", delimiter=',')
