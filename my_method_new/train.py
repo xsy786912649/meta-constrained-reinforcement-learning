@@ -370,7 +370,7 @@ if __name__ == "__main__":
             print("-----------------------------------------")
         
         output_hal = open("running_state_"+model_lower+".pkl", 'wb')
-        str = pickle.dumps(running_state)
-        output_hal.write(str)
+        str1 = pickle.dumps(running_state)
+        output_hal.write(str1)
         output_hal.close()
 
