@@ -141,7 +141,11 @@ def update_params(batch,batch_extra,batch_size):
     return 
 
 running_state = ZFilter((num_inputs,), clip=5)
-running_reward = ZFilter((1,), demean=False, clip=10)
+
+#def running_state(x,clip=5.0):
+#    x = np.clip(x, -clip, clip)/clip
+#return x
+
 "--------------------------------------------------for initialization of running_state------------------------------------------"
 for i in range(args.batch_size):
     state = env.reset()[0]

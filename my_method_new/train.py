@@ -58,7 +58,6 @@ num_inputs = env.observation_space.shape[0]
 num_actions = env.action_space.shape[0]
 
 running_state = ZFilter((num_inputs,), clip=5)
-running_reward = ZFilter((1,), demean=False, clip=10)
 
 def setting_reward():
     return np.random.uniform(0.0,2.0)
