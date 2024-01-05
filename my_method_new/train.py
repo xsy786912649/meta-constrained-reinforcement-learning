@@ -11,6 +11,8 @@ from torch.autograd import Variable
 from utils import *
 from trpo import one_step_trpo,conjugate_gradients
 
+import pickle
+
 from copy import deepcopy
 
 torch.utils.backcompat.broadcast_warning.enabled = True
@@ -366,4 +368,9 @@ if __name__ == "__main__":
             after_batch,after_batch_extra,after_accumulated_raward_batch=sample_data_for_task_specific(target_v,task_specific_policy,args.batch_size)
             print('(after adaptation) Episode {}\tAverage reward {:.2f}'.format(i_episode, after_accumulated_raward_batch)) 
             print("-----------------------------------------")
+        
+        output_hal = open("running_state_"+model_lower+".pkl", 'wb')
+        str = pickle.dumps(running_state)
+        output_hal.write(str)
+        output_hal.close()
 

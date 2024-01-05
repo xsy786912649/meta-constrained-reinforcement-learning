@@ -14,6 +14,8 @@ from trpo import trpo_step,one_step_trpo
 from utils import *
 from copy import deepcopy
 
+import pickle
+
 torch.utils.backcompat.broadcast_warning.enabled = True
 torch.utils.backcompat.keepdim_warning.enabled = True
 
@@ -141,10 +143,6 @@ def update_params(batch,batch_extra,batch_size):
     return 
 
 running_state = ZFilter((num_inputs,), clip=5)
-
-#def running_state(x,clip=5.0):
-#    x = np.clip(x, -clip, clip)/clip
-#return x
 
 "--------------------------------------------------for initialization of running_state------------------------------------------"
 for i in range(args.batch_size):
