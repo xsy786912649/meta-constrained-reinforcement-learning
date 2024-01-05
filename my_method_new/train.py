@@ -195,16 +195,16 @@ def task_specific_adaptation(task_specific_policy,meta_policy_net_copy,batch,q_v
         return kl.sum(1, keepdim=True)
     
     def get_kl3():
-        policy_dictance=torch.tensor(0.0,requires_grad=True)
+        policy_dictance=torch.tensor(0.0)
         for i,param in enumerate(task_specific_policy.parameters()):
-            policy_dictance += (param-list(meta_policy_net_copy.parameter())[i].clone().detach().data).pow(2).sum() 
+            policy_dictance += (param-list(meta_policy_net_copy.parameters())[i].clone().detach().data).pow(2).sum() 
         return policy_dictance
     if index==1:
         one_step_trpo(task_specific_policy, get_loss, get_kl,args.meta_lambda,args.lower_opt) 
     elif index==2:
         one_step_trpo(task_specific_policy, get_loss, get_kl2,args.meta_lambda,args.lower_opt) 
     elif index==3:
-        one_step_trpo(task_specific_policy, get_loss, get_kl3,args.meta_lambda3,args.lower_opt) 
+        one_step_trpo(task_specific_policy, get_loss, get_kl3,args.meta_lambda,args.lower_opt) 
 
     return task_specific_policy
 
@@ -222,7 +222,7 @@ def kl_divergence(meta_policy_net1,task_specific_policy1,batch,index):
         kl = log_std0 - log_std1 + (std1.pow(2) + (mean1 - mean0).pow(2)) / (2.0 * std0.pow(2)) - 0.5
         return kl.sum(1, keepdim=True).mean()
     elif index==3:
-        policy_dictance=torch.tensor(0.0,requires_grad=True)
+        policy_dictance=torch.tensor(0.0)
         for param,param1 in zip(task_specific_policy1.parameters(),meta_policy_net1.parameters()):
             policy_dictance += (param-param1).pow(2).sum() 
         return policy_dictance
@@ -258,7 +258,7 @@ def loss_obain_new(task_specific_policy,meta_policy_net_copy,after_batch,after_q
     
     return J_loss
 
-index=1
+index = 1
 model_lower="Adam"
 if args.lower_opt=="Adam":
     model_lower="Adam"
