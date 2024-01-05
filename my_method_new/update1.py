@@ -140,6 +140,8 @@ def update_params(batch,batch_extra,batch_size):
     #trpo_step(policy_net, get_loss, get_kl, args.max_kl, args.damping)
     one_step_trpo(policy_net, get_loss, get_kl,args.meta_lambda,lower_opt='Adam') 
 
+    print(torch.exp(policy_net.action_log_std))
+
     return 
 
 running_state = ZFilter((num_inputs,), clip=5)

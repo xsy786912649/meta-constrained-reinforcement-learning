@@ -177,7 +177,7 @@ def update_params(batch,batch_extra,batch_size):
 
     #trpo_step(policy_net, get_loss, get_kl, args.max_kl, args.damping)
     one_step_trpo(policy_net, get_loss, get_kl,args.meta_lambda,lower_opt='Adam') 
-
+    print(torch.exp(policy_net.action_log_std))
     return 
 
 running_state = ZFilter((num_inputs,), clip=5)
@@ -209,7 +209,7 @@ if __name__ == "__main__":
                 action = select_action(state)
                 action = action.data[0].numpy()
                 next_state, reward, done, truncated, info = env.step(action)
-                reward=-abs(info['x_velocity']-1.99)
+                reward=-abs(info['x_velocity']-1.5)
                 reward_sum += reward
                 next_state = running_state(next_state)
                 path_number = i
@@ -226,7 +226,7 @@ if __name__ == "__main__":
                 action = select_action(state)
                 action = action.data[0].numpy()
                 next_state, reward, done, truncated, info = env.step(action)
-                reward=-abs(info['x_velocity']-1.99)
+                reward=-abs(info['x_velocity']-1.5)
                 next_state = running_state(next_state)
                 path_number = i
 
