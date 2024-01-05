@@ -379,4 +379,6 @@ if __name__ == "__main__":
         str1 = pickle.dumps(running_state)
         output_hal.write(str1)
         output_hal.close()
+        
+        print(torch.exp(meta_policy_net.action_log_std)) 
 
