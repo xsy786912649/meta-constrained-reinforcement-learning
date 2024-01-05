@@ -43,7 +43,6 @@ if __name__ == "__main__":
     meta_policy_net = torch.load("meta_policy_net_"+model_lower+".pkl")
 
     print(model_lower, "running_state: ",running_state.rs.n)
-    print(torch.exp(meta_policy_net.action_log_std)) 
 
     accumulated_raward_k_adaptation=[[],[],[],[]]
 
@@ -54,6 +53,8 @@ if __name__ == "__main__":
         previous_policy_net = Policy(num_inputs, num_actions)
         for i,param in enumerate(previous_policy_net.parameters()):
             param.data.copy_(list(meta_policy_net.parameters())[i].clone().detach().data)
+
+        print(torch.exp(meta_policy_net.action_log_std)) 
 
         for iteration_number in range(4):
             _,accumulated_raward_batch=sample_data_for_task_specific_test(target_v,previous_policy_net,args.batch_size*5)
