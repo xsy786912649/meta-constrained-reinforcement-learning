@@ -52,12 +52,15 @@ def sample_data_for_task_specific_test(target_v,policy_net,batch_size):
 
     return batch,batch_extra,accumulated_raward_batch
 
+"--------------------------------------------------for initialization of running_state------------------------------------------"
+with open("running_state_"+model_lower+".pkl",'rb') as file:
+    running_state  = pickle.loads(file.read())
+
 if __name__ == "__main__":
 
     meta_policy_net = torch.load("meta_policy_net_"+model_lower+".pkl")
-    "--------------------------------------------------for initialization of running_state------------------------------------------"
-    with open("running_state_"+model_lower+".pkl",'rb') as file:
-        running_state  = pickle.loads(file.read())
+
+    print(model_lower, "running_state: ",running_state.rs.n)
 
     accumulated_raward_k_adaptation=[[],[],[],[]]
 
