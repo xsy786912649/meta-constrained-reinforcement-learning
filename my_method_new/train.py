@@ -350,11 +350,13 @@ if __name__ == "__main__":
         torch.save(meta_policy_net, "meta_policy_net_"+model_lower+".pkl")
         torch.save(meta_policy_net, "./check_point/meta_policy_net_"+model_lower+"_"+str(i_episode)+".pkl")
 
-        for task_number_test in range(1):
-            target_v=1.2
+        target_v_list000=[0.3,1.0,1.7]
+        result_before=np.zeros(3)
+        result_after=np.zeros(3)
+        for task_number_test in range(3):
+            target_v=target_v_list000[task_number_test]
             batch,batch_extra,accumulated_raward_batch=sample_data_for_task_specific(target_v,meta_policy_net,args.batch_size)
-            print("test_task: ", " target_v: ", target_v)
-            print('(before adaptation) Episode {}\tAverage reward {:.2f}'.format(i_episode, accumulated_raward_batch))
+            result_before[task_number_test]=accumulated_raward_batch
     
             q_values = compute_adavatage(batch,batch_extra,args.batch_size)
             q_values = (q_values - q_values.mean())  
@@ -368,8 +370,10 @@ if __name__ == "__main__":
             task_specific_policy=task_specific_adaptation(task_specific_policy,meta_policy_net_copy,batch,q_values,index)
 
             after_batch,after_batch_extra,after_accumulated_raward_batch=sample_data_for_task_specific(target_v,task_specific_policy,args.batch_size)
-            print('(after adaptation) Episode {}\tAverage reward {:.2f}'.format(i_episode, after_accumulated_raward_batch)) 
-            print("-----------------------------------------")
+            result_after[task_number_test]=after_accumulated_raward_batch
+
+        print("result_before: ",result_before.mean())
+        print("result_after: ",result_after.mean())
         
         output_hal = open("running_state_"+model_lower+".pkl", 'wb')
         str1 = pickle.dumps(running_state)
