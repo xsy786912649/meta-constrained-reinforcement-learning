@@ -2,7 +2,6 @@ from train import *
 
 def sample_data_for_task_specific_test(target_v,policy_net,batch_size):
     memory = Memory()
-    memory_extra=Memory()
 
     accumulated_raward_batch = 0
     num_episodes = 0
@@ -26,31 +25,14 @@ def sample_data_for_task_specific_test(target_v,policy_net,batch_size):
             state = next_state
             if done or truncated:
                 break
-    
-        env._elapsed_steps=0
-        for t in range(args.max_length):
-            action = select_action_test(state,policy_net)
-            action = action.data[0].numpy()
-            next_state, reward, done, truncated, info= env.step(action)
-            reward=-abs(info['x_velocity']-target_v)
-            next_state = running_state(next_state)
-            path_number = i
-
-            memory_extra.push(state, np.array([action]), path_number, next_state, reward)
-            if args.render:
-                env.render()
-            state = next_state
-            if done or truncated:
-                break
 
         num_episodes += 1
         accumulated_raward_batch += reward_sum
 
     accumulated_raward_batch /= num_episodes
     batch = memory.sample()
-    batch_extra = memory_extra.sample()
 
-    return batch,batch_extra,accumulated_raward_batch
+    return batch,accumulated_raward_batch
 
 "--------------------------------------------------for initialization of running_state------------------------------------------"
 with open("running_state_"+model_lower+".pkl",'rb') as file:
@@ -73,7 +55,7 @@ if __name__ == "__main__":
             param.data.copy_(list(meta_policy_net.parameters())[i].clone().detach().data)
 
         for iteration_number in range(4):
-            _,_,accumulated_raward_batch=sample_data_for_task_specific_test(target_v,previous_policy_net,args.batch_size)
+            _,accumulated_raward_batch=sample_data_for_task_specific_test(target_v,previous_policy_net,args.batch_size*5)
 
             batch,batch_extra,_=sample_data_for_task_specific(target_v,previous_policy_net,args.batch_size)
             print("task_number: ",task_number)
