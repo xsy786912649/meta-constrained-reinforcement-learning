@@ -187,7 +187,8 @@ def policy_gradient_loss_obain(task_specific_policy_parameter,after_batch,after_
     afteradap_action_means, afteradap_action_log_stds, afteradap_action_stds = reference_policy_net.model_forward(Variable(states), task_specific_policy_parameter)
     log_prob = normal_log_density(Variable(actions), afteradap_action_means, afteradap_action_log_stds, afteradap_action_stds)
     AAAAA=torch.exp(log_prob - Variable(fixed_log_prob))
-    bbbbb=torch.min(Variable(after_q_values)*AAAAA,Variable(after_q_values)*torch.clamp(AAAAA,0.8,1.2))
+    #bbbbb=torch.min(Variable(after_q_values)*AAAAA,Variable(after_q_values)*torch.clamp(AAAAA,0.8,1.2))
+    bbbbb=Variable(after_q_values)*torch.special.expit(2.0*AAAAA-2.0)*2 
     J_loss = (-bbbbb).mean()   
 
     return J_loss
