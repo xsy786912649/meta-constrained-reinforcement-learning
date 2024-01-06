@@ -27,7 +27,7 @@
   "config": "configs/maml/halfcheetah-vel.yaml",
   "output_folder": "maml-halfcheetah-vel",
   "seed": 1,
-  "num_workers": 8,
+  "num_workers": 2,
   "use_cuda": false,
   "device": "cpu"
 }
