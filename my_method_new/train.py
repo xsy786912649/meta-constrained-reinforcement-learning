@@ -231,11 +231,12 @@ def policy_gradient_obain(task_specific_policy,after_batch,after_q_values):
     actions = torch.Tensor(np.array(np.concatenate(after_batch.action, 0)))
     states = torch.Tensor(np.array(after_batch.state))
     fixed_action_means, fixed_action_log_stds, fixed_action_stds = task_specific_policy(Variable(states))
-    fixed_log_prob = normal_log_density(Variable(actions), fixed_action_means, fixed_action_log_stds, fixed_action_stds).data.clone()
+    fixed_log_prob = normal_log_density(Variable(actions), fixed_action_means, fixed_action_log_stds, fixed_action_stds).detach().clone().data
     afteradap_action_means, afteradap_action_log_stds, afteradap_action_stds = task_specific_policy(Variable(states))
     log_prob = normal_log_density(Variable(actions), afteradap_action_means, afteradap_action_log_stds, afteradap_action_stds)
     AAAAA=torch.exp(log_prob - Variable(fixed_log_prob))
-    bbbbb=torch.min(Variable(after_q_values)*AAAAA,Variable(after_q_values)*torch.clamp(AAAAA,0.8,1.2))
+    #bbbbb=torch.min(Variable(after_q_values)*AAAAA,Variable(after_q_values)*torch.clamp(AAAAA,0.8,1.2))
+    bbbbb=Variable(after_q_values)*torch.special.expit(2.0*AAAAA-2.0)*2
     J_loss = (-bbbbb).mean()
     for param in task_specific_policy.parameters():
         param.grad.zero_()
