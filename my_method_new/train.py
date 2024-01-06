@@ -237,6 +237,7 @@ def policy_gradient_obain(task_specific_policy,after_batch,after_q_values):
     AAAAA=torch.exp(log_prob - Variable(fixed_log_prob))
     #bbbbb=torch.min(Variable(after_q_values)*AAAAA,Variable(after_q_values)*torch.clamp(AAAAA,0.8,1.2))
     bbbbb=Variable(after_q_values)*torch.special.expit(2.0*AAAAA-2.0)*2
+    
     J_loss = (-bbbbb).mean()
     for param in task_specific_policy.parameters():
         param.grad.zero_()
