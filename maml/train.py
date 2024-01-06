@@ -178,7 +178,6 @@ def task_specific_adaptation(meta_policy_net,meta_policy_net_copy,batch,q_values
 
     return task_specific_policy_parameter
 
-
 def policy_gradient_loss_obain(task_specific_policy_parameter,after_batch,after_q_values):
     
     actions = torch.Tensor(np.array(np.concatenate(after_batch.action, 0)))
