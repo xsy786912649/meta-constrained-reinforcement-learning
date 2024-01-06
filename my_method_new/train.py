@@ -162,7 +162,7 @@ def task_specific_adaptation(task_specific_policy,meta_policy_net_copy,batch,q_v
     states = torch.Tensor(np.array(batch.state))
 
     action_means, action_log_stds, action_stds = meta_policy_net_copy(Variable(states))
-    fixed_log_prob = normal_log_density(Variable(actions), action_means, action_log_stds, action_stds).data.clone()
+    fixed_log_prob = normal_log_density(Variable(actions), action_means, action_log_stds, action_stds).detach().clone().data
 
     def get_loss():
         action_means1, action_log_stds1, action_stds1 = task_specific_policy(Variable(states))
