@@ -338,7 +338,7 @@ def policy_gradient_obain(task_specific_policy,after_batch,after_advantages):
     afteradap_action_means, afteradap_action_log_stds, afteradap_action_stds = task_specific_policy(Variable(states))
     log_prob = normal_log_density(Variable(actions), afteradap_action_means, afteradap_action_log_stds, afteradap_action_stds)
     AAAAA=torch.exp(log_prob - Variable(fixed_log_prob))
-    bbbbb=torch.min(Variable(after_advantages)*AAAAA,Variable(after_advantages)*AAAAA*torch.clamp(AAAAA,0.8,1.2))
+    bbbbb=torch.min(Variable(after_advantages)*AAAAA,Variable(after_advantages)*torch.clamp(AAAAA,0.8,1.2))
     J_loss = (-bbbbb).mean()
     for param in task_specific_policy.parameters():
         param.grad.zero_()
