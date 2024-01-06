@@ -1,5 +1,5 @@
 import os
-os.add_dll_directory("C://Users//lenovo//.mujoco//mjpro150//bin")
+os.add_dll_directory("C://Users//78691//.mujoco//mjpro150//bin")
 
 import gym
 import torch

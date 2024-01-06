@@ -17,8 +17,8 @@ pip install -r requirements.txt
 ```
 
 #### Requirements
- - Python 3.8.16
- - PyTorch 1.7.1
+ - Python 3.5 or above
+ - PyTorch 1.3
  - Gym 0.15
 
 ## Usage

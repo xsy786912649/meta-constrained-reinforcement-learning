@@ -31,13 +31,13 @@ class SyncVectorEnv(SyncVectorEnv_):
     def step_wait(self):
         observations_list, infos = [], []
         batch_ids, j = [], 0
-        num_actions = len(list(self._actions))
+        num_actions = len(self._actions)
         rewards = np.zeros((num_actions,), dtype=np.float_)
         for i, env in enumerate(self.envs):
             if self._dones[i]:
                 continue
 
-            action = list(self._actions)[j]
+            action = self._actions[j]
             observation, rewards[j], self._dones[i], info = env.step(action)
             batch_ids.append(i)
 
