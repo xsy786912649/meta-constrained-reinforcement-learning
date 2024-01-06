@@ -98,7 +98,7 @@ def one_step_trpo(model, get_loss, get_kl,meta_lambda,lower_opt="Adam"):
         optimizer = torch.optim.SGD(model.parameters(), lr=0.03)
         print("SGD")
     
-    for i in range(20):
+    for i in range(50):
         optimizer.zero_grad()
         loss = get_loss()*1.0/meta_lambda+get_kl().mean()
         #print("total_loss ", loss)
