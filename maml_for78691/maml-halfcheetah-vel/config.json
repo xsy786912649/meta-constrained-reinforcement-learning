@@ -1,8 +1,10 @@
 {
-  "env-name": "2DNavigation-v0",
+  "env-name": "HalfCheetahVel-v2",
   "env-kwargs": {
-    "low": -0.5,
-    "high": 0.5
+    "low": 0.0,
+    "high": 2.0,
+    "normalization_scale": 10.0,
+    "max_episode_steps": 100
   },
   "gamma": 0.99,
   "gae-lambda": 1.0,
@@ -16,16 +18,16 @@
   "num-steps": 1,
   "fast-lr": 0.1,
   "num-batches": 500,
-  "meta-batch-size": 20,
+  "meta-batch-size": 40,
   "max-kl": 0.01,
   "cg-iters": 10,
   "cg-damping": 1e-05,
   "ls-max-steps": 15,
   "ls-backtrack-ratio": 0.8,
-  "config": "configs/maml/2d-navigation.yaml",
-  "output_folder": "2d-navigation",
+  "config": "configs/maml/halfcheetah-vel.yaml",
+  "output_folder": "maml-halfcheetah-vel",
   "seed": 1,
-  "num_workers": 8,
+  "num_workers": 2,
   "use_cuda": false,
   "device": "cpu"
 }
