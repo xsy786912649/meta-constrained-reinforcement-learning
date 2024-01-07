@@ -235,7 +235,7 @@ def policy_gradient_obain(task_specific_policy,after_batch,after_q_values):
     afteradap_action_means, afteradap_action_log_stds, afteradap_action_stds = task_specific_policy(Variable(states))
     log_prob = normal_log_density(Variable(actions), afteradap_action_means, afteradap_action_log_stds, afteradap_action_stds)
     AAAAA=torch.exp(log_prob - Variable(fixed_log_prob))
-    #bbbbb=torch.min(Variable(after_q_values)*AAAAA,Variable(after_q_values)*torch.clamp(AAAAA,0.8,1.2))
+    #bbbbb=torch.min(Variable(after_q_values)*AAAAA,Variable(after_q_values)*AAAAA*torch.clamp(AAAAA,0.8,1.2))
     bbbbb=Variable(after_q_values)*torch.special.expit(2.0*AAAAA-2.0)*2
     
     J_loss = (-bbbbb).mean()
@@ -289,7 +289,7 @@ if __name__ == "__main__":
 
     optimizer = torch.optim.Adam(meta_policy_net.parameters(), lr=0.003)
 
-    for i_episode in range(500):
+    for i_episode in range(1000):
         print("i_episode: ",i_episode)
         grads_update=None
         for task_number in range(args.task_batch_size):
@@ -350,7 +350,7 @@ if __name__ == "__main__":
         optimizer.zero_grad()
 
         torch.save(meta_policy_net, "meta_policy_net_"+model_lower+".pkl")
-        torch.save(meta_policy_net, "./check_point/meta_policy_net_"+model_lower+"_"+str(i_episode)+".pkl")
+        #torch.save(meta_policy_net, "./check_point/meta_policy_net_"+model_lower+"_"+str(i_episode)+".pkl")
 
         target_v_list000=[0.3,1.0,1.7]
         result_before=np.zeros(3)

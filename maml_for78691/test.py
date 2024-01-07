@@ -61,9 +61,9 @@ def main(args):
         logs['tasks'].extend(tasks)
         train_returns.append(get_returns(train_episodes[0]))
         valid_returns.append(get_returns(valid_episodes))
-        print(get_returns(train_episodes[0]))
+        print(np.mean(get_returns(train_episodes[0])))
         print("---------------------")
-        print(get_returns(valid_episodes))
+        print(np.mean(get_returns(valid_episodes)))
 
     logs['train_returns'] = np.concatenate(train_returns, axis=0)
     logs['valid_returns'] = np.concatenate(valid_returns, axis=0)
