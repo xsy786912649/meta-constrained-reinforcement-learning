@@ -215,7 +215,7 @@ if __name__ == "__main__":
 
     optimizer = torch.optim.Adam(meta_policy_net.params, lr=0.003)
 
-    for i_episode in range(500):
+    for i_episode in range(1000):
         print("i_episode: ",i_episode)
         grads_update=None
         for task_number in range(args.task_batch_size):
@@ -259,7 +259,7 @@ if __name__ == "__main__":
         optimizer.zero_grad()
 
         torch.save(meta_policy_net, "meta_policy_net_"+model_lower+".pkl")
-        torch.save(meta_policy_net, "./check_point/meta_policy_net_"+model_lower+"_"+str(i_episode)+".pkl")
+        #torch.save(meta_policy_net, "./check_point/meta_policy_net_"+model_lower+"_"+str(i_episode)+".pkl")
 
         target_v_list000=[0.3,1.0,1.7]
         result_before=np.zeros(3)
