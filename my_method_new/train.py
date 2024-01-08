@@ -75,7 +75,6 @@ def select_action_test(state,policy_net):
     action_mean, _, action_std = policy_net(Variable(state))
     return action_mean
 
-
 def sample_data_for_task_specific(target_v,policy_net,batch_size):
     memory = Memory()
     memory_extra=Memory()
@@ -200,11 +199,11 @@ def task_specific_adaptation(task_specific_policy,meta_policy_net_copy,batch,q_v
             policy_dictance += (param-list(meta_policy_net_copy.parameters())[i].clone().detach().data).pow(2).sum() 
         return policy_dictance
     if index==1:
-        one_step_trpo(task_specific_policy, get_loss, get_kl,args.meta_lambda,args.lower_opt) 
+        one_step_trpo(task_specific_policy, get_loss, get_kl,meta_lambda_now,args.lower_opt) 
     elif index==2:
-        one_step_trpo(task_specific_policy, get_loss, get_kl2,args.meta_lambda,args.lower_opt) 
+        one_step_trpo(task_specific_policy, get_loss, get_kl2,meta_lambda_now,args.lower_opt) 
     elif index==3:
-        one_step_trpo(task_specific_policy, get_loss, get_kl3,args.meta_lambda,args.lower_opt) 
+        one_step_trpo(task_specific_policy, get_loss, get_kl3,meta_lambda_now,args.lower_opt) 
 
     return task_specific_policy
 
@@ -291,6 +290,9 @@ if __name__ == "__main__":
 
     for i_episode in range(1000):
         print("i_episode: ",i_episode)
+        meta_lambda_now=args.meta_lambda*333.0/(i_episode+333.0) 
+        print("meta_lambda_now: ",meta_lambda_now)
+
         grads_update=None
         for task_number in range(args.task_batch_size):
             target_v=setting_reward()
@@ -324,7 +326,7 @@ if __name__ == "__main__":
             
             #(\nabla_\phi^2 kl_phi_theta+loss_for_1term) x= policy_gradient_2term
             def d_theta_2_kl_phi_theta_loss_for_1term(v):
-                grads = torch.autograd.grad(kl_phi_theta+loss_for_1term/args.meta_lambda, task_specific_policy.parameters(), create_graph=True,retain_graph=True)
+                grads = torch.autograd.grad(kl_phi_theta+loss_for_1term/meta_lambda_now, task_specific_policy.parameters(), create_graph=True,retain_graph=True)
                 flat_grad_kl = torch.cat([grad.contiguous().view(-1) for grad in grads])
                 kl_v = (flat_grad_kl * Variable(v)).sum()
                 grads_new = torch.autograd.grad(kl_v, task_specific_policy.parameters(), create_graph=True,retain_graph=True)
@@ -360,7 +362,7 @@ if __name__ == "__main__":
             batch,batch_extra,accumulated_raward_batch=sample_data_for_task_specific(target_v,meta_policy_net,args.batch_size)
             result_before[task_number_test]=accumulated_raward_batch
     
-            q_values = compute_adavatage(batch,batch_extra,args.batch_size)
+            q_values = compute_adavatage(batch,batch_extra,args.batch_size) 
             q_values = (q_values - q_values.mean())  
 
             task_specific_policy=Policy(num_inputs, num_actions)
