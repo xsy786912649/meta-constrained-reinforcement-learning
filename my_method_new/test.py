@@ -55,7 +55,7 @@ if __name__ == "__main__":
         for i,param in enumerate(previous_policy_net.parameters()):
             param.data.copy_(list(meta_policy_net.parameters())[i].clone().detach().data)
 
-        print(torch.exp(meta_policy_net.action_log_std)) 
+        print(torch.exp(previous_policy_net.action_log_std)) 
 
         for iteration_number in range(4):
             _,accumulated_raward_batch=sample_data_for_task_specific_test(target_v,previous_policy_net,args.batch_size)
