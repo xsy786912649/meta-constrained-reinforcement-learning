@@ -58,11 +58,11 @@ if __name__ == "__main__":
         print(torch.exp(meta_policy_net.action_log_std)) 
 
         for iteration_number in range(4):
-            _,accumulated_raward_batch=sample_data_for_task_specific_test(target_v,previous_policy_net,args.batch_size*5)
-
+            #_,accumulated_raward_batch=sample_data_for_task_specific_test(target_v,previous_policy_net,args.batch_size) 
+            
             batch,batch_extra,accumulated_raward_batch2=sample_data_for_task_specific(target_v,previous_policy_net,args.batch_size)
             print("task_number: ",task_number)
-            print('(adaptation {}) \tAverage reward {:.2f}'.format(iteration_number, accumulated_raward_batch))
+            #print('(adaptation {}) \tAverage reward {:.2f}'.format(iteration_number, accumulated_raward_batch))
             print('(adaptation {}) \tAverage reward {:.2f}'.format(iteration_number, accumulated_raward_batch2))
             if i>0:
                 accumulated_raward_k_adaptation[iteration_number].append(accumulated_raward_batch)
