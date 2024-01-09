@@ -41,6 +41,8 @@ with open("running_state_"+model_lower+".pkl",'rb') as file:
 if __name__ == "__main__":
 
     meta_policy_net = torch.load("meta_policy_net_"+model_lower+".pkl")
+    meta_policy_net.action_log_std.data=torch.zeros(1, num_actions)-1.0
+    
     meta_lambda_now=args.meta_lambda*333.0/(999.0+333.0) 
     print(model_lower, "running_state: ",running_state.rs.n)
 
