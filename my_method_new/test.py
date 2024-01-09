@@ -45,6 +45,7 @@ if __name__ == "__main__":
     print(model_lower, "running_state: ",running_state.rs.n)
 
     accumulated_raward_k_adaptation=[[],[],[],[]]
+    accumulated_raward_k_adaptation2=[[],[],[],[]]
 
     for task_number in range(20):
         target_v=task_number*1.0/10
@@ -65,6 +66,7 @@ if __name__ == "__main__":
             print('(adaptation {}) \tAverage reward {:.2f}'.format(iteration_number, accumulated_raward_batch2))
             if i>0:
                 accumulated_raward_k_adaptation[iteration_number].append(accumulated_raward_batch)
+                accumulated_raward_k_adaptation2[iteration_number].append(accumulated_raward_batch2)
             
             q_values = compute_adavatage(batch,batch_extra,args.batch_size)
             q_values = (q_values - q_values.mean()) 
@@ -81,6 +83,18 @@ if __name__ == "__main__":
     a1=np.array(accumulated_raward_k_adaptation[1])
     a2=np.array(accumulated_raward_k_adaptation[2])
     a3=np.array(accumulated_raward_k_adaptation[3])
+    #print(a0)
+    print(a0.mean())
+    #print(a1)
+    print(a1.mean())
+    #print(a2)
+    print(a2.mean())
+    #print(a3)
+    print(a3.mean())
+    a0=np.array(accumulated_raward_k_adaptation2[0])
+    a1=np.array(accumulated_raward_k_adaptation2[1])
+    a2=np.array(accumulated_raward_k_adaptation2[2])
+    a3=np.array(accumulated_raward_k_adaptation2[3])
     #print(a0)
     print(a0.mean())
     #print(a1)
