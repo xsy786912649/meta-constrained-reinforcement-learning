@@ -41,7 +41,7 @@ with open("running_state_"+model_lower+".pkl",'rb') as file:
 if __name__ == "__main__":
 
     meta_policy_net = torch.load("meta_policy_net_"+model_lower+".pkl")
-
+    meta_lambda_now=args.meta_lambda*333.0/(999.0+333.0) 
     print(model_lower, "running_state: ",running_state.rs.n)
 
     accumulated_raward_k_adaptation=[[],[],[],[]]
@@ -71,7 +71,7 @@ if __name__ == "__main__":
             task_specific_policy=Policy(num_inputs, num_actions)
             for i,param in enumerate(task_specific_policy.parameters()):
                 param.data.copy_(list(previous_policy_net.parameters())[i].clone().detach().data)
-            task_specific_policy=task_specific_adaptation(task_specific_policy,previous_policy_net,batch,q_values,index)
+            task_specific_policy=task_specific_adaptation(task_specific_policy,previous_policy_net,batch,q_values,meta_lambda_now,index)
 
             for i,param in enumerate(previous_policy_net.parameters()):
                 param.data.copy_(list(task_specific_policy.parameters())[i].clone().detach().data)

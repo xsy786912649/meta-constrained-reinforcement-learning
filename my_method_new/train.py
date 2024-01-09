@@ -156,7 +156,7 @@ def compute_adavatage(batch,batch_extra,batch_size):
     targets = Variable(returns)
     return targets
 
-def task_specific_adaptation(task_specific_policy,meta_policy_net_copy,batch,q_values,index): 
+def task_specific_adaptation(task_specific_policy,meta_policy_net_copy,batch,q_values,meta_lambda_now,index): 
     actions = torch.Tensor(np.concatenate(batch.action, 0))
     states = torch.Tensor(np.array(batch.state))
 
@@ -310,7 +310,7 @@ if __name__ == "__main__":
                 param.data.copy_(list(meta_policy_net.parameters())[i].clone().detach().data)
             for i,param in enumerate(meta_policy_net_copy.parameters()):
                 param.data.copy_(list(meta_policy_net.parameters())[i].clone().detach().data)
-            task_specific_policy=task_specific_adaptation(task_specific_policy,meta_policy_net_copy,batch,q_values1,index)
+            task_specific_policy=task_specific_adaptation(task_specific_policy,meta_policy_net_copy,batch,q_values1,meta_lambda_now,index)
 
             after_batch,after_batch_extra,after_accumulated_raward_batch=sample_data_for_task_specific(target_v,task_specific_policy,args.batch_size*5) 
             print('(after adaptation) Episode {}\tAverage reward {:.2f}'.format(i_episode, after_accumulated_raward_batch)) 
@@ -371,7 +371,7 @@ if __name__ == "__main__":
                 param.data.copy_(list(meta_policy_net.parameters())[i].clone().detach().data)
             for i,param in enumerate(meta_policy_net_copy.parameters()):
                 param.data.copy_(list(meta_policy_net.parameters())[i].clone().detach().data)
-            task_specific_policy=task_specific_adaptation(task_specific_policy,meta_policy_net_copy,batch,q_values,index)
+            task_specific_policy=task_specific_adaptation(task_specific_policy,meta_policy_net_copy,batch,q_values,meta_lambda_now,index)
 
             after_batch,after_batch_extra,after_accumulated_raward_batch=sample_data_for_task_specific(target_v,task_specific_policy,args.batch_size)
             result_after[task_number_test]=after_accumulated_raward_batch
