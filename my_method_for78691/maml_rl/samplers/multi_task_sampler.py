@@ -11,6 +11,7 @@ from maml_rl.samplers.sampler import Sampler, make_env
 from maml_rl.envs.utils.sync_vector_env import SyncVectorEnv
 from maml_rl.episode import BatchEpisodes
 from maml_rl.utils.reinforcement_learning import reinforce_loss
+from collections import OrderedDict
 
 
 def _create_consumer(queue, futures, loop=None):
@@ -268,6 +269,7 @@ class SamplerWorker(mp.Process):
             self.train_queue.put((index, step, deepcopy(train_episodes)))
 
             with self.policy_lock:
+                params = OrderedDict(self.named_parameters().detach().clone().requires_grad_(True))
                 loss = reinforce_loss(self.policy, train_episodes, params=params)
                 params = self.policy.update_params(loss,
                                                    params=params,

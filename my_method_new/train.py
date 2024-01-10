@@ -28,7 +28,7 @@ parser.add_argument('--tau', type=float, default=0.97, metavar='G',
                     help='gae (default: 0.97)')
 parser.add_argument('--meta-reg', type=float, default=0.001, metavar='G',
                     help='meta regularization regression (default: 1.0)') 
-parser.add_argument('--meta-lambda', type=float, default=2.0, metavar='G', 
+parser.add_argument('--meta-lambda', type=float, default=1.0, metavar='G', 
                     help='meta meta-lambda (default: 0.5)')  # 0.5
 parser.add_argument('--max-kl', type=float, default=3e-2, metavar='G',
                     help='max kl value (default: 3e-2)')
@@ -288,9 +288,9 @@ if __name__ == "__main__":
 
     optimizer = torch.optim.Adam(meta_policy_net.parameters(), lr=0.003)
 
-    for i_episode in range(500):
+    for i_episode in range(300):
         print("i_episode: ",i_episode)
-        meta_lambda_now=args.meta_lambda*100.0/(i_episode+100.0) 
+        meta_lambda_now=args.meta_lambda*300.0/(i_episode+300.0) 
         print("meta_lambda_now: ",meta_lambda_now)
 
         grads_update=None

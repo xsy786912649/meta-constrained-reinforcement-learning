@@ -10,6 +10,8 @@ from maml_rl.utils.torch_utils import (weighted_mean, detach_distribution,
 from maml_rl.utils.optimization import conjugate_gradient
 from maml_rl.utils.reinforcement_learning import reinforce_loss
 
+from collections import OrderedDict
+
 
 class MAMLTRPO(GradientBasedMetaLearner):
     """Model-Agnostic Meta-Learning (MAML, [1]) for Reinforcement Learning
@@ -60,7 +62,8 @@ class MAMLTRPO(GradientBasedMetaLearner):
         if first_order is None:
             first_order = self.first_order
         # Loop over the number of steps of adaptation
-        params = None
+            
+        params = OrderedDict(self.named_parameters().detach().clone().requires_grad_(True))
         for futures in train_futures:
             inner_loss = reinforce_loss(self.policy,
                                         await futures,

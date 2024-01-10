@@ -18,19 +18,24 @@ class Policy(nn.Module):
         self.named_meta_parameters = self.named_parameters
         self.meta_parameters = self.parameters
 
-    def update_params(self, loss, params=None, step_size=0.5, first_order=False):
+    def update_params(self, loss, params=None, step_size=0.5, first_order=True):
         """Apply one step of gradient descent on the loss function `loss`, with 
         step-size `step_size`, and returns the updated parameters of the neural 
         network.
         """
-        if params is None:
-            params = OrderedDict(self.named_meta_parameters())
+        #if params is None:
+        #    params = OrderedDict(self.named_meta_parameters())
 
-        grads = torch.autograd.grad(loss, params.values(),
-                                    create_graph=not first_order)
+        params_meta = OrderedDict(self.named_meta_parameters())
 
-        updated_params = OrderedDict()
-        for (name, param), grad in zip(params.items(), grads):
-            updated_params[name] = param - step_size * grad
+        first_order = True
+        for i in range(20):
+            grads = torch.autograd.grad(loss, params.values(),
+                                        create_graph=not first_order)
+            
+            updated_params = OrderedDict()
+            for (name, param), (name_meta, param_meta), grad in zip(params.items(), params_meta.items(), grads):
+                updated_params[name] = param_meta - 0.1 * step_size * grad 
+                param = param - 0.1 * step_size * grad 
 
         return updated_params
