@@ -49,6 +49,8 @@ def main(args):
 
     logs = {'tasks': []}
     train_returns, valid_returns = [], []
+
+    print('num-steps: ',config['num-steps'])
     for batch in trange(args.num_batches):
         tasks = sampler.sample_tasks(num_tasks=args.meta_batch_size)
         print(tasks)
