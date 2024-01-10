@@ -51,6 +51,7 @@ def main(args):
     train_returns, valid_returns = [], []
     for batch in trange(args.num_batches):
         tasks = sampler.sample_tasks(num_tasks=args.meta_batch_size)
+        print(tasks)
         train_episodes, valid_episodes = sampler.sample(tasks,
                                                         num_steps=config['num-steps'],
                                                         fast_lr=config['fast-lr'],

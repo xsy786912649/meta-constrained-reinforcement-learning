@@ -6,7 +6,7 @@ env-name: "AntDir-v2"
 # Additional parameters for the environment (eg. bound for task sampling).
 env-kwargs:
   normalization_scale: 10.0
-  max_episode_steps: 100
+  max_episode_steps: 200
 
 # Discount factor gamma.
 gamma: 0.99

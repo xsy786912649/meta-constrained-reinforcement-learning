@@ -8,7 +8,7 @@ env-kwargs:
   low: 0.0
   high: 2.0
   normalization_scale: 10.0
-  max_episode_steps: 100
+  max_episode_steps: 200
 
 # Discount factor gamma.
 gamma: 0.99
