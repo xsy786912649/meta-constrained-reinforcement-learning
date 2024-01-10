@@ -19,7 +19,7 @@ class NormalMLPPolicy(Policy):
                  output_size,
                  hidden_sizes=(),
                  nonlinearity=F.relu,
-                 init_std=0.5,
+                 init_std=1.0,
                  min_std=1e-6):
         super(NormalMLPPolicy, self).__init__(input_size=input_size,
                                               output_size=output_size)
