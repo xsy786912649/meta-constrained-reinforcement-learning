@@ -7,6 +7,7 @@ import json
 import os
 import yaml
 from tqdm import trange
+import numpy as np
 
 import maml_rl.envs
 from maml_rl.metalearners import MAMLTRPO
@@ -84,6 +85,11 @@ def main(args):
                     num_iterations=num_iterations,
                     train_returns=get_returns(train_episodes[0]),
                     valid_returns=get_returns(valid_episodes))
+        print("---------------------")
+        print(np.mean(get_returns(train_episodes[0])))
+        print("----------")
+        print(np.mean(get_returns(valid_episodes)))
+        print("---------------------")
 
         # Save policy
         if args.output_folder is not None:
