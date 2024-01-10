@@ -288,9 +288,9 @@ if __name__ == "__main__":
 
     optimizer = torch.optim.Adam(meta_policy_net.parameters(), lr=0.003)
 
-    for i_episode in range(1000):
+    for i_episode in range(500):
         print("i_episode: ",i_episode)
-        meta_lambda_now=args.meta_lambda*333.0/(i_episode+333.0) 
+        meta_lambda_now=args.meta_lambda*100.0/(i_episode+100.0) 
         print("meta_lambda_now: ",meta_lambda_now)
 
         grads_update=None

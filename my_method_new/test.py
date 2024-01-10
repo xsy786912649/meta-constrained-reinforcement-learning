@@ -42,7 +42,7 @@ if __name__ == "__main__":
 
     meta_policy_net = torch.load("meta_policy_net_"+model_lower+".pkl")
 
-    meta_lambda_now=args.meta_lambda*333.0/(999.0+333.0) 
+    meta_lambda_now=args.meta_lambda*100.0/(500.0+100.0) 
     print(model_lower, "running_state: ",running_state.rs.n)
 
     accumulated_raward_k_adaptation=[[],[],[],[]]
