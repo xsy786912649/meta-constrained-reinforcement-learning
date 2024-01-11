@@ -69,10 +69,8 @@ class MAMLTRPO(GradientBasedMetaLearner):
             params[name2]= param2.detach().clone().requires_grad_(True)
             
         for futures in train_futures:
-            inner_loss = reinforce_loss(self.policy,
-                                        await futures,
-                                        params=params)
-            params = self.policy.update_params(inner_loss,
+            episodes = await futures
+            params = self.policy.update_params(reinforce_loss, episodes, self.policy,
                                                params=params,
                                                step_size=self.fast_lr,
                                                first_order=first_order)

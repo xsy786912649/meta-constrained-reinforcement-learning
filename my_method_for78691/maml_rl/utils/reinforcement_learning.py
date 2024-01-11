@@ -1,8 +1,7 @@
 import numpy as np
 import torch
 
-from maml_rl.utils.torch_utils import weighted_mean, to_numpy, detach_distribution
-from torch.distributions.kl import kl_divergence
+from maml_rl.utils.torch_utils import weighted_mean, to_numpy
 
 def value_iteration(transitions, rewards, gamma=0.95, theta=1e-5):
     rewards = np.expand_dims(rewards, axis=2)
@@ -38,12 +37,6 @@ def reinforce_loss(policy, episodes, params=None):
     losses = -weighted_mean(log_probs * episodes.advantages,
                             lengths=episodes.lengths)
     
-    pi1 = policy(episodes.observations, params=params)
-    
-    old_pi1 = detach_distribution(pi1)
-    kls = weighted_mean(kl_divergence(pi1, old_pi1),
-                                lengths=episodes.lengths)
-
-    return losses.mean()+kls.mean()*0.5
+    return losses.mean()
 
 

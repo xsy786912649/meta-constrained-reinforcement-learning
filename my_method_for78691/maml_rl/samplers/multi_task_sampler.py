@@ -274,11 +274,10 @@ class SamplerWorker(mp.Process):
                 for (name2, param2) in params2.items():
                     params[name2]= param2.detach().clone().requires_grad_(True)
 
-                loss = reinforce_loss(self.policy, train_episodes, params=params)
-                params = self.policy.update_params(loss,
-                                                   params=params,
-                                                   step_size=fast_lr,
-                                                   first_order=True)
+                params = self.policy.update_params(reinforce_loss, train_episodes, self.policy,
+                                               params=params,
+                                               step_size=fast_lr,
+                                               first_order=True)
 
         # Sample the validation trajectories with the adapted policy
         valid_episodes = self.create_episodes(params=params,
