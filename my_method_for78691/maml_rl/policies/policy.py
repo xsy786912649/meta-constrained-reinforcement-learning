@@ -29,13 +29,14 @@ class Policy(nn.Module):
         params_meta = OrderedDict(self.named_meta_parameters())
 
         first_order = True
-        for i in range(20):
-            grads = torch.autograd.grad(loss, params.values(),
+        for i in range(50):
+            grads = torch.autograd.grad(loss, params.values(),  retain_graph=True,
                                         create_graph=not first_order)
+            print(loss)
             
             updated_params = OrderedDict()
             for (name, param), (name_meta, param_meta), grad in zip(params.items(), params_meta.items(), grads):
-                updated_params[name] = param_meta - 0.1 * step_size * grad 
-                param = param - 0.1 * step_size * grad 
+                updated_params[name] = param_meta - 0.3 * step_size * grad 
+                param = param - 0.3 * step_size * grad 
 
         return updated_params

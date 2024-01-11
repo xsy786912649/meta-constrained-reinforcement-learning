@@ -38,8 +38,10 @@ def reinforce_loss(policy, episodes, params=None):
     losses = -weighted_mean(log_probs * episodes.advantages,
                             lengths=episodes.lengths)
     
-    old_pi = detach_distribution(pi)
-    kls = weighted_mean(kl_divergence(pi, old_pi),
+    pi1 = policy(episodes.observations, params=params)
+    
+    old_pi1 = detach_distribution(pi1)
+    kls = weighted_mean(kl_divergence(pi1, old_pi1),
                                 lengths=episodes.lengths)
 
     return losses.mean()+kls.mean()*0.5
