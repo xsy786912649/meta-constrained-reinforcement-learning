@@ -287,6 +287,7 @@ if __name__ == "__main__":
             next_state = running_state(next_state)
 
     optimizer = torch.optim.Adam(meta_policy_net.parameters(), lr=0.003)
+    aaaaaa=-10000
 
     for i_episode in range(300):
         print("i_episode: ",i_episode)
@@ -350,10 +351,7 @@ if __name__ == "__main__":
             param.grad= -grads_update[i]
         optimizer.step()
         optimizer.zero_grad()
-
-        torch.save(meta_policy_net, "meta_policy_net_"+model_lower+".pkl")
-        #torch.save(meta_policy_net, "./check_point/meta_policy_net_"+model_lower+"_"+str(i_episode)+".pkl")
-
+       
         target_v_list000=[0.3,1.0,1.7]
         result_before=np.zeros(3)
         result_after=np.zeros(3)
@@ -378,11 +376,19 @@ if __name__ == "__main__":
 
         print("result_before: ",result_before.mean())
         print("result_after: ",result_after.mean())
+        if result_after.mean()>aaaaaa:
+            aaa=result_after.mean()
+            torch.save(meta_policy_net, "meta_policy_net_"+model_lower+".pkl")
+            output_hal = open("running_state_"+model_lower+".pkl", 'wb')
+            str1 = pickle.dumps(running_state)
+            output_hal.write(str1)
+            output_hal.close()
         
-        output_hal = open("running_state_"+model_lower+".pkl", 'wb')
-        str1 = pickle.dumps(running_state)
-        output_hal.write(str1)
-        output_hal.close()
-        
+        #torch.save(meta_policy_net, "./check_point/meta_policy_net_"+model_lower+"_"+str(i_episode)+".pkl")
+        #output_hal = open("./check_point/running_state_"+model_lower+"_"+str(i_episode)+".pkl", 'wb')
+        #str1 = pickle.dumps(running_state)
+        #output_hal.write(str1)
+        #output_hal.close()
+
         print(torch.exp(meta_policy_net.action_log_std)) 
 
