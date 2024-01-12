@@ -34,17 +34,23 @@ class Policy(nn.Module):
         pi1 = policy(episodes.observations, params=params)
         old_pi1 = detach_distribution(pi1)
 
-        first_order = True
-        for i in range(50):
-            inner_loss = reinforce_loss(policy,episodes,params=params)
-            
-            kls = weighted_mean(kl_divergence(policy(episodes.observations, params=params), old_pi1),lengths=episodes.lengths)
-            
-            grads = torch.autograd.grad(inner_loss+kls.mean()*0.5, params.values())
-            
-            updated_params = OrderedDict()
-            for (name, param), (name_meta, param_meta), grad in zip(params.items(), params_meta.items(), grads):
-                updated_params[name] = param_meta - 0.3 * step_size * grad 
-                param.data = param.data - 0.3 * step_size * grad 
+        optimizer = torch.optim.Adam(params.values(), lr=0.001)
 
+        for i in range(50):
+            optimizer.zero_grad()
+            inner_loss = reinforce_loss(policy,episodes,params=params)
+            kls = weighted_mean(kl_divergence(policy(episodes.observations, params=params), old_pi1),lengths=episodes.lengths).mean()
+
+            loss = inner_loss + kls *  0.5
+            #print("total_loss ", loss)
+            #print("get_kl ",kls)
+            if kls.clone().detach().numpy()>3.0:
+                break
+            loss.backward()
+            optimizer.step()
+
+            
+        updated_params = OrderedDict()
+        for (name, param), (name_meta, param_meta) in zip(params.items(), params_meta.items()):
+            updated_params[name] = param_meta - param_meta.data + param.data
         return updated_params
