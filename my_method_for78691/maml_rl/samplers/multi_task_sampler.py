@@ -269,10 +269,14 @@ class SamplerWorker(mp.Process):
             self.train_queue.put((index, step, deepcopy(train_episodes)))
 
             with self.policy_lock:
-                params2 = OrderedDict(self.policy.named_parameters()) 
-                params= OrderedDict()
-                for (name2, param2) in params2.items():
-                    params[name2]= param2.detach().clone().requires_grad_(True)
+                if step==0:
+                    params2 = OrderedDict(self.policy.named_parameters()) 
+                    params= OrderedDict()
+                    for (name2, param2) in params2.items():
+                        params[name2]= param2.detach().clone().requires_grad_(True)
+                else:
+                    for (name, param) in params.items():
+                        params[name]= param.detach().clone().requires_grad_(True)
 
                 params = self.policy.update_params(reinforce_loss, train_episodes, self.policy,
                                                params=params,
