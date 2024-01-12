@@ -44,6 +44,8 @@ parser.add_argument('--render', action='store_true',
                     help='render the environment')
 parser.add_argument('--log-interval', type=int, default=1, metavar='N',
                     help='interval between training status logs (default: 1)')
+parser.add_argument('--index', type=int, default=1, metavar='N',
+                    help='index (default: 1)')
 parser.add_argument('--max-length', type=int, default=200, metavar='N',
                     help='max length of a path (default: 200)')
 parser.add_argument('--lower-opt', type=str, default="Adam", metavar='N',
@@ -259,7 +261,8 @@ def loss_obain_new(task_specific_policy,meta_policy_net_copy,after_batch,after_q
     
     return J_loss
 
-index = 1
+index = args.index
+
 model_lower="Adam"
 if args.lower_opt=="Adam":
     model_lower="Adam"
