@@ -21,7 +21,7 @@ class Policy(nn.Module):
         self.named_meta_parameters = self.named_parameters
         self.meta_parameters = self.parameters
 
-    def update_params(self, reinforce_loss, episodes, policy, params=None, step_size=0.5, first_order=True):
+    def update_params(self, reinforce_loss, episodes, policy, params=None, step_size=0.5, first_order=True, algorihtm_index=1):
         """Apply one step of gradient descent on the loss function `loss`, with 
         step-size `step_size`, and returns the updated parameters of the neural 
         network.
@@ -39,7 +39,12 @@ class Policy(nn.Module):
         for i in range(50):
             optimizer.zero_grad()
             inner_loss = reinforce_loss(policy,episodes,params=params)
-            kls = weighted_mean(kl_divergence(policy(episodes.observations, params=params), old_pi1),lengths=episodes.lengths).mean()
+            if algorihtm_index==1:
+                kls = weighted_mean(kl_divergence(policy(episodes.observations, params=params), old_pi1),lengths=episodes.lengths).mean()
+            elif algorihtm_index==2:
+                kls = weighted_mean(kl_divergence(old_pi1,policy(episodes.observations, params=params)),lengths=episodes.lengths).mean()
+            else:
+                assert algorihtm_index == 1   
 
             loss = inner_loss + kls *  0.5
             #print("total_loss ", loss)

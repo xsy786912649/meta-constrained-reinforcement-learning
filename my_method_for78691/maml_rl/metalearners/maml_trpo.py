@@ -53,10 +53,12 @@ class MAMLTRPO(GradientBasedMetaLearner):
                  policy,
                  fast_lr=0.5,
                  first_order=False,
+                 index=1,
                  device='cpu'):
         super(MAMLTRPO, self).__init__(policy, device=device)
         self.fast_lr = fast_lr
         self.first_order = first_order
+        self.index = index
 
     async def adapt(self, train_futures, first_order=None):
         if first_order is None:
@@ -73,7 +75,8 @@ class MAMLTRPO(GradientBasedMetaLearner):
             params = self.policy.update_params(reinforce_loss, episodes, self.policy,
                                                params=params,
                                                step_size=self.fast_lr,
-                                               first_order=first_order)
+                                               first_order=first_order,
+                                               index=self.index)
         return params
 
     def hessian_vector_product(self, kl, damping=1e-2):

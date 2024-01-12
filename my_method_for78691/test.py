@@ -59,6 +59,7 @@ def main(args):
                                                         fast_lr=config['fast-lr'],
                                                         gamma=config['gamma'],
                                                         gae_lambda=config['gae-lambda'],
+                                                        algorihtm_index=config['index'],
                                                         device=args.device)
 
         logs['tasks'].extend(tasks)

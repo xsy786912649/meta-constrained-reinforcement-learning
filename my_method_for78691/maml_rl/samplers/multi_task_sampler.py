@@ -248,6 +248,7 @@ class SamplerWorker(mp.Process):
                fast_lr=0.5,
                gamma=0.95,
                gae_lambda=1.0,
+               algorihtm_index=1,
                device='cpu'):
         # Sample the training trajectories with the initial policy and adapt the
         # policy to the task, based on the REINFORCE loss computed on the
@@ -281,7 +282,7 @@ class SamplerWorker(mp.Process):
                 params = self.policy.update_params(reinforce_loss, train_episodes, self.policy,
                                                params=params,
                                                step_size=fast_lr,
-                                               first_order=True)
+                                               first_order=True, algorihtm_index=algorihtm_index)
 
         # Sample the validation trajectories with the adapted policy
         valid_episodes = self.create_episodes(params=params,

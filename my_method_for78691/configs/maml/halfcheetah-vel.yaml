@@ -62,3 +62,6 @@ ls-max-steps: 15
 
 # Ratio to use for backtracking during the line search.
 ls-backtrack-ratio: 0.8
+
+# index
+index: 1

@@ -60,6 +60,7 @@ def main(args):
     metalearner = MAMLTRPO(policy,
                            fast_lr=config['fast-lr'],
                            first_order=config['first-order'],
+                           index=config['index'],
                            device=args.device)
 
     num_iterations = 0
