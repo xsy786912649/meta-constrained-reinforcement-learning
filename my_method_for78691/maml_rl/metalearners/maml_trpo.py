@@ -76,7 +76,7 @@ class MAMLTRPO(GradientBasedMetaLearner):
                                                params=params,
                                                step_size=self.fast_lr,
                                                first_order=first_order,
-                                               index=self.index)
+                                               algorihtm_index=self.index)
         return params
 
     def hessian_vector_product(self, kl, damping=1e-2):
