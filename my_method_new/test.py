@@ -1,4 +1,4 @@
-from train import *
+from train_trpo import *
 
 def sample_data_for_task_specific_test(target_v,policy_net,batch_size):
     memory = Memory()
