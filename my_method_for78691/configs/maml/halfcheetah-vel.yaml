@@ -64,4 +64,4 @@ ls-max-steps: 15
 ls-backtrack-ratio: 0.8
 
 # index
-index: 1
+index: 2
