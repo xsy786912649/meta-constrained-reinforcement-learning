@@ -109,7 +109,7 @@ ax.fill_between(axis,data_cheetah_dir_1_mean-data_cheetah_dir_1_sd,data_cheetah_
 plt.plot(axis,data_cheetah_dir_2_mean,'-',marker="o",markersize=8, linewidth=2.5 ,label="BO-MRL with $\mathcal{A l g}^{(2)}$")
 ax.fill_between(axis,data_cheetah_dir_2_mean-data_cheetah_dir_2_sd,data_cheetah_dir_2_mean+data_cheetah_dir_2_sd,alpha=0.2)
 plt.plot(axis,data_cheetah_dir_emaml,'-.',marker="x", linewidth=2.5,markersize=8,label="E-MAML")
-plt.plot(axis,data_cheetah_dir_maml,'-',marker="1",markersize=8, linewidth=2.5 ,label="MAML")
+plt.plot(axis,data_cheetah_dir_maml,'-',marker="1",markersize=8, linewidth=2.5 ,label="MAML-TRPO")
 plt.plot(axis,data_cheetah_dir_ProMP,'--', linewidth=2.5 ,label="ProMP")
 
 #plt.xticks(np.arange(0,iterations,40))
@@ -134,7 +134,7 @@ ax.fill_between(axis,data_ant_1_mean-data_ant_1_sd,data_ant_1_mean+data_ant_1_sd
 plt.plot(axis,data_ant_2_mean,'-',marker="o",markersize=8, linewidth=2.5 ,label="BO-MRL with $\mathcal{A l g}^{(2)}$")
 ax.fill_between(axis,data_ant_2_mean-data_ant_2_sd,data_ant_2_mean+data_ant_2_sd,alpha=0.2)
 plt.plot(axis,data_ant_emaml,'-.',marker="x", linewidth=2.5,markersize=8,label="E-MAML")
-plt.plot(axis,data_ant_maml,'-',marker="1",markersize=8, linewidth=2.5 ,label="MAML")
+plt.plot(axis,data_ant_maml,'-',marker="1",markersize=8, linewidth=2.5 ,label="MAML-TRPO")
 plt.plot(axis,data_ant_ProMP,'--', linewidth=2.5 ,label="ProMP")
 
 #plt.xticks(np.arange(0,iterations,40))
@@ -159,7 +159,7 @@ ax.fill_between(axis,data_ant_dir_1_mean-data_ant_dir_1_sd,data_ant_dir_1_mean+d
 plt.plot(axis,data_ant_dir_2_mean,'-',marker="o",markersize=8, linewidth=2.5 ,label="BO-MRL with $\mathcal{A l g}^{(2)}$")
 ax.fill_between(axis,data_ant_dir_2_mean-data_ant_dir_2_sd,data_ant_dir_2_mean+data_ant_dir_2_sd,alpha=0.2)
 plt.plot(axis,data_ant_dir_emaml,'-.',marker="x", linewidth=2.5,markersize=8,label="E-MAML")
-plt.plot(axis,data_ant_dir_maml,'-',marker="1",markersize=8, linewidth=2.5 ,label="MAML")
+plt.plot(axis,data_ant_dir_maml,'-',marker="1",markersize=8, linewidth=2.5 ,label="MAML-TRPO")
 plt.plot(axis,data_ant_dir_ProMP,'--', linewidth=2.5 ,label="ProMP")
 
 #plt.xticks(np.arange(0,iterations,40))
