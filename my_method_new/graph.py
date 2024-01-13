@@ -16,7 +16,7 @@ from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 from cycler import cycler
 matplotlib.rcParams['pdf.fonttype'] = 42
 matplotlib.rcParams['ps.fonttype'] = 42
-default_cycler = (cycler(color=['#295778', '#ee7663', '#62c5cc', '#f3b554', '#cc87f8']) )  
+default_cycler = (cycler(color=['#295778', '#ee7663', '#62c5cc', '#f3b554', '#FF1493']) )  
 plt.rc('axes', prop_cycle=default_cycler)
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -91,7 +91,7 @@ plt.plot(axis,data_cheetah_ProMP,'--', linewidth=2.5 ,label="ProMP")
 plt.title('Half-cheetah, goal velocity',size=28)
 plt.xlabel('Number of policy adaptation steps',size=28)
 plt.ylabel("Accumulated reward",size=28)
-plt.ylim(-170,-40)
+plt.ylim(-170,-50)
 #plt.legend(loc=4)
 plt.legend(loc=0, numpoints=1)
 plt.subplots_adjust(left=0.142, right=0.993, top=0.936, bottom=0.132)

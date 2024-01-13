@@ -354,10 +354,11 @@ if __name__ == "__main__":
         optimizer.step()
         optimizer.zero_grad()
        
-        target_v_list000=[0.3,1.0,1.7]
-        result_before=np.zeros(3)
-        result_after=np.zeros(3)
-        for task_number_test in range(3):
+        target_v_list000=[0.1,0.5,1.0,1.5,1.9]
+        len_target_v_list000=len(target_v_list000)
+        result_before=np.zeros(len_target_v_list000)
+        result_after=np.zeros(len_target_v_list000)
+        for task_number_test in range(len_target_v_list000):
             target_v=target_v_list000[task_number_test]
             batch,batch_extra,accumulated_raward_batch=sample_data_for_task_specific(target_v,meta_policy_net,args.batch_size)
             result_before[task_number_test]=accumulated_raward_batch
