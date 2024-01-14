@@ -42,7 +42,7 @@ data_cheetah_dir_1_sd=np.sqrt(np.var(data_cheetah_dir_1,axis=0))/2.0
 
 data_ant_2 = np.loadtxt("./results/result_ant_2.csv", delimiter=',')
 data_ant_2_mean=np.sum(data_ant_2,axis=0)/data_ant_2.shape[0]
-data_ant_2_sd=np.sqrt(np.var(data_ant_2,axis=0))
+data_ant_2_sd=np.sqrt(np.var(data_ant_2,axis=0))/2.0
 
 data_ant_1 = np.loadtxt("./results/result_ant_1.csv", delimiter=',')
 data_ant_1_mean=np.sum(data_ant_1,axis=0)/data_ant_1.shape[0]
@@ -54,15 +54,15 @@ data_ant_dir_2_sd=np.sqrt(np.var(data_ant_dir_2,axis=0))
 
 data_ant_dir_1 = np.loadtxt("./results/result_ant_dir_1.csv", delimiter=',') 
 data_ant_dir_1_mean=np.sum(data_ant_dir_1,axis=0)/data_ant_dir_1.shape[0]
-data_ant_dir_1_sd=np.sqrt(np.var(data_ant_dir_1,axis=0))
+data_ant_dir_1_sd=np.sqrt(np.var(data_ant_dir_1,axis=0))/2.0
 
 data_navigation_2 = np.loadtxt("./results/result_navigation_2.csv", delimiter=',')
 data_navigation_2_mean=np.sum(data_navigation_2,axis=0)/data_navigation_2.shape[0]
-data_navigation_2_sd=np.sqrt(np.var(data_navigation_2,axis=0))
+data_navigation_2_sd=np.sqrt(np.var(data_navigation_2,axis=0))/2.0
 
 data_navigation_1 = np.loadtxt("./results/result_navigation_1.csv", delimiter=',')
 data_navigation_1_mean=np.sum(data_navigation_1,axis=0)/data_navigation_1.shape[0]
-data_navigation_1_sd=np.sqrt(np.var(data_navigation_1,axis=0))
+data_navigation_1_sd=np.sqrt(np.var(data_navigation_1,axis=0))/2.0
 
 
 data_cheetah_maml = np.loadtxt("./results/result_cheetah_maml.csv", delimiter=',')
@@ -100,7 +100,7 @@ plt.plot(axis,data_cheetah_ProMP,'--', linewidth=2.5 ,label="ProMP")
 plt.title('Half-cheetah, goal velocity',size=28)
 plt.xlabel('Number of policy adaptation steps',size=28)
 plt.ylabel("Accumulated reward",size=28)
-plt.ylim(-170,-50)
+plt.ylim(-170,-52)
 #plt.legend(loc=4)
 plt.legend(loc=0, numpoints=1)
 plt.subplots_adjust(left=0.142, right=0.993, top=0.936, bottom=0.132)
@@ -125,10 +125,10 @@ plt.plot(axis,data_cheetah_dir_ProMP,'--', linewidth=2.5 ,label="ProMP")
 plt.title('Half-cheetah, moving direction',size=28)
 plt.xlabel('Number of policy adaptation steps',size=28)
 plt.ylabel("Accumulated reward",size=28)
-plt.ylim(-80,550)
+plt.ylim(-80,560)
 #plt.legend(loc=4)
 plt.legend(loc=0, numpoints=1)
-plt.subplots_adjust(left=0.142, right=0.993, top=0.936, bottom=0.132)
+plt.subplots_adjust(left=0.126, right=0.993, top=0.936, bottom=0.132)
 leg = plt.gca().get_legend()
 ltext = leg.get_texts()
 #plt.setp(ltext, fontsize=18,fontweight='bold') 
@@ -150,7 +150,7 @@ plt.plot(axis,data_ant_maml,'-',marker="1",markersize=12, linewidth=2.5 ,label="
 plt.title('Ant, goal velocity',size=28)
 plt.xlabel('Number of policy adaptation steps',size=28)
 plt.ylabel("Accumulated reward",size=28)
-#plt.ylim(-150,-50)
+plt.ylim(25,119)
 #plt.legend(loc=4)
 plt.legend(loc=0, numpoints=1)
 plt.subplots_adjust(left=0.142, right=0.993, top=0.936, bottom=0.132)
@@ -175,10 +175,10 @@ plt.plot(axis,data_ant_dir_ProMP,'--', linewidth=2.5 ,label="ProMP")
 plt.title('Ant, moving direction',size=28)
 plt.xlabel('Number of policy adaptation steps',size=28)
 plt.ylabel("Accumulated reward",size=28)
-#plt.ylim(-150,-50)
+plt.ylim(-20,665)
 #plt.legend(loc=4)
 plt.legend(loc=0, numpoints=1)
-plt.subplots_adjust(left=0.142, right=0.993, top=0.936, bottom=0.132)
+plt.subplots_adjust(left=0.129, right=0.993, top=0.936, bottom=0.125)
 leg = plt.gca().get_legend()
 ltext = leg.get_texts()
 #plt.setp(ltext, fontsize=18,fontweight='bold') 
@@ -198,7 +198,7 @@ plt.plot(axis,data_navigation_maml,'-',marker="1",markersize=12, linewidth=2.5 ,
 plt.title('2D navigation',size=28)
 plt.xlabel('Number of policy adaptation steps',size=28)
 plt.ylabel("Accumulated reward",size=28)
-#plt.ylim(-150,-50)
+#plt.ylim(25,119)
 #plt.legend(loc=4)
 plt.legend(loc=0, numpoints=1)
 plt.subplots_adjust(left=0.142, right=0.993, top=0.936, bottom=0.132)
