@@ -61,7 +61,25 @@ env = gym.make(args.env_name)
 num_inputs = env.observation_space.shape[0]
 num_actions = env.action_space.shape[0]
 
+index = args.index
+
+model_lower="Adam"
+if args.lower_opt=="Adam":
+    model_lower="Adam"
+elif args.lower_opt=="adagrad":
+    model_lower="Adagrad"
+elif args.lower_opt=="rmsprop":
+    model_lower="RMSprop"
+elif args.lower_opt=="sgd":
+    model_lower="SGD"
+
 running_state = ZFilter((num_inputs,), clip=5)
+if os.path.exists("./check_point/running_state_"+model_lower+".pkl"):
+    with open("./check_point/running_state_"+model_lower+".pkl",'rb') as file:
+        running_state  = pickle.loads(file.read())
+
+print(model_lower, "running_state: ",running_state.rs.n) 
+print("index: ", index)
 
 def setting_reward():
     return np.random.uniform(0.0,2.0)
@@ -261,17 +279,6 @@ def loss_obain_new(task_specific_policy,meta_policy_net_copy,after_batch,after_q
     
     return J_loss
 
-index = args.index
-
-model_lower="Adam"
-if args.lower_opt=="Adam":
-    model_lower="Adam"
-elif args.lower_opt=="adagrad":
-    model_lower="Adagrad"
-elif args.lower_opt=="rmsprop":
-    model_lower="RMSprop"
-elif args.lower_opt=="sgd":
-    model_lower="SGD"
 
 if __name__ == "__main__":
     if not os.path.exists("./check_point/meta_policy_net_"+model_lower+".pkl"):
@@ -289,7 +296,6 @@ if __name__ == "__main__":
             next_state, reward, done, truncated, info = env.step(action)
             next_state = running_state(next_state)
 
-    optimizer = torch.optim.Adam(meta_policy_net.parameters(), lr=0.003)
     aaaaaa=-10000
 
     for i_episode in range(300):
