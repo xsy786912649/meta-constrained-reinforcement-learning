@@ -155,6 +155,7 @@ if __name__ == "__main__":
             for i,param in enumerate(previous_policy_net.parameters()):
                 param.data.copy_(list(task_specific_policy.parameters())[i].clone().detach().data)
     
+    print("-----------------")
     a0=np.array(accumulated_raward_k_adaptation[0])
     a1=np.array(accumulated_raward_k_adaptation[1])
     a2=np.array(accumulated_raward_k_adaptation[2])
@@ -167,6 +168,7 @@ if __name__ == "__main__":
     print(a2.mean())
     #print(a3)
     print(a3.mean())
+    print("-----------------")
     a0=np.array(accumulated_raward_k_adaptation2[0])
     a1=np.array(accumulated_raward_k_adaptation2[1])
     a2=np.array(accumulated_raward_k_adaptation2[2])
@@ -179,6 +181,7 @@ if __name__ == "__main__":
     print(a2.mean())
     #print(a3)
     print(a3.mean())
+    print("-----------------")
     a0=np.array(accumulated_raward_k_adaptation3[0])
     a1=np.array(accumulated_raward_k_adaptation3[1])
     a2=np.array(accumulated_raward_k_adaptation3[2])

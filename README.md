@@ -1,2 +1,2 @@
-# meta-constrained-reinforcement-learning
+# meta-reinforcement-learning
  
