@@ -1,8 +1,8 @@
 {
-  "env-name": "HalfCheetahVel-v2",
+  "env-name": "AntVel-v2",
   "env-kwargs": {
     "low": 0.0,
-    "high": 2.0,
+    "high": 3.0,
     "normalization_scale": 10.0,
     "max_episode_steps": 200
   },
@@ -25,8 +25,8 @@
   "ls-max-steps": 15,
   "ls-backtrack-ratio": 0.8,
   "index": 1,
-  "config": "configs/maml/halfcheetah-vel.yaml",
-  "output_folder": "maml-halfcheetah-vel",
+  "config": "configs/maml/ant-vel.yaml",
+  "output_folder": "maml-ant-vel",
   "seed": 1,
   "num_workers": 2,
   "use_cuda": false,
