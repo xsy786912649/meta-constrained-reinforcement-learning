@@ -30,9 +30,9 @@ parser.add_argument('--meta-reg', type=float, default=0.001, metavar='G',
                     help='meta regularization regression (default: 1.0)') 
 parser.add_argument('--meta-lambda', type=float, default=0.5, metavar='G', 
                     help='meta meta-lambda (default: 0.5)')  
-parser.add_argument('--max-kl', type=float, default=1e-2, metavar='G',
+parser.add_argument('--max-kl', type=float, default=3e-2, metavar='G',
                     help='max kl value (default: 1e-2)')
-parser.add_argument('--damping', type=float, default=1e-5, metavar='G',
+parser.add_argument('--damping', type=float, default=0e-5, metavar='G',
                     help='damping (default: 0e-1)')
 parser.add_argument('--seed', type=int, default=543, metavar='N',
                     help='random seed (default: 1)')
@@ -237,7 +237,8 @@ def policy_gradient_obain(task_specific_policy,after_batch,after_q_values):
     log_prob = normal_log_density(Variable(actions), afteradap_action_means, afteradap_action_log_stds, afteradap_action_stds)
     AAAAA=torch.exp(log_prob - Variable(fixed_log_prob))
     #bbbbb=torch.min(Variable(after_q_values)*AAAAA,Variable(after_q_values)*AAAAA*torch.clamp(AAAAA,0.8,1.2))
-    bbbbb=Variable(after_q_values)*torch.special.expit(2.0*AAAAA-2.0)*2
+    bbbbb=Variable(after_q_values)*AAAAA
+    #bbbbb=Variable(after_q_values)*torch.special.expit(2.0*AAAAA-2.0)*2
     
     J_loss = (-bbbbb).mean()
     for param in task_specific_policy.parameters():
@@ -246,7 +247,6 @@ def policy_gradient_obain(task_specific_policy,after_batch,after_q_values):
     policy_grad = [param2.grad.data.clone() for param2 in task_specific_policy.parameters()]
 
     return J_loss, policy_grad
-
 
 def loss_obain_new(task_specific_policy,meta_policy_net_copy,after_batch,after_q_values):
     actions = torch.Tensor(np.array(np.concatenate(after_batch.action, 0)))
@@ -376,7 +376,7 @@ if __name__ == "__main__":
 
         trpo_step(meta_policy_net, get_loss, get_kl, args.max_kl, args.damping)
         
-        target_v_list000=[0.1,0.5,1.0,1.5,1.9]
+        target_v_list000=[0.1,0.3,0.5,0.7,1.0,1.3,1.5,1.7,1.9]
         len_target_v_list000=len(target_v_list000)
         result_before=np.zeros(len_target_v_list000)
         result_after=np.zeros(len_target_v_list000)

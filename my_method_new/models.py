@@ -13,7 +13,7 @@ class Policy(nn.Module):
         self.action_mean.weight.data.mul_(0.1)
         self.action_mean.bias.data.mul_(0.0)
 
-        self.action_log_std = nn.Parameter(torch.zeros(1, num_outputs)-1.0)
+        self.action_log_std = nn.Parameter(torch.zeros(1, num_outputs)-0.7)
 
         self.saved_actions = []
         self.rewards = []

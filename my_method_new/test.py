@@ -49,7 +49,7 @@ if __name__ == "__main__":
     accumulated_raward_k_adaptation2=[[],[],[],[]]
 
     for task_number in range(20):
-        target_v=setting_reward()
+        target_v=task_number * 0.1 
         print("task_number: ",task_number, " target_v: ", target_v)
 
         previous_policy_net = Policy(num_inputs, num_actions)
@@ -65,8 +65,9 @@ if __name__ == "__main__":
             print('(adaptation {}) \tAverage reward {:.2f}'.format(iteration_number, accumulated_raward_batch))
             print('(adaptation {}) \tAverage reward {:.2f}'.format(iteration_number, accumulated_raward_batch2))
 
-            accumulated_raward_k_adaptation[iteration_number].append(accumulated_raward_batch)
-            accumulated_raward_k_adaptation2[iteration_number].append(accumulated_raward_batch2)
+            if task_number >0:
+                accumulated_raward_k_adaptation[iteration_number].append(accumulated_raward_batch)
+                accumulated_raward_k_adaptation2[iteration_number].append(accumulated_raward_batch2)
         
             q_values = compute_adavatage(batch,batch_extra,args.batch_size)
             q_values = (q_values - q_values.mean()) 

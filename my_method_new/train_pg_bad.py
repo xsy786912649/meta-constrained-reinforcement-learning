@@ -354,7 +354,7 @@ if __name__ == "__main__":
         optimizer.step()
         optimizer.zero_grad()
        
-        target_v_list000=[0.1,0.5,1.0,1.5,1.9]
+        target_v_list000=[0.1,0.3,0.5,0.7,1.0,1.3,1.5,1.7,1.9]
         len_target_v_list000=len(target_v_list000)
         result_before=np.zeros(len_target_v_list000)
         result_after=np.zeros(len_target_v_list000)
