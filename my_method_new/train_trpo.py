@@ -257,7 +257,7 @@ def loss_obain_new(task_specific_policy,meta_policy_net_copy,after_batch,after_q
     log_prob = normal_log_density(Variable(actions), afteradap_action_means, afteradap_action_log_stds, afteradap_action_stds)
     aaaaa=torch.exp(log_prob - Variable(fixed_log_prob))
     J_loss = (-Variable(after_q_values) * torch.special.expit(2.0*aaaaa-2.0)*2 ).mean()
-    #J_loss = (-Variable(after_q_values) * torch.exp(log_prob - Variable(fixed_log_prob))).mean()
+    #J_loss = (-Variable(after_q_values) * aaaaa).mean()
     
     return J_loss
 
@@ -274,10 +274,10 @@ elif args.lower_opt=="sgd":
     model_lower="SGD"
 
 if __name__ == "__main__":
-    if not os.path.exists("meta_policy_net_"+model_lower+".pkl"):
+    if not os.path.exists("./check_point/meta_policy_net_"+model_lower+".pkl"):
         meta_policy_net = Policy(num_inputs, num_actions)
     else:
-        meta_policy_net = torch.load("meta_policy_net_"+model_lower+".pkl")
+        meta_policy_net = torch.load("./check_point/meta_policy_net_"+model_lower+".pkl")
 
     "--------------------------------------------------for initialization of running_state------------------------------------------"
     for i in range(args.batch_size*5):
@@ -404,8 +404,8 @@ if __name__ == "__main__":
         if result_after.mean()>aaaaaa:
             print("save model")
             aaaaaa=result_after.mean()
-            torch.save(meta_policy_net, "meta_policy_net_"+model_lower+".pkl")
-            output_hal = open("running_state_"+model_lower+".pkl", 'wb')
+            torch.save(meta_policy_net, "./check_point/meta_policy_net_"+model_lower+".pkl")
+            output_hal = open("./check_point/running_state_"+model_lower+".pkl", 'wb')
             str1 = pickle.dumps(running_state)
             output_hal.write(str1)
             output_hal.close()
