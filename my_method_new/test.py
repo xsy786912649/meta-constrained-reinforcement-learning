@@ -120,6 +120,7 @@ if __name__ == "__main__":
 
     accumulated_raward_k_adaptation=[[],[],[],[]]
     accumulated_raward_k_adaptation2=[[],[],[],[]]
+    accumulated_raward_k_adaptation3=[[],[],[],[]]
 
     for task_number in range(20):
         target_v=task_number * 0.1 
@@ -141,6 +142,7 @@ if __name__ == "__main__":
             if task_number >0:
                 accumulated_raward_k_adaptation[iteration_number].append(accumulated_raward_batch)
                 accumulated_raward_k_adaptation2[iteration_number].append(accumulated_raward_batch2)
+                accumulated_raward_k_adaptation3[iteration_number].append(min(accumulated_raward_batch2,accumulated_raward_batch2))
         
             q_values = compute_adavatage(batch,batch_extra,args.batch_size)
             q_values = (q_values - q_values.mean()) 
@@ -169,6 +171,18 @@ if __name__ == "__main__":
     a1=np.array(accumulated_raward_k_adaptation2[1])
     a2=np.array(accumulated_raward_k_adaptation2[2])
     a3=np.array(accumulated_raward_k_adaptation2[3])
+    #print(a0)
+    print(a0.mean())
+    #print(a1)
+    print(a1.mean())
+    #print(a2)
+    print(a2.mean())
+    #print(a3)
+    print(a3.mean())
+    a0=np.array(accumulated_raward_k_adaptation3[0])
+    a1=np.array(accumulated_raward_k_adaptation3[1])
+    a2=np.array(accumulated_raward_k_adaptation3[2])
+    a3=np.array(accumulated_raward_k_adaptation3[3])
     #print(a0)
     print(a0.mean())
     #print(a1)
