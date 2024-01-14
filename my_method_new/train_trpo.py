@@ -402,6 +402,7 @@ if __name__ == "__main__":
         print("result_before: ",result_before.mean())
         print("result_after: ",result_after.mean())
         if result_after.mean()>aaaaaa:
+            print("save model")
             aaaaaa=result_after.mean()
             torch.save(meta_policy_net, "meta_policy_net_"+model_lower+".pkl")
             output_hal = open("running_state_"+model_lower+".pkl", 'wb')

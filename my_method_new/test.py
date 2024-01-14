@@ -1,4 +1,78 @@
-from train_trpo import *
+import argparse
+import os
+import gym
+import scipy.optimize
+
+import torch
+from models import *
+from replay_memory import Memory
+from running_state import ZFilter
+from torch.autograd import Variable
+from utils import *
+from trpo import one_step_trpo,conjugate_gradients,trpo_step
+
+import pickle
+
+from copy import deepcopy
+
+from train_trpo import model_lower,args,env,index,num_inputs, num_actions,select_action_test,select_action,compute_adavatage,task_specific_adaptation
+
+running_state=0
+with open("running_state_"+model_lower+".pkl",'rb') as file:
+    running_state  = pickle.loads(file.read())
+
+def sample_data_for_task_specific(target_v,policy_net,batch_size):
+    
+    memory = Memory()
+    memory_extra=Memory()
+
+    accumulated_raward_batch = 0
+    num_episodes = 0
+    for i in range(batch_size):
+        state = env.reset()[0]
+        state = running_state(state)
+
+        reward_sum = 0
+        for t in range(args.max_length):
+            action = select_action(state,policy_net)
+            action = action.data[0].numpy()
+            next_state, reward, done, truncated, info = env.step(action)
+            reward=-abs(info['x_velocity']-target_v)-0.5 * 1e-1 * np.sum(np.square(action))
+            reward_sum += reward
+            next_state = running_state(next_state)
+            path_number = i
+
+            memory.push(state, np.array([action]), path_number, next_state, reward)
+            if args.render:
+                env.render()
+            state = next_state
+            if done or truncated:
+                break
+    
+        env._elapsed_steps=0
+        for t in range(args.max_length):
+            action = select_action(state,policy_net)
+            action = action.data[0].numpy()
+            next_state, reward, done, truncated, info= env.step(action)
+            reward=-abs(info['x_velocity']-target_v)-0.5 * 1e-1 * np.sum(np.square(action))
+            next_state = running_state(next_state)
+            path_number = i
+
+            memory_extra.push(state, np.array([action]), path_number, next_state, reward)
+            if args.render:
+                env.render()
+            state = next_state
+            if done or truncated:
+                break
+
+        num_episodes += 1
+        accumulated_raward_batch += reward_sum
+
+    accumulated_raward_batch /= num_episodes
+    batch = memory.sample()
+    batch_extra = memory_extra.sample()
+
+    return batch,batch_extra,accumulated_raward_batch
 
 def sample_data_for_task_specific_test(target_v,policy_net,batch_size):
     memory = Memory()
@@ -34,23 +108,22 @@ def sample_data_for_task_specific_test(target_v,policy_net,batch_size):
 
     return batch,accumulated_raward_batch
 
-"--------------------------------------------------for initialization of running_state------------------------------------------"
-with open("running_state_"+model_lower+".pkl",'rb') as file:
-    running_state  = pickle.loads(file.read())
 
 if __name__ == "__main__":
 
     meta_policy_net = torch.load("meta_policy_net_"+model_lower+".pkl")
 
     meta_lambda_now=args.meta_lambda
-    print(model_lower, "running_state: ",running_state.rs.n)
+    print(meta_lambda_now)
+    print(model_lower, "running_state: ",running_state.rs.n) 
+    print("index: ", index)
 
     accumulated_raward_k_adaptation=[[],[],[],[]]
     accumulated_raward_k_adaptation2=[[],[],[],[]]
 
     for task_number in range(20):
         target_v=task_number * 0.1 
-        print("task_number: ",task_number, " target_v: ", target_v)
+        print("task_number: ",task_number, " target_v: ", target_v) 
 
         previous_policy_net = Policy(num_inputs, num_actions)
         for i,param in enumerate(previous_policy_net.parameters()):
