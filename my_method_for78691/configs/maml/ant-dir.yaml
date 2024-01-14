@@ -28,7 +28,7 @@ nonlinearity: "tanh"
 # Task-specific
 # -------------
 # Number of trajectories to sample for each task.
-fast-batch-size: 20
+fast-batch-size: 40
 
 # Number of gradient steps in the inner loop / fast adaptation.
 num-steps: 1
