@@ -142,7 +142,7 @@ if __name__ == "__main__":
             if task_number >0:
                 accumulated_raward_k_adaptation[iteration_number].append(accumulated_raward_batch)
                 accumulated_raward_k_adaptation2[iteration_number].append(accumulated_raward_batch2)
-                accumulated_raward_k_adaptation3[iteration_number].append(min(accumulated_raward_batch2,accumulated_raward_batch2))
+                accumulated_raward_k_adaptation3[iteration_number].append(max(accumulated_raward_batch,accumulated_raward_batch2))
         
             q_values = compute_adavatage(batch,batch_extra,args.batch_size)
             q_values = (q_values - q_values.mean()) 
