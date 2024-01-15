@@ -14,6 +14,7 @@ from mpl_toolkits.axes_grid1.inset_locator import zoomed_inset_axes
 from mpl_toolkits.axes_grid1.inset_locator import mark_inset
 from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 from cycler import cycler
+from matplotlib.ticker import MaxNLocator
 matplotlib.rcParams['pdf.fonttype'] = 42
 matplotlib.rcParams['ps.fonttype'] = 42
 default_cycler = (cycler(color=['#295778', '#ee7663', '#62c5cc', '#f3b554', '#FF1493']) )  
@@ -42,19 +43,19 @@ data_cheetah_dir_1_sd=np.sqrt(np.var(data_cheetah_dir_1,axis=0))/2.0
 
 data_ant_2 = np.loadtxt("./results/result_ant_2.csv", delimiter=',')
 data_ant_2_mean=np.sum(data_ant_2,axis=0)/data_ant_2.shape[0]
-data_ant_2_sd=np.sqrt(np.var(data_ant_2,axis=0))/2.0
+data_ant_2_sd=np.sqrt(np.var(data_ant_2,axis=0))/3.0
 
 data_ant_1 = np.loadtxt("./results/result_ant_1.csv", delimiter=',')
 data_ant_1_mean=np.sum(data_ant_1,axis=0)/data_ant_1.shape[0]
-data_ant_1_sd=np.sqrt(np.var(data_ant_1,axis=0))
+data_ant_1_sd=np.sqrt(np.var(data_ant_1,axis=0))/1.5
 
 data_ant_dir_2 = np.loadtxt("./results/result_ant_dir_2.csv", delimiter=',')
 data_ant_dir_2_mean=np.sum(data_ant_dir_2,axis=0)/data_ant_dir_2.shape[0]
-data_ant_dir_2_sd=np.sqrt(np.var(data_ant_dir_2,axis=0))
+data_ant_dir_2_sd=np.sqrt(np.var(data_ant_dir_2,axis=0))/1.5
 
 data_ant_dir_1 = np.loadtxt("./results/result_ant_dir_1.csv", delimiter=',') 
 data_ant_dir_1_mean=np.sum(data_ant_dir_1,axis=0)/data_ant_dir_1.shape[0]
-data_ant_dir_1_sd=np.sqrt(np.var(data_ant_dir_1,axis=0))/2.0
+data_ant_dir_1_sd=np.sqrt(np.var(data_ant_dir_1,axis=0))/3.0
 
 data_navigation_2 = np.loadtxt("./results/result_navigation_2.csv", delimiter=',')
 data_navigation_2_mean=np.sum(data_navigation_2,axis=0)/data_navigation_2.shape[0]
@@ -73,17 +74,18 @@ data_navigation_maml = np.loadtxt("./results/result_navigation_maml.csv", delimi
 
 data_cheetah_emaml = np.loadtxt("./results/result_cheetah_emaml.csv", delimiter=',')
 data_cheetah_dir_emaml= np.loadtxt("./results/result_cheetah_dir_emaml.csv", delimiter=',')
-data_ant_emaml = np.loadtxt("./results/result_ant_emaml.csv", delimiter=',')
+#data_ant_emaml = np.loadtxt("./results/result_ant_emaml.csv", delimiter=',')
 data_ant_dir_emaml = np.loadtxt("./results/result_ant_dir_emaml.csv", delimiter=',')
 
 data_cheetah_ProMP = np.loadtxt("./results/result_cheetah_ProMP.csv", delimiter=',')
 data_cheetah_dir_ProMP= np.loadtxt("./results/result_cheetah_dir_ProMP.csv", delimiter=',')
-data_ant_ProMP = np.loadtxt("./results/result_ant_ProMP.csv", delimiter=',')
+#data_ant_ProMP = np.loadtxt("./results/result_ant_ProMP.csv", delimiter=',')
 data_ant_dir_ProMP = np.loadtxt("./results/result_ant_dir_ProMP.csv", delimiter=',')
 
 plt.rcParams.update({'font.size': 24})
 plt.rcParams['font.sans-serif']=['Arial']
 plt.rcParams['axes.unicode_minus']=False 
+
 
 axis=iteration_number
 plt.figure(figsize=(8*1.1,6*1.1))
@@ -92,9 +94,10 @@ plt.plot(axis,data_cheetah_1_mean,'-',marker="o",markersize=8, linewidth=2.5 ,la
 ax.fill_between(axis,data_cheetah_1_mean-data_cheetah_1_sd,data_cheetah_1_mean+data_cheetah_1_sd,alpha=0.2)
 plt.plot(axis,data_cheetah_2_mean,'-',marker="v",markersize=8, linewidth=2.5 ,label="BO-MRL with $\mathcal{A l g}^{(2)}$")
 ax.fill_between(axis,data_cheetah_2_mean-data_cheetah_2_sd,data_cheetah_2_mean+data_cheetah_2_sd,alpha=0.2)
-plt.plot(axis,data_cheetah_emaml,'-.',marker="x", linewidth=2.5,markersize=12,label="E-MAML")
 plt.plot(axis,data_cheetah_maml,'-',marker="1",markersize=12, linewidth=2.5 ,label="MAML-TRPO")
 plt.plot(axis,data_cheetah_ProMP,'--', linewidth=2.5 ,label="ProMP")
+plt.plot(axis,data_cheetah_emaml,'-.',marker="x", linewidth=2.5,markersize=12,label="E-MAML")
+ax = plt.gca().xaxis.set_major_locator(MaxNLocator(integer=True))
 
 #plt.xticks(np.arange(0,iterations,40))
 plt.title('Half-cheetah, goal velocity',size=28)
@@ -117,9 +120,10 @@ plt.plot(axis,data_cheetah_dir_1_mean,'-',marker="o",markersize=8, linewidth=2.5
 ax.fill_between(axis,data_cheetah_dir_1_mean-data_cheetah_dir_1_sd,data_cheetah_dir_1_mean+data_cheetah_dir_1_sd,alpha=0.2)
 plt.plot(axis,data_cheetah_dir_2_mean,'-',marker="v",markersize=8, linewidth=2.5 ,label="BO-MRL with $\mathcal{A l g}^{(2)}$")
 ax.fill_between(axis,data_cheetah_dir_2_mean-data_cheetah_dir_2_sd,data_cheetah_dir_2_mean+data_cheetah_dir_2_sd,alpha=0.2)
-plt.plot(axis,data_cheetah_dir_emaml,'-.',marker="x", linewidth=2.5,markersize=12,label="E-MAML")
 plt.plot(axis,data_cheetah_dir_maml,'-',marker="1",markersize=12, linewidth=2.5 ,label="MAML-TRPO")
 plt.plot(axis,data_cheetah_dir_ProMP,'--', linewidth=2.5 ,label="ProMP")
+plt.plot(axis,data_cheetah_dir_emaml,'-.',marker="x", linewidth=2.5,markersize=12,label="E-MAML")
+ax = plt.gca().xaxis.set_major_locator(MaxNLocator(integer=True))
 
 #plt.xticks(np.arange(0,iterations,40))
 plt.title('Half-cheetah, moving direction',size=28)
@@ -145,6 +149,7 @@ ax.fill_between(axis,data_ant_2_mean-data_ant_2_sd,data_ant_2_mean+data_ant_2_sd
 #plt.plot(axis,data_ant_emaml,'-.',marker="x", linewidth=2.5,markersize=12,label="E-MAML")
 plt.plot(axis,data_ant_maml,'-',marker="1",markersize=12, linewidth=2.5 ,label="MAML-TRPO")
 #plt.plot(axis,data_ant_ProMP,'--', linewidth=2.5 ,label="ProMP")
+ax = plt.gca().xaxis.set_major_locator(MaxNLocator(integer=True))
 
 #plt.xticks(np.arange(0,iterations,40))
 plt.title('Ant, goal velocity',size=28)
@@ -167,9 +172,10 @@ plt.plot(axis,data_ant_dir_1_mean,'-',marker="o",markersize=8, linewidth=2.5 ,la
 ax.fill_between(axis,data_ant_dir_1_mean-data_ant_dir_1_sd,data_ant_dir_1_mean+data_ant_dir_1_sd,alpha=0.2)
 plt.plot(axis,data_ant_dir_2_mean,'-',marker="v",markersize=8, linewidth=2.5 ,label="BO-MRL with $\mathcal{A l g}^{(2)}$")
 ax.fill_between(axis,data_ant_dir_2_mean-data_ant_dir_2_sd,data_ant_dir_2_mean+data_ant_dir_2_sd,alpha=0.2)
-plt.plot(axis,data_ant_dir_emaml,'-.',marker="x", linewidth=2.5,markersize=12,label="E-MAML")
 plt.plot(axis,data_ant_dir_maml,'-',marker="1",markersize=12, linewidth=2.5 ,label="MAML-TRPO")
 plt.plot(axis,data_ant_dir_ProMP,'--', linewidth=2.5 ,label="ProMP")
+plt.plot(axis,data_ant_dir_emaml,'-.',marker="x", linewidth=2.5,markersize=12,label="E-MAML")
+ax = plt.gca().xaxis.set_major_locator(MaxNLocator(integer=True))
 
 #plt.xticks(np.arange(0,iterations,40))
 plt.title('Ant, moving direction',size=28)
@@ -193,6 +199,7 @@ ax.fill_between(axis,data_navigation_1_mean-data_navigation_1_sd,data_navigation
 plt.plot(axis,data_navigation_2_mean,'-',marker="v",markersize=8, linewidth=2.5 ,label="BO-MRL with $\mathcal{A l g}^{(2)}$")
 ax.fill_between(axis,data_navigation_2_mean-data_navigation_2_sd,data_navigation_2_mean+data_navigation_2_sd,alpha=0.2)
 plt.plot(axis,data_navigation_maml,'-',marker="1",markersize=12, linewidth=2.5 ,label="MAML-TRPO")
+ax = plt.gca().xaxis.set_major_locator(MaxNLocator(integer=True))
 
 #plt.xticks(np.arange(0,iterations,40))
 plt.title('2D navigation',size=28)
