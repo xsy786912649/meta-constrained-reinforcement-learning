@@ -59,11 +59,11 @@ data_ant_dir_1_sd=np.sqrt(np.var(data_ant_dir_1,axis=0))/3.0
 
 data_navigation_2 = np.loadtxt("./results/result_navigation_2.csv", delimiter=',')
 data_navigation_2_mean=np.sum(data_navigation_2,axis=0)/data_navigation_2.shape[0]
-data_navigation_2_sd=np.sqrt(np.var(data_navigation_2,axis=0))/2.0
+data_navigation_2_sd=np.sqrt(np.var(data_navigation_2,axis=0))
 
 data_navigation_1 = np.loadtxt("./results/result_navigation_1.csv", delimiter=',')
 data_navigation_1_mean=np.sum(data_navigation_1,axis=0)/data_navigation_1.shape[0]
-data_navigation_1_sd=np.sqrt(np.var(data_navigation_1,axis=0))/2.0
+data_navigation_1_sd=np.sqrt(np.var(data_navigation_1,axis=0))
 
 
 data_cheetah_maml = np.loadtxt("./results/result_cheetah_maml.csv", delimiter=',')
@@ -71,6 +71,8 @@ data_cheetah_dir_maml= np.loadtxt("./results/result_cheetah_dir_maml.csv", delim
 data_ant_maml = np.loadtxt("./results/result_ant_maml.csv", delimiter=',')
 data_ant_dir_maml = np.loadtxt("./results/result_ant_dir_maml.csv", delimiter=',')
 data_navigation_maml = np.loadtxt("./results/result_navigation_maml.csv", delimiter=',')
+data_navigation_maml_mean=np.sum(data_navigation_maml,axis=0)/data_navigation_maml.shape[0]
+data_navigation_maml_sd=np.sqrt(np.var(data_navigation_maml,axis=0))
 
 data_cheetah_emaml = np.loadtxt("./results/result_cheetah_emaml.csv", delimiter=',')
 data_cheetah_dir_emaml= np.loadtxt("./results/result_cheetah_dir_emaml.csv", delimiter=',')
@@ -198,17 +200,17 @@ plt.plot(axis,data_navigation_1_mean,'-',marker="o",markersize=8, linewidth=2.5 
 ax.fill_between(axis,data_navigation_1_mean-data_navigation_1_sd,data_navigation_1_mean+data_navigation_1_sd,alpha=0.2)
 plt.plot(axis,data_navigation_2_mean,'-',marker="v",markersize=8, linewidth=2.5 ,label="BO-MRL with $\mathcal{A l g}^{(2)}$")
 ax.fill_between(axis,data_navigation_2_mean-data_navigation_2_sd,data_navigation_2_mean+data_navigation_2_sd,alpha=0.2)
-plt.plot(axis,data_navigation_maml,'-',marker="1",markersize=12, linewidth=2.5 ,label="MAML-TRPO")
+plt.plot(axis,data_navigation_maml_mean,'-',marker="1",markersize=12, linewidth=2.5 ,label="MAML-TRPO")
 ax = plt.gca().xaxis.set_major_locator(MaxNLocator(integer=True))
 
 #plt.xticks(np.arange(0,iterations,40))
 plt.title('2D navigation',size=28)
 plt.xlabel('Number of policy adaptation steps',size=28)
 plt.ylabel("Accumulated reward",size=28)
-#plt.ylim(25,119)
+plt.ylim(-40,-2.0)
 #plt.legend(loc=4)
 plt.legend(loc=0, numpoints=1)
-plt.subplots_adjust(left=0.129, right=0.993, top=0.936, bottom=0.132)
+plt.subplots_adjust(left=0.117, right=0.993, top=0.936, bottom=0.125)
 leg = plt.gca().get_legend()
 ltext = leg.get_texts()
 #plt.setp(ltext, fontsize=18,fontweight='bold') 
