@@ -6,7 +6,7 @@
   },
   "gamma": 0.99,
   "gae-lambda": 1.0,
-  "first-order": false,
+  "first-order": true,
   "hidden-sizes": [
     64,
     64
@@ -24,9 +24,9 @@
   "ls-backtrack-ratio": 0.8,
   "index": 1,
   "config": "configs/maml/2d-navigation.yaml",
-  "output_folder": "bomrl-2d-navigation",
+  "output_folder": "bomrl-2d-navigation-2",
   "seed": 1,
-  "num_workers": 2,
+  "num_workers": 4,
   "use_cuda": false,
   "device": "cpu"
 }

@@ -256,6 +256,8 @@ class SamplerWorker(mp.Process):
         # for optimization.
         params = None
         for step in range(num_steps):
+            #if step==1:
+            #    fast_lr=fast_lr/2.0
             train_episodes = self.create_episodes(params=params,
                                                   gamma=gamma,
                                                   gae_lambda=gae_lambda,
