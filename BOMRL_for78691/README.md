@@ -1,25 +1,11 @@
-# Reinforcement Learning with Model-Agnostic Meta-Learning (MAML)
+# A General Bilevel Optimization Framework for Meta-Reinforcement Learning: Provable Optimality and Generalization for One-Step Policy Adaptation (BOMRL)
 
-![HalfCheetahDir](https://raw.githubusercontent.com/tristandeleu/pytorch-maml-rl/master/_assets/halfcheetahdir.gif)
-
-Implementation of Model-Agnostic Meta-Learning (MAML) applied on Reinforcement Learning problems in Pytorch. This repository includes environments introduced in ([Duan et al., 2016](https://arxiv.org/abs/1611.02779), [Finn et al., 2017](https://arxiv.org/abs/1703.03400)): multi-armed bandits, tabular MDPs, continuous control with MuJoCo, and 2D navigation task.
-
-## Getting started
-To avoid any conflict with your existing Python setup, and to keep this project self-contained, it is suggested to work in a virtual environment with [`virtualenv`](http://docs.python-guide.org/en/latest/dev/virtualenvs/). To install `virtualenv`:
-```
-pip install --upgrade virtualenv
-```
-Create a virtual environment, activate it and install the requirements in [`requirements.txt`](requirements.txt).
-```
-virtualenv venv
-source venv/bin/activate
-pip install -r requirements.txt
-```
 
 #### Requirements
  - Python 3.8.16
  - PyTorch 1.7.1
  - Gym 0.15
+ - mojuco 150
 
 ## Usage
 
@@ -40,18 +26,8 @@ This project is, for the most part, a reproduction of the original implementatio
 > Chelsea Finn, Pieter Abbeel, and Sergey Levine. Model-Agnostic Meta-Learning for Fast Adaptation of Deep
 Networks. _International Conference on Machine Learning (ICML)_, 2017 [[ArXiv](https://arxiv.org/abs/1703.03400)]
 
-If you want to cite this paper
-```
-@article{finn17maml,
-  author    = {Chelsea Finn and Pieter Abbeel and Sergey Levine},
-  title     = {{Model-Agnostic Meta-Learning for Fast Adaptation of Deep Networks}},
-  journal   = {International Conference on Machine Learning (ICML)},
-  year      = {2017},
-  url       = {http://arxiv.org/abs/1703.03400}
-}
-```
 
-If you want to cite this implementation:
+This code is build based on an implementation code of MAML:
 ```
 @misc{deleu2018mamlrl,
   author = {Tristan Deleu},
@@ -60,3 +36,4 @@ If you want to cite this implementation:
   year   = {2018}
 }
 ```
+Thanks for the implementation by the author.
