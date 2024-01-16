@@ -15,7 +15,7 @@ gamma: 0.99
 gae-lambda: 1.0
 
 # If "true", then the first order approximation of MAML is applied.
-first-order: false
+first-order: true
 
 # Policy network
 # --------------
