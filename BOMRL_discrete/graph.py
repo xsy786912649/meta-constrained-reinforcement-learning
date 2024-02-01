@@ -242,8 +242,8 @@ error_params=dict(elinewidth=4,capsize=5)
 
 bar = plt.bar(x_data, y_data, width=bar_width, linewidth=line_width ,yerr=std_err,error_kw=error_params, color=['#577829', '#295778', '#ee7663' ], edgecolor='black')
 
-plt.text(1-0.35, 0.15265574 * 9* 0.1 +0.01  , 'Upper bound for\n one-step $\mathcal{A l g}^{(1)}$', fontsize=20)
-plt.axhline(y=0.15265574 * 9* 0.1 , color='black', linestyle='--', linewidth=4, zorder=3)
+plt.text(1-0.35, 0.12265574 * 9* 0.1 +0.01  , 'Upper bound for\n one-step $\mathcal{A l g}^{(1)}$', fontsize=20)
+plt.axhline(y=0.12265574 * 9* 0.1 , color='black', linestyle='--', linewidth=4, zorder=3)
 plt.ylim(0.0,0.199)
 
 plt.title('Low task variance ($\mathcal{A l g}^{(1)}$ applied)',size=28)
