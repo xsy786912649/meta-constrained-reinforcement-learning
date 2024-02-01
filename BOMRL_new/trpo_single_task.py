@@ -137,8 +137,8 @@ def update_params(batch,batch_extra,batch_size):
         kl = log_std1 - log_std0 + (std0.pow(2) + (mean0 - mean1).pow(2)) / (2.0 * std1.pow(2)) - 0.5
         return kl.sum(1, keepdim=True)
 
-    trpo_step(policy_net, get_loss, get_kl, args.max_kl, args.damping)
-    #one_step_trpo(policy_net, get_loss, get_kl,args.meta_lambda,lower_opt='Adam') 
+    #trpo_step(policy_net, get_loss, get_kl, args.max_kl, args.damping)
+    one_step_trpo(policy_net, get_loss, get_kl,args.meta_lambda,lower_opt='Adam') 
 
     print(torch.exp(policy_net.action_log_std))
 
