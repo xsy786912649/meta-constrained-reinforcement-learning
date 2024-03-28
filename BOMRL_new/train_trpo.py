@@ -11,6 +11,8 @@ from torch.autograd import Variable
 from utils import *
 from trpo import one_step_trpo,conjugate_gradients,trpo_step
 
+import csv
+
 import pickle
 
 from copy import deepcopy
@@ -407,6 +409,11 @@ if __name__ == "__main__":
 
         print("result_before: ",result_before.mean())
         print("result_after: ",result_after.mean())
+
+        with open('./check_point/training_log.csv', 'a+') as file:
+            writer = csv.writer(file)
+            writer.writerow([i_episode, result_after.mean()])
+        
         if result_after.mean()>aaaaaa:
             print("save model")
             aaaaaa=result_after.mean()

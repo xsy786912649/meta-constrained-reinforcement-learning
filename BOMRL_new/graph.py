@@ -216,3 +216,4 @@ ltext = leg.get_texts()
 #plt.setp(ltext, fontsize=18,fontweight='bold') 
 plt.savefig('./figures/navigation.pdf') 
 plt.show()
+
