@@ -28,9 +28,9 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 iteration_number=(np.array(list(range(300))))
 
-data_cheetah_1 = np.loadtxt("./results/training_log_cheetah_1.csv", delimiter=',')[:,1]*0.75
-data_cheetah_2 = np.loadtxt("./results/training_log_cheetah_2.csv", delimiter=',')[:,1]*0.75
-data_cheetah_maml = np.loadtxt("./results/training_log_cheetah_2.csv", delimiter=',')[:,1]*0.75
+data_cheetah_1 = np.loadtxt("./results/training_log_HalfCheetah_vel_1.csv", delimiter=',')[:,1]*0.75
+data_cheetah_2 = np.loadtxt("./results/training_log_HalfCheetah_vel_2.csv", delimiter=',')[:,1]*0.75
+data_cheetah_maml = np.loadtxt("./results/training_log_HalfCheetah_vel_maml.csv", delimiter=',')[:,1]*0.75
 
 axis=iteration_number
 plt.figure(figsize=(8*1.1,6*1.1))
