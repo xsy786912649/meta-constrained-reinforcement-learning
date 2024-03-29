@@ -32,7 +32,7 @@ parser.add_argument('--meta-reg', type=float, default=0.001, metavar='G',
                     help='meta regularization regression (default: 0.001)') 
 parser.add_argument('--meta-lambda', type=float, default=0.5, metavar='G', 
                     help='meta meta-lambda (default: 0.5)')  
-parser.add_argument('--max-kl', type=float, default=3e-2, metavar='G',
+parser.add_argument('--max-kl', type=float, default=1e-2, metavar='G',
                     help='max kl value (default: 1e-2)')
 parser.add_argument('--damping', type=float, default=0e-5, metavar='G',
                     help='damping (default: 0e-1)')
@@ -300,7 +300,7 @@ if __name__ == "__main__":
 
     aaaaaa=-10000
 
-    for i_episode in range(300):
+    for i_episode in range(500):
         print("i_episode: ",i_episode)
         meta_lambda_now=args.meta_lambda
         print("meta_lambda_now: ",meta_lambda_now)
