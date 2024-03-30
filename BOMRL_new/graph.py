@@ -24,55 +24,26 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 iteration_number=(np.array(list(range(4))))
 
+data_cheetah_3 = np.loadtxt("./results/result_cheetah_3.csv", delimiter=',')
 data_cheetah_2 = np.loadtxt("./results/result_cheetah_2.csv", delimiter=',')
-data_cheetah_2_mean=np.sum(data_cheetah_2,axis=0)/data_cheetah_2.shape[0]
-data_cheetah_2_sd=np.sqrt(np.var(data_cheetah_2,axis=0))/2.0
-
 data_cheetah_1 = np.loadtxt("./results/result_cheetah_1.csv", delimiter=',')
-data_cheetah_1_mean=np.sum(data_cheetah_1,axis=0)/data_cheetah_1.shape[0]
-data_cheetah_1_sd=np.sqrt(np.var(data_cheetah_1,axis=0))/2.0
-
+data_cheetah_dir_3 = np.loadtxt("./results/result_cheetah_dir_3.csv", delimiter=',')
 data_cheetah_dir_2 = np.loadtxt("./results/result_cheetah_dir_2.csv", delimiter=',')
-data_cheetah_dir_2_mean=np.sum(data_cheetah_dir_2,axis=0)/data_cheetah_dir_2.shape[0]
-data_cheetah_dir_2_sd=np.sqrt(np.var(data_cheetah_dir_2,axis=0))/2.0
-
 data_cheetah_dir_1 = np.loadtxt("./results/result_cheetah_dir_1.csv", delimiter=',') 
-data_cheetah_dir_1_mean=np.sum(data_cheetah_dir_1,axis=0)/data_cheetah_dir_1.shape[0]
-data_cheetah_dir_1_sd=np.sqrt(np.var(data_cheetah_dir_1,axis=0))/2.0
 
-
+data_ant_3 = np.loadtxt("./results/result_ant_3.csv", delimiter=',')
 data_ant_2 = np.loadtxt("./results/result_ant_2.csv", delimiter=',')
-data_ant_2_mean=np.sum(data_ant_2,axis=0)/data_ant_2.shape[0]
-data_ant_2_sd=np.sqrt(np.var(data_ant_2,axis=0))/3.0
-
 data_ant_1 = np.loadtxt("./results/result_ant_1.csv", delimiter=',')
-data_ant_1_mean=np.sum(data_ant_1,axis=0)/data_ant_1.shape[0]
-data_ant_1_sd=np.sqrt(np.var(data_ant_1,axis=0))/1.5
-
+data_ant_dir_3 = np.loadtxt("./results/result_ant_dir_3.csv", delimiter=',')
 data_ant_dir_2 = np.loadtxt("./results/result_ant_dir_2.csv", delimiter=',')
-data_ant_dir_2_mean=np.sum(data_ant_dir_2,axis=0)/data_ant_dir_2.shape[0]
-data_ant_dir_2_sd=np.sqrt(np.var(data_ant_dir_2,axis=0))/1.5
-
 data_ant_dir_1 = np.loadtxt("./results/result_ant_dir_1.csv", delimiter=',') 
-data_ant_dir_1_mean=np.sum(data_ant_dir_1,axis=0)/data_ant_dir_1.shape[0]
-data_ant_dir_1_sd=np.sqrt(np.var(data_ant_dir_1,axis=0))/3.0
 
-data_navigation_2 = np.loadtxt("./results/result_navigation_2.csv", delimiter=',')
-data_navigation_2_mean=np.sum(data_navigation_2,axis=0)/data_navigation_2.shape[0]
-data_navigation_2_sd=np.sqrt(np.var(data_navigation_2,axis=0))
-
-data_navigation_1 = np.loadtxt("./results/result_navigation_1.csv", delimiter=',')
-data_navigation_1_mean=np.sum(data_navigation_1,axis=0)/data_navigation_1.shape[0]
-data_navigation_1_sd=np.sqrt(np.var(data_navigation_1,axis=0))
 
 
 data_cheetah_maml = np.loadtxt("./results/result_cheetah_maml.csv", delimiter=',')
 data_cheetah_dir_maml= np.loadtxt("./results/result_cheetah_dir_maml.csv", delimiter=',')
 data_ant_maml = np.loadtxt("./results/result_ant_maml.csv", delimiter=',')
 data_ant_dir_maml = np.loadtxt("./results/result_ant_dir_maml.csv", delimiter=',')
-data_navigation_maml = np.loadtxt("./results/result_navigation_maml.csv", delimiter=',')
-data_navigation_maml_mean=np.sum(data_navigation_maml,axis=0)/data_navigation_maml.shape[0]
-data_navigation_maml_sd=np.sqrt(np.var(data_navigation_maml,axis=0))
 
 data_cheetah_emaml = np.loadtxt("./results/result_cheetah_emaml.csv", delimiter=',')
 data_cheetah_dir_emaml= np.loadtxt("./results/result_cheetah_dir_emaml.csv", delimiter=',')
@@ -92,10 +63,9 @@ plt.rcParams['axes.unicode_minus']=False
 axis=iteration_number
 plt.figure(figsize=(8*1.1,6*1.1))
 ax = plt.gca()
-plt.plot(axis,data_cheetah_1_mean,'-',marker="o",markersize=8, linewidth=2.5 ,label="BO-MRL with $\mathcal{A l g}^{(1)}$")
-ax.fill_between(axis,data_cheetah_1_mean-data_cheetah_1_sd,data_cheetah_1_mean+data_cheetah_1_sd,alpha=0.2)
-plt.plot(axis,data_cheetah_2_mean,'-',marker="v",markersize=8, linewidth=2.5 ,label="BO-MRL with $\mathcal{A l g}^{(2)}$")
-ax.fill_between(axis,data_cheetah_2_mean-data_cheetah_2_sd,data_cheetah_2_mean+data_cheetah_2_sd,alpha=0.2)
+plt.plot(axis,data_cheetah_1,'-',marker="o",markersize=8, linewidth=2.5 ,label="BO-MRL with $\mathcal{A l g}^{(1)}$")
+plt.plot(axis,data_cheetah_2,'-',marker="v",markersize=8, linewidth=2.5 ,label="BO-MRL with $\mathcal{A l g}^{(2)}$")
+plt.plot(axis,data_cheetah_3,'-',marker="s",markersize=8, linewidth=2.5 ,label="BO-MRL with $\mathcal{A l g}^{(3)}$")
 plt.plot(axis,data_cheetah_maml,'-',marker="1",markersize=12, linewidth=2.5 ,label="MAML-TRPO")
 plt.plot(axis,data_cheetah_ProMP,'--', linewidth=2.5 ,label="ProMP")
 plt.plot(axis,data_cheetah_emaml,'-.',marker="x", linewidth=2.5,markersize=12,label="E-MAML")
@@ -105,7 +75,7 @@ ax = plt.gca().xaxis.set_major_locator(MaxNLocator(integer=True))
 plt.title('Half-cheetah, goal velocity',size=28)
 plt.xlabel('Number of policy adaptation steps',size=28)
 plt.ylabel("Accumulated reward",size=28)
-plt.ylim(-170,-52)
+plt.ylim(-170,-40)
 #plt.legend(loc=4)
 plt.legend(loc=0, numpoints=1)
 plt.subplots_adjust(left=0.142, right=0.993, top=0.936, bottom=0.132)
@@ -118,10 +88,9 @@ plt.show()
 axis=iteration_number
 plt.figure(figsize=(8*1.1,6*1.1))
 ax = plt.gca()
-plt.plot(axis,data_cheetah_dir_1_mean,'-',marker="o",markersize=8, linewidth=2.5 ,label="BO-MRL with $\mathcal{A l g}^{(1)}$")
-ax.fill_between(axis,data_cheetah_dir_1_mean-data_cheetah_dir_1_sd,data_cheetah_dir_1_mean+data_cheetah_dir_1_sd,alpha=0.2)
-plt.plot(axis,data_cheetah_dir_2_mean,'-',marker="v",markersize=8, linewidth=2.5 ,label="BO-MRL with $\mathcal{A l g}^{(2)}$")
-ax.fill_between(axis,data_cheetah_dir_2_mean-data_cheetah_dir_2_sd,data_cheetah_dir_2_mean+data_cheetah_dir_2_sd,alpha=0.2)
+plt.plot(axis,data_cheetah_dir_1,'-',marker="o",markersize=8, linewidth=2.5 ,label="BO-MRL with $\mathcal{A l g}^{(1)}$")
+plt.plot(axis,data_cheetah_dir_2,'-',marker="v",markersize=8, linewidth=2.5 ,label="BO-MRL with $\mathcal{A l g}^{(2)}$")
+plt.plot(axis,data_cheetah_dir_3,'-',marker="s",markersize=8, linewidth=2.5 ,label="BO-MRL with $\mathcal{A l g}^{(3)}$")
 plt.plot(axis,data_cheetah_dir_maml,'-',marker="1",markersize=12, linewidth=2.5 ,label="MAML-TRPO")
 plt.plot(axis,data_cheetah_dir_ProMP,'--', linewidth=2.5 ,label="ProMP")
 plt.plot(axis,data_cheetah_dir_emaml,'-.',marker="x", linewidth=2.5,markersize=12,label="E-MAML")
@@ -144,10 +113,9 @@ plt.show()
 axis=iteration_number
 plt.figure(figsize=(8*1.1,6*1.1))
 ax = plt.gca()
-plt.plot(axis,data_ant_1_mean,'-',marker="o",markersize=8, linewidth=2.5 ,label="BO-MRL with $\mathcal{A l g}^{(1)}$")
-ax.fill_between(axis,data_ant_1_mean-data_ant_1_sd,data_ant_1_mean+data_ant_1_sd,alpha=0.2)
-plt.plot(axis,data_ant_2_mean,'-',marker="v",markersize=8, linewidth=2.5 ,label="BO-MRL with $\mathcal{A l g}^{(2)}$")
-ax.fill_between(axis,data_ant_2_mean-data_ant_2_sd,data_ant_2_mean+data_ant_2_sd,alpha=0.2)
+plt.plot(axis,data_ant_1,'-',marker="o",markersize=8, linewidth=2.5 ,label="BO-MRL with $\mathcal{A l g}^{(1)}$")
+plt.plot(axis,data_ant_2,'-',marker="v",markersize=8, linewidth=2.5 ,label="BO-MRL with $\mathcal{A l g}^{(2)}$")
+plt.plot(axis,data_ant_3,'-',marker="s",markersize=8, linewidth=2.5 ,label="BO-MRL with $\mathcal{A l g}^{(3)}$")
 #plt.plot(axis,data_ant_emaml,'-.',marker="x", linewidth=2.5,markersize=12,label="E-MAML")
 plt.plot(axis,data_ant_maml,'-',marker="1",markersize=12, linewidth=2.5 ,label="MAML-TRPO")
 #plt.plot(axis,data_ant_ProMP,'--', linewidth=2.5 ,label="ProMP")
@@ -170,10 +138,9 @@ plt.show()
 axis=iteration_number
 plt.figure(figsize=(8*1.1,6*1.1))
 ax = plt.gca()
-plt.plot(axis,data_ant_dir_1_mean,'-',marker="o",markersize=8, linewidth=2.5 ,label="BO-MRL with $\mathcal{A l g}^{(1)}$")
-ax.fill_between(axis,data_ant_dir_1_mean-data_ant_dir_1_sd,data_ant_dir_1_mean+data_ant_dir_1_sd,alpha=0.2)
-plt.plot(axis,data_ant_dir_2_mean,'-',marker="v",markersize=8, linewidth=2.5 ,label="BO-MRL with $\mathcal{A l g}^{(2)}$")
-ax.fill_between(axis,data_ant_dir_2_mean-data_ant_dir_2_sd,data_ant_dir_2_mean+data_ant_dir_2_sd,alpha=0.2)
+plt.plot(axis,data_ant_dir_1,'-',marker="o",markersize=8, linewidth=2.5 ,label="BO-MRL with $\mathcal{A l g}^{(1)}$")
+plt.plot(axis,data_ant_dir_2,'-',marker="v",markersize=8, linewidth=2.5 ,label="BO-MRL with $\mathcal{A l g}^{(2)}$")
+plt.plot(axis,data_ant_dir_3,'-',marker="s",markersize=8, linewidth=2.5 ,label="BO-MRL with $\mathcal{A l g}^{(3)}$")
 plt.plot(axis,data_ant_dir_maml,'-',marker="1",markersize=12, linewidth=2.5 ,label="MAML-TRPO")
 plt.plot(axis,data_ant_dir_ProMP,'--', linewidth=2.5 ,label="ProMP")
 plt.plot(axis,data_ant_dir_emaml,'-.',marker="x", linewidth=2.5,markersize=12,label="E-MAML")
@@ -193,27 +160,4 @@ ltext = leg.get_texts()
 plt.savefig('./figures/ant_dir.pdf') 
 plt.show()
 
-axis=iteration_number
-plt.figure(figsize=(8*1.1,6*1.1))
-ax = plt.gca()
-plt.plot(axis,data_navigation_1_mean,'-',marker="o",markersize=8, linewidth=2.5 ,label="BO-MRL with $\mathcal{A l g}^{(1)}$")
-ax.fill_between(axis,data_navigation_1_mean-data_navigation_1_sd,data_navigation_1_mean+data_navigation_1_sd,alpha=0.2)
-plt.plot(axis,data_navigation_2_mean,'-',marker="v",markersize=8, linewidth=2.5 ,label="BO-MRL with $\mathcal{A l g}^{(2)}$")
-ax.fill_between(axis,data_navigation_2_mean-data_navigation_2_sd,data_navigation_2_mean+data_navigation_2_sd,alpha=0.2)
-plt.plot(axis,data_navigation_maml_mean,'-',marker="1",markersize=12, linewidth=2.5 ,label="MAML-TRPO")
-ax = plt.gca().xaxis.set_major_locator(MaxNLocator(integer=True))
-
-#plt.xticks(np.arange(0,iterations,40))
-plt.title('2D navigation',size=28)
-plt.xlabel('Number of policy adaptation steps',size=28)
-plt.ylabel("Accumulated reward",size=28)
-plt.ylim(-15,-2.01)
-#plt.legend(loc=4)
-plt.legend(loc=0, numpoints=1)
-plt.subplots_adjust(left=0.117, right=0.993, top=0.936, bottom=0.125)
-leg = plt.gca().get_legend()
-ltext = leg.get_texts()
-#plt.setp(ltext, fontsize=18,fontweight='bold') 
-plt.savefig('./figures/navigation.pdf') 
-plt.show()
 
