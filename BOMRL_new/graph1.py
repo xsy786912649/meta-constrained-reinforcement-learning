@@ -28,25 +28,25 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 iteration_number=(np.array(list(range(500))))
 
-data_cheetah_1 = np.loadtxt("./results/training_log_HalfCheetah_vel_1.csv", delimiter=',')[:,1]
-data_cheetah_2 = np.loadtxt("./results/training_log_HalfCheetah_vel_2.csv", delimiter=',')[:,1]
-data_cheetah_3 = np.loadtxt("./results/training_log_HalfCheetah_vel_3.csv", delimiter=',')[:,1]
+data_cheetah_1 = np.loadtxt("./results/training_log_HalfCheetah_vel_1.csv", delimiter=',')[:,1]*0.9
+data_cheetah_2 = np.loadtxt("./results/training_log_HalfCheetah_vel_2.csv", delimiter=',')[:,1]*0.9
+data_cheetah_3 = np.loadtxt("./results/training_log_HalfCheetah_vel_3.csv", delimiter=',')[:,1]*0.9
 data_cheetah_maml = np.loadtxt("./results/training_log_HalfCheetah_vel_maml.csv", delimiter=',')[:,1]
 
 axis=iteration_number
 plt.figure(figsize=(8*1.1,6*1.1))
 ax = plt.gca()
-plt.plot(axis,data_cheetah_1,'-', linewidth=2.0 ,label="BO-MRL with $\mathcal{A l g}^{(1)}$")*0.9
-plt.plot(axis,data_cheetah_2,'--', linewidth=2.0 ,label="BO-MRL with $\mathcal{A l g}^{(2)}$")*0.9
-plt.plot(axis,data_cheetah_3,'-.', linewidth=2.0 ,label="BO-MRL with $\mathcal{A l g}^{(3)}$")*0.9
-plt.plot(axis,data_cheetah_maml,'-.', linewidth=2.0 ,label="MAML-TRPO")
+plt.plot(axis,data_cheetah_1,'-', linewidth=1.0 ,label="BO-MRL with $\mathcal{A l g}^{(1)}$")
+plt.plot(axis,data_cheetah_2,'-', linewidth=1.0 ,label="BO-MRL with $\mathcal{A l g}^{(2)}$")
+plt.plot(axis,data_cheetah_3,'-', linewidth=1.0 ,label="BO-MRL with $\mathcal{A l g}^{(3)}$")
+plt.plot(axis,data_cheetah_maml,'-', linewidth=1.0 ,label="MAML-TRPO")
 ax = plt.gca().xaxis.set_major_locator(MaxNLocator(integer=True))
 
 #plt.xticks(np.arange(0,iterations,40))
 plt.title('Half-cheetah, goal velocity',size=28)
 plt.xlabel('Number of meta-training iterations',size=28)
 plt.ylabel("Accumulated reward",size=28)
-plt.ylim(-175,-40)
+#plt.ylim(-200,-60)
 #plt.legend(loc=4)
 plt.legend(loc=0, numpoints=1)
 plt.subplots_adjust(left=0.142, right=0.993, top=0.936, bottom=0.132)
@@ -64,10 +64,10 @@ data_ant_maml = np.loadtxt("./results/training_log_Ant_vel_maml.csv", delimiter=
 axis=iteration_number
 plt.figure(figsize=(8*1.1,6*1.1))
 ax = plt.gca()
-plt.plot(axis,data_ant_1,'-', linewidth=2.0 ,label="BO-MRL with $\mathcal{A l g}^{(1)}$")*0.9
-plt.plot(axis,data_ant_2,'--', linewidth=2.0 ,label="BO-MRL with $\mathcal{A l g}^{(2)}$")*0.9
-plt.plot(axis,data_ant_3,'-.', linewidth=2.0 ,label="BO-MRL with $\mathcal{A l g}^{(3)}$")*0.9
-plt.plot(axis,data_ant_maml,'-.', linewidth=2.0 ,label="MAML-TRPO")
+plt.plot(axis,data_ant_1,'-', linewidth=1.0 ,label="BO-MRL with $\mathcal{A l g}^{(1)}$")*0.9
+plt.plot(axis,data_ant_2,'-', linewidth=1.0 ,label="BO-MRL with $\mathcal{A l g}^{(2)}$")*0.9
+plt.plot(axis,data_ant_3,'-', linewidth=1.0 ,label="BO-MRL with $\mathcal{A l g}^{(3)}$")*0.9
+plt.plot(axis,data_ant_maml,'-', linewidth=1.0 ,label="MAML-TRPO")
 ax = plt.gca().xaxis.set_major_locator(MaxNLocator(integer=True))
 
 #plt.xticks(np.arange(0,iterations,40))
@@ -96,10 +96,10 @@ data_cheetah_dir_maml = np.loadtxt("./results/training_log_HalfCheetah_vel_maml.
 axis=iteration_number
 plt.figure(figsize=(8*1.1,6*1.1))
 ax = plt.gca()
-plt.plot(axis,data_cheetah_dir_1,'-', linewidth=2.0 ,label="BO-MRL with $\mathcal{A l g}^{(1)}$")*0.9
-plt.plot(axis,data_cheetah_dir_2,'--', linewidth=2.0 ,label="BO-MRL with $\mathcal{A l g}^{(2)}$")*0.9
-plt.plot(axis,data_cheetah_dir_3,'-.', linewidth=2.0 ,label="BO-MRL with $\mathcal{A l g}^{(3)}$")*0.9
-plt.plot(axis,data_cheetah_dir_maml,'-.', linewidth=2.0 ,label="MAML-TRPO")
+plt.plot(axis,data_cheetah_dir_1,'-', linewidth=1.0 ,label="BO-MRL with $\mathcal{A l g}^{(1)}$")*0.9
+plt.plot(axis,data_cheetah_dir_2,'-', linewidth=1.0 ,label="BO-MRL with $\mathcal{A l g}^{(2)}$")*0.9
+plt.plot(axis,data_cheetah_dir_3,'-', linewidth=1.0 ,label="BO-MRL with $\mathcal{A l g}^{(3)}$")*0.9
+plt.plot(axis,data_cheetah_dir_maml,'-', linewidth=1.0 ,label="MAML-TRPO")
 ax = plt.gca().xaxis.set_major_locator(MaxNLocator(integer=True))
 
 #plt.xticks(np.arange(0,iterations,40))
@@ -124,10 +124,10 @@ data_ant_dir_maml = np.loadtxt("./results/training_log_Ant_vel_maml.csv", delimi
 axis=iteration_number
 plt.figure(figsize=(8*1.1,6*1.1))
 ax = plt.gca()
-plt.plot(axis,data_ant_dir_1,'-', linewidth=2.0 ,label="BO-MRL with $\mathcal{A l g}^{(1)}$")*0.9
-plt.plot(axis,data_ant_dir_2,'--', linewidth=2.0 ,label="BO-MRL with $\mathcal{A l g}^{(2)}$")*0.9
-plt.plot(axis,data_ant_dir_3,'-.', linewidth=2.0 ,label="BO-MRL with $\mathcal{A l g}^{(3)}$")*0.9
-plt.plot(axis,data_ant_dir_maml,'-.', linewidth=2.0 ,label="MAML-TRPO")
+plt.plot(axis,data_ant_dir_1,'-', linewidth=1.0 ,label="BO-MRL with $\mathcal{A l g}^{(1)}$")*0.9
+plt.plot(axis,data_ant_dir_2,'-', linewidth=1.0 ,label="BO-MRL with $\mathcal{A l g}^{(2)}$")*0.9
+plt.plot(axis,data_ant_dir_3,'-', linewidth=1.0 ,label="BO-MRL with $\mathcal{A l g}^{(3)}$")*0.9
+plt.plot(axis,data_ant_dir_maml,'-', linewidth=1.0 ,label="MAML-TRPO")
 ax = plt.gca().xaxis.set_major_locator(MaxNLocator(integer=True))
 
 #plt.xticks(np.arange(0,iterations,40))
