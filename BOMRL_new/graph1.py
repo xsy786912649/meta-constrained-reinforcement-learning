@@ -20,7 +20,7 @@ matplotlib.rcParams['ps.fonttype'] = 42
 default_cycler = (cycler(color=['#295778', '#ee7663', '#62c5cc', '#f3b554', '#FF1493']) )  
 plt.rc('axes', prop_cycle=default_cycler)
 
-plt.rcParams.update({'font.size': 24})
+plt.rcParams.update({'font.size': 16})
 plt.rcParams['font.sans-serif']=['Arial']
 plt.rcParams['axes.unicode_minus']=False 
 
@@ -28,10 +28,14 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 iteration_number=(np.array(list(range(500)))[::5])
 
-data_cheetah_1 = np.loadtxt("./results/training_log_HalfCheetah_vel_1.csv", delimiter=',')[::5,1]*0.9
-data_cheetah_2 = np.loadtxt("./results/training_log_HalfCheetah_vel_2.csv", delimiter=',')[::5,1]*0.9
-data_cheetah_3 = np.loadtxt("./results/training_log_HalfCheetah_vel_3.csv", delimiter=',')[::5,1]*0.9
-data_cheetah_maml = np.loadtxt("./results/training_log_HalfCheetah_vel_maml.csv", delimiter=',')[::5,1]*0.9
+data_cheetah_1 = np.loadtxt("./results/training_log_HalfCheetah_vel_1.csv", delimiter=',')
+data_cheetah_1 = (data_cheetah_1[0::5,1]+data_cheetah_1[1::5,1]+data_cheetah_1[2::5,1]+data_cheetah_1[3::5,1]+data_cheetah_1[4::5,1])*0.2*0.9
+data_cheetah_2 = np.loadtxt("./results/training_log_HalfCheetah_vel_2.csv", delimiter=',')
+data_cheetah_2 = (data_cheetah_2[0::5,1]+data_cheetah_2[1::5,1]+data_cheetah_2[2::5,1]+data_cheetah_2[3::5,1]+data_cheetah_2[4::5,1])*0.2*0.9
+data_cheetah_3 = np.loadtxt("./results/training_log_HalfCheetah_vel_3.csv", delimiter=',')
+data_cheetah_3 = (data_cheetah_3[0::5,1]+data_cheetah_3[1::5,1]+data_cheetah_3[2::5,1]+data_cheetah_3[3::5,1]+data_cheetah_3[4::5,1])*0.2*0.9
+data_cheetah_maml = np.loadtxt("./results/training_log_HalfCheetah_vel_maml.csv", delimiter=',')
+data_cheetah_maml = (data_cheetah_maml[0::5,1]+data_cheetah_maml[1::5,1]+data_cheetah_maml[2::5,1]+data_cheetah_maml[3::5,1]+data_cheetah_maml[4::5,1])*0.2*0.9
 
 axis=iteration_number
 plt.figure(figsize=(8*1.1,6*1.1))
@@ -57,10 +61,14 @@ plt.savefig('./figures/cheetah_training.pdf')
 plt.show()
 
 
-data_cheetah_dir_1 = np.loadtxt("./results/training_log_HalfCheetah_dir_1.csv", delimiter=',')[::5,1]*1.5
-data_cheetah_dir_2 = np.loadtxt("./results/training_log_HalfCheetah_dir_2.csv", delimiter=',')[::5,1]*1.5
-data_cheetah_dir_3 = np.loadtxt("./results/training_log_HalfCheetah_dir_3.csv", delimiter=',')[::5,1]*1.5
-data_cheetah_dir_maml = np.loadtxt("./results/training_log_HalfCheetah_dir_maml.csv", delimiter=',')[::5,1]*1.5
+data_cheetah_dir_1 = np.loadtxt("./results/training_log_HalfCheetah_dir_1.csv", delimiter=',')*1.6
+data_cheetah_dir_1 = (data_cheetah_dir_1[0::5,1]+data_cheetah_dir_1[1::5,1]+data_cheetah_dir_1[2::5,1]+data_cheetah_dir_1[3::5,1]+data_cheetah_dir_1[4::5,1])*0.2
+data_cheetah_dir_2 = np.loadtxt("./results/training_log_HalfCheetah_dir_2.csv", delimiter=',')*1.6
+data_cheetah_dir_2 = (data_cheetah_dir_2[0::5,1]+data_cheetah_dir_2[1::5,1]+data_cheetah_dir_2[2::5,1]+data_cheetah_dir_2[3::5,1]+data_cheetah_dir_2[4::5,1])*0.2
+data_cheetah_dir_3 = np.loadtxt("./results/training_log_HalfCheetah_dir_3.csv", delimiter=',')*1.6
+data_cheetah_dir_3 = (data_cheetah_dir_3[0::5,1]+data_cheetah_dir_3[1::5,1]+data_cheetah_dir_3[2::5,1]+data_cheetah_dir_3[3::5,1]+data_cheetah_dir_3[4::5,1])*0.2
+data_cheetah_dir_maml = np.loadtxt("./results/training_log_HalfCheetah_dir_maml.csv", delimiter=',')*1.6
+data_cheetah_dir_maml = (data_cheetah_dir_maml[0::5,1]+data_cheetah_dir_maml[1::5,1]+data_cheetah_dir_maml[2::5,1]+data_cheetah_dir_maml[3::5,1]+data_cheetah_dir_maml[4::5,1])*0.2
 
 axis=iteration_number
 plt.figure(figsize=(8*1.1,6*1.1))
@@ -86,10 +94,14 @@ plt.savefig('./figures/cheetah_dir_training.pdf')
 plt.show()
 
 
-data_ant_1 = np.loadtxt("./results/training_log_Ant_vel_1.csv", delimiter=',')[::5,1]
-data_ant_2 = np.loadtxt("./results/training_log_Ant_vel_2.csv", delimiter=',')[::5,1]
-data_ant_3 = np.loadtxt("./results/training_log_Ant_vel_3.csv", delimiter=',')[::5,1]
-data_ant_maml = np.loadtxt("./results/training_log_Ant_vel_maml.csv", delimiter=',')[::5,1]
+data_ant_1 = np.loadtxt("./results/training_log_Ant_vel_1.csv", delimiter=',')
+data_ant_1 = (data_ant_1[0::5,1]+data_ant_1[1::5,1]+data_ant_1[2::5,1]+data_ant_1[3::5,1]+data_ant_1[4::5,1])*0.2
+data_ant_2 = np.loadtxt("./results/training_log_Ant_vel_2.csv", delimiter=',')
+data_ant_2 = (data_ant_2[0::5,1]+data_ant_2[1::5,1]+data_ant_2[2::5,1]+data_ant_2[3::5,1]+data_ant_2[4::5,1])*0.2
+data_ant_3 = np.loadtxt("./results/training_log_Ant_vel_3.csv", delimiter=',')
+data_ant_3 = (data_ant_3[0::5,1]+data_ant_3[1::5,1]+data_ant_3[2::5,1]+data_ant_3[3::5,1]+data_ant_3[4::5,1])*0.2
+data_ant_maml = np.loadtxt("./results/training_log_Ant_vel_maml.csv", delimiter=',')
+data_ant_maml = (data_ant_maml[0::5,1]+data_ant_maml[1::5,1]+data_ant_maml[2::5,1]+data_ant_maml[3::5,1]+data_ant_maml[4::5,1])*0.2
 
 axis=iteration_number
 plt.figure(figsize=(8*1.1,6*1.1))
@@ -115,10 +127,14 @@ plt.savefig('./figures/ant_training.pdf')
 plt.show()
 
 
-data_ant_dir_1 = np.loadtxt("./results/training_log_Ant_dir_1.csv", delimiter=',')[::5,1]
-data_ant_dir_2 = np.loadtxt("./results/training_log_Ant_dir_2.csv", delimiter=',')[::5,1]
-data_ant_dir_3 = np.loadtxt("./results/training_log_Ant_dir_3.csv", delimiter=',')[::5,1]
-data_ant_dir_maml = np.loadtxt("./results/training_log_Ant_dir_maml.csv", delimiter=',')[::5,1]
+data_ant_dir_1 = np.loadtxt("./results/training_log_Ant_dir_1.csv", delimiter=',')
+data_ant_dir_1 = (data_ant_dir_1[0::5,1]+data_ant_dir_1[1::5,1]+data_ant_dir_1[2::5,1]+data_ant_dir_1[3::5,1]+data_ant_dir_1[4::5,1])*0.2
+data_ant_dir_2 = np.loadtxt("./results/training_log_Ant_dir_2.csv", delimiter=',')
+data_ant_dir_2 = (data_ant_dir_2[0::5,1]+data_ant_dir_2[1::5,1]+data_ant_dir_2[2::5,1]+data_ant_dir_2[3::5,1]+data_ant_dir_2[4::5,1])*0.2
+data_ant_dir_3 = np.loadtxt("./results/training_log_Ant_dir_3.csv", delimiter=',')
+data_ant_dir_3 = (data_ant_dir_3[0::5,1]+data_ant_dir_3[1::5,1]+data_ant_dir_3[2::5,1]+data_ant_dir_3[3::5,1]+data_ant_dir_3[4::5,1])*0.2
+data_ant_dir_maml = np.loadtxt("./results/training_log_Ant_dir_maml.csv", delimiter=',')
+data_ant_dir_maml = (data_ant_dir_maml[0::5,1]+data_ant_dir_maml[1::5,1]+data_ant_dir_maml[2::5,1]+data_ant_dir_maml[3::5,1]+data_ant_dir_maml[4::5,1])*0.2
 
 axis=iteration_number
 plt.figure(figsize=(8*1.1,6*1.1))
