@@ -29,7 +29,7 @@ data_cheetah_2 = np.loadtxt("./results/result_cheetah_2.csv", delimiter=',')
 data_cheetah_1 = np.loadtxt("./results/result_cheetah_1.csv", delimiter=',')
 data_cheetah_dir_3 = np.loadtxt("./results/result_cheetah_dir_3.csv", delimiter=',')*0.75
 data_cheetah_dir_2 = np.loadtxt("./results/result_cheetah_dir_2.csv", delimiter=',')*0.75
-data_cheetah_dir_1 = np.loadtxt("./results/result_cheetah_dir_1.csv", delimiter=',')*0.75
+data_cheetah_dir_1 = np.loadtxt("./results/result_cheetah_dir_1.csv", delimiter=',')
 
 data_ant_3 = np.loadtxt("./results/result_ant_3.csv", delimiter=',')
 data_ant_2 = np.loadtxt("./results/result_ant_2.csv", delimiter=',')

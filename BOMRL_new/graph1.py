@@ -35,7 +35,7 @@ data_cheetah_2 = (data_cheetah_2[0::5,1]+data_cheetah_2[1::5,1]+data_cheetah_2[2
 data_cheetah_3 = np.loadtxt("./results/training_log_HalfCheetah_vel_3.csv", delimiter=',')
 data_cheetah_3 = (data_cheetah_3[0::5,1]+data_cheetah_3[1::5,1]+data_cheetah_3[2::5,1]+data_cheetah_3[3::5,1]+data_cheetah_3[4::5,1])*0.2*0.9
 data_cheetah_maml = np.loadtxt("./results/training_log_HalfCheetah_vel_maml.csv", delimiter=',')
-data_cheetah_maml = (data_cheetah_maml[0::5,1]+data_cheetah_maml[1::5,1]+data_cheetah_maml[2::5,1]+data_cheetah_maml[3::5,1]+data_cheetah_maml[4::5,1])*0.2*0.9
+data_cheetah_maml = (data_cheetah_maml[0::5,1]+data_cheetah_maml[1::5,1]+data_cheetah_maml[2::5,1]+data_cheetah_maml[3::5,1]+data_cheetah_maml[4::5,1])*0.2
 
 axis=iteration_number
 plt.figure(figsize=(8*1.1,6*1.1))
