@@ -9,6 +9,8 @@ import yaml
 from tqdm import trange
 import numpy as np
 
+import csv
+
 import maml_rl.envs
 from maml_rl.metalearners import MAMLTRPO
 from maml_rl.baseline import LinearFeatureBaseline
@@ -87,11 +89,16 @@ def main(args):
                     num_iterations=num_iterations,
                     train_returns=get_returns(train_episodes[0]),
                     valid_returns=get_returns(valid_episodes))
+        
         print("---------------------")
         print(np.mean(get_returns(train_episodes[0])))
         print("----------")
-        print(np.mean(get_returns(valid_episodes)))
+        result_after=np.mean(get_returns(valid_episodes))
+        print(result_after)
         print("---------------------")
+        with open('./check_point/training_log_'+config['env-name']+'_maml.csv', 'a+') as file:
+            writer = csv.writer(file)
+            writer.writerow([batch, result_after.mean()])
 
         # Save policy
         if args.output_folder is not None:
