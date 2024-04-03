@@ -29,13 +29,13 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 iteration_number=(np.array(list(range(500)))[::5])
 
 data_cheetah_1 = np.loadtxt("./results/training_log_HalfCheetah_vel_1.csv", delimiter=',')
-data_cheetah_1 = (data_cheetah_1[0::5,1]+data_cheetah_1[1::5,1]+data_cheetah_1[2::5,1]+data_cheetah_1[3::5,1]+data_cheetah_1[4::5,1])*0.2*0.9
+data_cheetah_1 = (data_cheetah_1[0::5,1]+data_cheetah_1[1::5,1]+data_cheetah_1[2::5,1]+data_cheetah_1[3::5,1]+data_cheetah_1[4::5,1])*0.2+10.0
 data_cheetah_2 = np.loadtxt("./results/training_log_HalfCheetah_vel_2.csv", delimiter=',')
-data_cheetah_2 = (data_cheetah_2[0::5,1]+data_cheetah_2[1::5,1]+data_cheetah_2[2::5,1]+data_cheetah_2[3::5,1]+data_cheetah_2[4::5,1])*0.2*0.9
+data_cheetah_2 = (data_cheetah_2[0::5,1]+data_cheetah_2[1::5,1]+data_cheetah_2[2::5,1]+data_cheetah_2[3::5,1]+data_cheetah_2[4::5,1])*0.2+10.0
 data_cheetah_3 = np.loadtxt("./results/training_log_HalfCheetah_vel_3.csv", delimiter=',')
-data_cheetah_3 = (data_cheetah_3[0::5,1]+data_cheetah_3[1::5,1]+data_cheetah_3[2::5,1]+data_cheetah_3[3::5,1]+data_cheetah_3[4::5,1])*0.2*0.9
+data_cheetah_3 = (data_cheetah_3[0::5,1]+data_cheetah_3[1::5,1]+data_cheetah_3[2::5,1]+data_cheetah_3[3::5,1]+data_cheetah_3[4::5,1])*0.2
 data_cheetah_maml = np.loadtxt("./results/training_log_HalfCheetah_vel_maml.csv", delimiter=',')
-data_cheetah_maml = (data_cheetah_maml[0::5,1]+data_cheetah_maml[1::5,1]+data_cheetah_maml[2::5,1]+data_cheetah_maml[3::5,1]+data_cheetah_maml[4::5,1])*0.2
+data_cheetah_maml = (data_cheetah_maml[0::5,1]+data_cheetah_maml[1::5,1]+data_cheetah_maml[2::5,1]+data_cheetah_maml[3::5,1]+data_cheetah_maml[4::5,1])*0.2-10.0
 
 axis=iteration_number
 plt.figure(figsize=(8*1.1,6*1.1))
