@@ -96,7 +96,7 @@ def main(args):
         result_after=np.mean(get_returns(valid_episodes))
         print(result_after)
         print("---------------------")
-        with open('./check_point/training_log_'+config['env-name']+'_maml.csv', 'a+') as file:
+        with open('./check_point/training_log_'+config['env-name']+'_'+config['index']+'.csv', 'a+') as file:
             writer = csv.writer(file)
             writer.writerow([batch, result_after.mean()])
 

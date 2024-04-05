@@ -34,7 +34,7 @@ class Policy(nn.Module):
         pi1 = policy(episodes.observations, params=params)
         old_pi1 = detach_distribution(pi1)
 
-        optimizer = torch.optim.Adam(params.values(), lr=0.001) # 0.00001 for 2D navigation, 0.001 for locomotion tasks
+        optimizer = torch.optim.Adam(params.values(), lr=0.001) # 0.001 for locomotion tasks
 
         for i in range(50):
             optimizer.zero_grad()
@@ -46,8 +46,7 @@ class Policy(nn.Module):
             else:
                 assert algorihtm_index == 1   
 
-            loss = inner_loss / (step_size * 5.0) + kls # 5.0 for locomotion tasks, 0.8 for 2D navigation task
-            #print("total_loss ", loss)
+            loss = inner_loss / (step_size * 20.0) + kls # 5.0 for half_cheetha tasks, 20.0 for ant
             #print("get_kl ",kls)
             if kls.clone().detach().numpy()>10.0:
                 print("please increase the regularzation weight \lambda or reduce the lower-level optimization learning rate")
