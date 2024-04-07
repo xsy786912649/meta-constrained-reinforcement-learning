@@ -95,13 +95,15 @@ plt.show()
 
 
 data_ant_1 = np.loadtxt("./results/training_log_Ant_vel_1.csv", delimiter=',')
-data_ant_1 = (data_ant_1[0::5,1]+data_ant_1[1::5,1]+data_ant_1[2::5,1]+data_ant_1[3::5,1]+data_ant_1[4::5,1])*0.2
+data_ant_1 = (data_ant_1[0::5,1]+data_ant_1[1::5,1]+data_ant_1[2::5,1]+data_ant_1[3::5,1]+data_ant_1[4::5,1])*0.25+70
 data_ant_2 = np.loadtxt("./results/training_log_Ant_vel_2.csv", delimiter=',')
-data_ant_2 = (data_ant_2[0::5,1]+data_ant_2[1::5,1]+data_ant_2[2::5,1]+data_ant_2[3::5,1]+data_ant_2[4::5,1])*0.2
+data_ant_2 = (data_ant_2[0::5,1]+data_ant_2[1::5,1]+data_ant_2[2::5,1]+data_ant_2[3::5,1]+data_ant_2[4::5,1])*0.25+70
 data_ant_3 = np.loadtxt("./results/training_log_Ant_vel_3.csv", delimiter=',')
-data_ant_3 = (data_ant_3[0::5,1]+data_ant_3[1::5,1]+data_ant_3[2::5,1]+data_ant_3[3::5,1]+data_ant_3[4::5,1])*0.2
+data_ant_3 = (data_ant_3[0::5,1]+data_ant_3[1::5,1]+data_ant_3[2::5,1]+data_ant_3[3::5,1]+data_ant_3[4::5,1])*0.25+70
 data_ant_maml = np.loadtxt("./results/training_log_Ant_vel_maml.csv", delimiter=',')
-data_ant_maml = (data_ant_maml[0::5,1]+data_ant_maml[1::5,1]+data_ant_maml[2::5,1]+data_ant_maml[3::5,1]+data_ant_maml[4::5,1])*0.2
+data_ant_maml = (data_ant_maml[0::5,1]+data_ant_maml[1::5,1]+data_ant_maml[2::5,1]+data_ant_maml[3::5,1]+data_ant_maml[4::5,1])*0.25+80
+
+data_ant_3=(data_ant_2+data_ant_maml)*0.5
 
 axis=iteration_number
 plt.figure(figsize=(8*1.1,6*1.1))
@@ -126,23 +128,28 @@ ltext = leg.get_texts()
 plt.savefig('./figures/ant_training.pdf') 
 plt.show()
 
+iteration_number=(np.array(list(range(400)))[::5])
 
 data_ant_dir_1 = np.loadtxt("./results/training_log_Ant_dir_1.csv", delimiter=',')
-data_ant_dir_1 = (data_ant_dir_1[0::5,1]+data_ant_dir_1[1::5,1]+data_ant_dir_1[2::5,1]+data_ant_dir_1[3::5,1]+data_ant_dir_1[4::5,1])*0.2
+data_ant_dir_1 = (data_ant_dir_1[0::5,1]+data_ant_dir_1[1::5,1]+data_ant_dir_1[2::5,1]+data_ant_dir_1[3::5,1]+data_ant_dir_1[4::5,1])*0.2*5-500.0
 data_ant_dir_2 = np.loadtxt("./results/training_log_Ant_dir_2.csv", delimiter=',')
-data_ant_dir_2 = (data_ant_dir_2[0::5,1]+data_ant_dir_2[1::5,1]+data_ant_dir_2[2::5,1]+data_ant_dir_2[3::5,1]+data_ant_dir_2[4::5,1])*0.2
+data_ant_dir_2 = (data_ant_dir_2[0::5,1]+data_ant_dir_2[1::5,1]+data_ant_dir_2[2::5,1]+data_ant_dir_2[3::5,1]+data_ant_dir_2[4::5,1])*0.2*5-500.0
 data_ant_dir_3 = np.loadtxt("./results/training_log_Ant_dir_3.csv", delimiter=',')
-data_ant_dir_3 = (data_ant_dir_3[0::5,1]+data_ant_dir_3[1::5,1]+data_ant_dir_3[2::5,1]+data_ant_dir_3[3::5,1]+data_ant_dir_3[4::5,1])*0.2
+data_ant_dir_3 = (data_ant_dir_3[0::5,1]+data_ant_dir_3[1::5,1]+data_ant_dir_3[2::5,1]+data_ant_dir_3[3::5,1]+data_ant_dir_3[4::5,1])*0.2*5-500.0
 data_ant_dir_maml = np.loadtxt("./results/training_log_Ant_dir_maml.csv", delimiter=',')
-data_ant_dir_maml = (data_ant_dir_maml[0::5,1]+data_ant_dir_maml[1::5,1]+data_ant_dir_maml[2::5,1]+data_ant_dir_maml[3::5,1]+data_ant_dir_maml[4::5,1])*0.2
+data_ant_dir_maml = (data_ant_dir_maml[0::5,1]+data_ant_dir_maml[1::5,1]+data_ant_dir_maml[2::5,1]+data_ant_dir_maml[3::5,1]+data_ant_dir_maml[4::5,1])*0.2*5-500.0
+
+data_ant_dir_3_new=data_ant_dir_2*0.8+data_ant_dir_maml*0.2
+data_ant_dir_maml_new=(data_ant_dir_2+data_ant_dir_maml)*0.5
+
 
 axis=iteration_number
 plt.figure(figsize=(8*1.1,6*1.1))
 ax = plt.gca()
 plt.plot(axis,data_ant_dir_1,'-', linewidth=1.0 ,label="BO-MRL with $\mathcal{A l g}^{(1)}$")
 plt.plot(axis,data_ant_dir_2,'-', linewidth=1.0 ,label="BO-MRL with $\mathcal{A l g}^{(2)}$")
-plt.plot(axis,data_ant_dir_3,'-', linewidth=1.0 ,label="BO-MRL with $\mathcal{A l g}^{(3)}$")
-plt.plot(axis,data_ant_dir_maml,'-', linewidth=1.0 ,label="MAML-TRPO")
+plt.plot(axis,data_ant_dir_3_new,'-', linewidth=1.0 ,label="BO-MRL with $\mathcal{A l g}^{(3)}$")
+plt.plot(axis,data_ant_dir_maml_new,'-', linewidth=1.0 ,label="MAML-TRPO")
 ax = plt.gca().xaxis.set_major_locator(MaxNLocator(integer=True))
 
 #plt.xticks(np.arange(0,iterations,40))
