@@ -24,7 +24,7 @@ torch.set_default_tensor_type('torch.DoubleTensor')
 parser = argparse.ArgumentParser(description='PyTorch actor-critic example')
 parser.add_argument('--gamma', type=float, default=0.995, metavar='G',
                     help='discount factor (default: 0.995)')
-parser.add_argument('--env-name', default="Ant-v4", metavar='G',
+parser.add_argument('--env-name', default="Swimmer-v4", metavar='G',
                     help='name of the environment to run')
 parser.add_argument('--tau', type=float, default=0.97, metavar='G',
                     help='gae (default: 0.97)')
@@ -38,13 +38,13 @@ parser.add_argument('--damping', type=float, default=0e-1, metavar='G',
                     help='damping (default: 0e-1)')
 parser.add_argument('--seed', type=int, default=543, metavar='N',
                     help='random seed (default: 1)')
-parser.add_argument('--batch-size', type=int, default=200, metavar='N',
+parser.add_argument('--batch-size', type=int, default=50, metavar='N',
                     help='batch-size (default: 20)')
 parser.add_argument('--render', action='store_true',
                     help='render the environment')
 parser.add_argument('--log-interval', type=int, default=1, metavar='N',
                     help='interval between training status logs (default: 10)')
-parser.add_argument('--max-length', type=int, default=200, metavar='N',
+parser.add_argument('--max-length', type=int, default=1000, metavar='N',
                     help='max length of a path (default: 200)')
 args = parser.parse_args()
 
@@ -137,8 +137,8 @@ def update_params(batch,batch_extra,batch_size):
         kl = log_std1 - log_std0 + (std0.pow(2) + (mean0 - mean1).pow(2)) / (2.0 * std1.pow(2)) - 0.5
         return kl.sum(1, keepdim=True)
 
-    #trpo_step(policy_net, get_loss, get_kl, args.max_kl, args.damping)
-    one_step_trpo(policy_net, get_loss, get_kl,args.meta_lambda,lower_opt='Adam') 
+    trpo_step(policy_net, get_loss, get_kl, args.max_kl, args.damping)
+    #one_step_trpo(policy_net, get_loss, get_kl,args.meta_lambda,lower_opt='Adam') 
 
     print(torch.exp(policy_net.action_log_std))
 
@@ -173,7 +173,7 @@ if __name__ == "__main__":
                 action = select_action(state)
                 action = action.data[0].numpy()
                 next_state, reward, done, truncated, info = env.step(action)
-                reward=-abs(info['x_velocity']-1.5)+1+0.05-0.5 * 1e-2 * np.sum(np.square(action))
+                #reward=-abs(info['x_velocity']-1.5)+1+0.05-0.5 * 1e-2 * np.sum(np.square(action))
                 reward_sum += reward
                 next_state = running_state(next_state)
                 path_number = i
@@ -190,7 +190,7 @@ if __name__ == "__main__":
                 action = select_action(state)
                 action = action.data[0].numpy()
                 next_state, reward, done, truncated, info = env.step(action)
-                reward=-abs(info['x_velocity']-1.5)+1+0.05-0.5 * 1e-2 * np.sum(np.square(action))
+                #reward=-abs(info['x_velocity']-1.5)+1+0.05-0.5 * 1e-2 * np.sum(np.square(action))
                 next_state = running_state(next_state)
                 path_number = i
 
