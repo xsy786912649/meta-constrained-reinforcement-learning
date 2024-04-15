@@ -190,14 +190,14 @@ fig, ax = plt.subplots(figsize=(8*1.1,6*1.1))
 y_optimal=1.6381797250192158
 y_data = y_optimal - np.array([ data_hole_1_mean[0], data_hole_1_mean[1], 1.30])
 #y_data = [ data_hole_1_mean[0], data_hole_1_mean[1], 1.30, 1.6381797250192158]
-x_data = ('No\n adaptation', 'One-step\n of $\mathcal{A l g}^{(1)}$', 'One-step of\n policy gradient')
+x_data = ('No\n adaptation', 'One-time\n of $\mathcal{A l g}^{(1)}$', 'One-step of\n policy gradient')
 std_err=[data_hole_1_sd[0]/2,data_hole_1_sd[1]/2,data_hole_1_sd[1]/2] 
 
 error_params=dict(elinewidth=4,capsize=5)
 
 bar = plt.bar(x_data, y_data, width=bar_width, linewidth=line_width ,yerr=std_err,error_kw=error_params, color=['#577829', '#295778', '#ee7663' ], edgecolor='black')
 
-plt.text(1-0.35, 0.2674698 * 9 * 0.1 + 0.05, 'Upper bound for\n one-step $\mathcal{A l g}^{(1)}$', fontsize=20)
+plt.text(1-0.35, 0.2674698 * 9 * 0.1 + 0.05, 'Upper bound for\n one-time $\mathcal{A l g}^{(1)}$', fontsize=20)
 plt.axhline(y=0.2474698 * 9 * 0.1 , color='black', linestyle='--', linewidth=4, zorder=3)
 
 plt.title('High task variance ($\mathcal{A l g}^{(1)}$ applied)',size=28)
@@ -212,14 +212,14 @@ fig, ax = plt.subplots(figsize=(8*1.1,6*1.1))
 y_optimal=1.6381797250192158
 y_data = y_optimal - np.array([ data_hole_2_mean[0], data_hole_2_mean[1], 1.30])
 #y_data = [ data_hole_2_mean[0], data_hole_2_mean[1], 1.30, 1.6381797250192158]
-x_data = ('No\n adaptation', 'One-step\n of $\mathcal{A l g}^{(2)}$', 'One-step of\n policy gradient')
+x_data = ('No\n adaptation', 'One-time\n of $\mathcal{A l g}^{(2)}$', 'One-step of\n policy gradient')
 std_err=[data_hole_2_sd[0]/2,data_hole_2_sd[1]/2,data_hole_2_sd[1]/2] 
 
 error_params=dict(elinewidth=4,capsize=5)
 
 bar = plt.bar(x_data, y_data, width=bar_width, linewidth=line_width ,yerr=std_err,error_kw=error_params, color=['#577829', '#295778', '#ee7663' ], edgecolor='black')
 
-plt.text(1-0.35, 0.6193449 * 9 * 0.1 - 0.2, 'Upper bound for\n one-step $\mathcal{A l g}^{(2)}$', fontsize=20)
+plt.text(1-0.35, 0.6193449 * 9 * 0.1 - 0.2, 'Upper bound for\n one-time $\mathcal{A l g}^{(2)}$', fontsize=20)
 plt.axhline(y=0.6193449 * 9 * 0.1 , color='black', linestyle='--', linewidth=4, zorder=3)
 
 plt.title('High task variance ($\mathcal{A l g}^{(2)}$ applied)',size=28)
@@ -235,14 +235,14 @@ y_optimal=1.6238083970192134
 
 y_data = y_optimal - np.array([ data_no_1_mean[0], data_no_1_mean[1], 1.5031502591632093 ])
 #y_data = [ data_no_1_mean[0], data_no_1_mean[1], 1.5031502591632093, 1.6238083970192134]
-x_data = ('No\n adaptation', 'One-step\n of $\mathcal{A l g}^{(1)}$', 'One-step of\n policy gradient')
+x_data = ('No\n adaptation', 'One-time\n of $\mathcal{A l g}^{(1)}$', 'One-step of\n policy gradient')
 std_err=[data_no_1_sd[0]/2,data_no_1_sd[1]/2,data_no_1_sd[1]/2] 
 
 error_params=dict(elinewidth=4,capsize=5)
 
 bar = plt.bar(x_data, y_data, width=bar_width, linewidth=line_width ,yerr=std_err,error_kw=error_params, color=['#577829', '#295778', '#ee7663' ], edgecolor='black')
 
-plt.text(1-0.35, 0.12265574 * 9* 0.1 +0.01  , 'Upper bound for\n one-step $\mathcal{A l g}^{(1)}$', fontsize=20)
+plt.text(1-0.35, 0.12265574 * 9* 0.1 +0.01  , 'Upper bound for\n one-time $\mathcal{A l g}^{(1)}$', fontsize=20)
 plt.axhline(y=0.12265574 * 9* 0.1 , color='black', linestyle='--', linewidth=4, zorder=3)
 plt.ylim(0.0,0.199)
 
@@ -258,7 +258,7 @@ fig, ax = plt.subplots(figsize=(8*1.1,6*1.1))
 y_optimal=1.6142083970192134
 y_data = y_optimal - np.array([ data_no_2_mean[0], data_no_2_mean[1], 1.5031502591632093 ])
 #y_data = [ data_no_2_mean[0], data_no_2_mean[1], 1.5031502591632093, 1.6142083970192134]
-x_data = ('No\n adaptation', 'One-step\n of $\mathcal{A l g}^{(2)}$', 'One-step of\n policy gradient')
+x_data = ('No\n adaptation', 'One-time\n of $\mathcal{A l g}^{(2)}$', 'One-step of\n policy gradient')
 std_err=[data_no_2_sd[0]/2,data_no_2_sd[1]/2,data_no_2_sd[1]/2] 
 
 error_params=dict(elinewidth=4,capsize=5)
@@ -266,7 +266,7 @@ error_params=dict(elinewidth=4,capsize=5)
 bar = plt.bar(x_data, y_data, width=bar_width, linewidth=line_width ,yerr=std_err,error_kw=error_params, color=['#577829', '#295778', '#ee7663' ], edgecolor='black')
 
 
-plt.text(1-0.35,  0.35228756 * 9.0* 0.05 - 0.025  , 'Upper bound for\n one-step $\mathcal{A l g}^{(2)}$', fontsize=20)
+plt.text(1-0.35,  0.35228756 * 9.0* 0.05 - 0.025  , 'Upper bound for\n one-time $\mathcal{A l g}^{(2)}$', fontsize=20)
 plt.axhline( y= 0.35228756 * 9.0* 0.05, color='black', linestyle='--', linewidth=4, zorder=3)
 plt.ylim(0.0,0.18)
 
@@ -283,14 +283,14 @@ fig, ax = plt.subplots(figsize=(8*1.1,6*1.1))
 y_optimal=1.6335099673006876
 y_data = y_optimal - np.array([ 0.41384084713453, 1.31245, 1.3049245332733332 ])
 #y_data = [0.41384084713453, 1.31245, 1.3049245332733332, 1.6335099673006876]
-x_data = ('No\n adaptation', 'One-step\n of $\mathcal{A l g}^{(3)}$', 'One-step of\n policy gradient')
+x_data = ('No\n adaptation', 'One-time\n of $\mathcal{A l g}^{(3)}$', 'One-step of\n policy gradient')
 std_err=[data_hole_2_sd[0]/2,data_hole_2_sd[1]/2,data_hole_2_sd[1]/2] 
 
 error_params=dict(elinewidth=4,capsize=5)
 
 bar = plt.bar(x_data, y_data, width=bar_width, linewidth=line_width ,yerr=std_err,error_kw=error_params, color=['#577829', '#295778', '#ee7663' ], edgecolor='black')
 
-plt.text(1-0.35, y_optimal-0.1933 - 0.28, 'Upper bound for\n one-step $\mathcal{A l g}^{(3)}$', fontsize=20)
+plt.text(1-0.35, y_optimal-0.1933 - 0.28, 'Upper bound for\n one-time $\mathcal{A l g}^{(3)}$', fontsize=20)
 plt.axhline(y=y_optimal-0.1933 , color='black', linestyle='--', linewidth=4, zorder=3)
 plt.ylim(0.0,1.8)
 
@@ -306,7 +306,7 @@ fig, ax = plt.subplots(figsize=(8*1.1,6*1.1))
 y_optimal=1.6142083970192134
 y_data = y_optimal - np.array([ 1.491573045339209, 1.51521, 1.5031502591632093 ])
 #y_data = [ 1.491573045339209, 1.51521, 1.5031502591632093, 1.6142083970192134]
-x_data = ('No\n adaptation', 'One-step\n of $\mathcal{A l g}^{(3)}$', 'One-step of\n policy gradient')
+x_data = ('No\n adaptation', 'One-time\n of $\mathcal{A l g}^{(3)}$', 'One-step of\n policy gradient')
 std_err=[data_no_2_sd[0]/2,data_no_2_sd[1]/2,data_no_2_sd[1]/2] 
 
 error_params=dict(elinewidth=4,capsize=5)
@@ -314,7 +314,7 @@ error_params=dict(elinewidth=4,capsize=5)
 bar = plt.bar(x_data, y_data, width=bar_width, linewidth=line_width ,yerr=std_err,error_kw=error_params, color=['#577829', '#295778', '#ee7663' ], edgecolor='black')
 
 
-plt.text(1-0.35,  y_optimal-0.9132  - 0.12  , 'Upper bound for\n one-step $\mathcal{A l g}^{(3)}$', fontsize=20)
+plt.text(1-0.35,  y_optimal-0.9132  - 0.12  , 'Upper bound for\n one-time $\mathcal{A l g}^{(3)}$', fontsize=20)
 plt.axhline( y= y_optimal-0.9132 , color='black', linestyle='--', linewidth=4, zorder=3)
 plt.ylim(0.0,0.799)
 
