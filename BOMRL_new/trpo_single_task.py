@@ -24,7 +24,7 @@ torch.set_default_tensor_type('torch.DoubleTensor')
 parser = argparse.ArgumentParser(description='PyTorch actor-critic example')
 parser.add_argument('--gamma', type=float, default=0.995, metavar='G',
                     help='discount factor (default: 0.995)')
-parser.add_argument('--env-name', default="Swimmer-v4", metavar='G',
+parser.add_argument('--env-name', default="HalfCheetah-v4", metavar='G',
                     help='name of the environment to run')
 parser.add_argument('--tau', type=float, default=0.97, metavar='G',
                     help='gae (default: 0.97)')
@@ -107,8 +107,8 @@ def update_params(batch,batch_extra,batch_size):
 
     q_values=update_advantage_function()
 
-    print(q_values.std())
-    print(q_values.mean())
+    #print(q_values.std())
+    #print(q_values.mean())
     q_values = (q_values - q_values.mean())
     
     action_means, action_log_stds, action_stds = policy_net(Variable(states))
@@ -137,8 +137,23 @@ def update_params(batch,batch_extra,batch_size):
         kl = log_std1 - log_std0 + (std0.pow(2) + (mean0 - mean1).pow(2)) / (2.0 * std1.pow(2)) - 0.5
         return kl.sum(1, keepdim=True)
 
-    trpo_step(policy_net, get_loss, get_kl, args.max_kl, args.damping)
+    def one_step_closeform_trpo():
+        optim11 = torch.optim.SGD(policy_net.parameters(), lr=3e-3)
+        for i in range(100):
+            action_means, action_log_stds, action_stds = policy_net(Variable(states))
+            log_prob = normal_log_density(Variable(actions), action_means, action_log_stds, action_stds)
+            loss_inter=(log_prob-(fixed_log_prob+5.0/(5.0+q_values.std())*q_values))*torch.special.expit(2.0*torch.exp(log_prob - fixed_log_prob)-2.0)*2 #*torch.exp(log_prob - Variable(fixed_log_prob))#
+            loss11=loss_inter.mean()
+            optim11.zero_grad()
+            loss11.backward()
+            optim11.step()
+            if loss11.data.abs()>0.1:
+                break
+        print(loss11)
+
+    #trpo_step(policy_net, get_loss, get_kl, args.max_kl, args.damping)
     #one_step_trpo(policy_net, get_loss, get_kl,args.meta_lambda,lower_opt='Adam') 
+    one_step_closeform_trpo()
 
     print(torch.exp(policy_net.action_log_std))
 
