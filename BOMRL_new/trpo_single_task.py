@@ -38,13 +38,13 @@ parser.add_argument('--damping', type=float, default=0e-1, metavar='G',
                     help='damping (default: 0e-1)')
 parser.add_argument('--seed', type=int, default=543, metavar='N',
                     help='random seed (default: 1)')
-parser.add_argument('--batch-size', type=int, default=20, metavar='N',
+parser.add_argument('--batch-size', type=int, default=50, metavar='N',
                     help='batch-size (default: 20)')
 parser.add_argument('--render', action='store_true',
                     help='render the environment')
 parser.add_argument('--log-interval', type=int, default=1, metavar='N',
                     help='interval between training status logs (default: 10)')
-parser.add_argument('--max-length', type=int, default=1000, metavar='N',
+parser.add_argument('--max-length', type=int, default=200, metavar='N',
                     help='max length of a path (default: 200)')
 args = parser.parse_args()
 
@@ -107,7 +107,7 @@ def update_params(batch,batch_extra,batch_size):
 
     q_values=update_advantage_function()
 
-    #print(q_values.std())
+    print(q_values.std())
     #print(q_values.mean())
     q_values = (q_values - q_values.mean())
     
@@ -142,7 +142,7 @@ def update_params(batch,batch_extra,batch_size):
         for i in range(100):
             action_means, action_log_stds, action_stds = policy_net(Variable(states))
             log_prob = normal_log_density(Variable(actions), action_means, action_log_stds, action_stds)
-            loss_inter=(log_prob-(fixed_log_prob+5.0/(5.0+q_values.std())*q_values))*torch.special.expit(2.0*torch.exp(log_prob - fixed_log_prob)-2.0)*2 #*torch.exp(log_prob - Variable(fixed_log_prob))#
+            loss_inter=(log_prob-(fixed_log_prob+1.0/10.0*q_values))*torch.special.expit(2.0*torch.exp(log_prob - fixed_log_prob)-2.0)*2 #*torch.exp(log_prob - Variable(fixed_log_prob))#
             loss11=loss_inter.mean()
             optim11.zero_grad()
             loss11.backward()
@@ -188,7 +188,7 @@ if __name__ == "__main__":
                 action = select_action(state)
                 action = action.data[0].numpy()
                 next_state, reward, done, truncated, info = env.step(action)
-                #reward=-abs(info['x_velocity']-1.5)+1+0.05-0.5 * 1e-2 * np.sum(np.square(action))
+                reward=-abs(info['x_velocity']-1.5)#+1+0.05-0.5 * 1e-2 * np.sum(np.square(action))
                 reward_sum += reward
                 next_state = running_state(next_state)
                 path_number = i
@@ -205,7 +205,7 @@ if __name__ == "__main__":
                 action = select_action(state)
                 action = action.data[0].numpy()
                 next_state, reward, done, truncated, info = env.step(action)
-                #reward=-abs(info['x_velocity']-1.5)+1+0.05-0.5 * 1e-2 * np.sum(np.square(action))
+                reward=-abs(info['x_velocity']-1.5)#+1+0.05-0.5 * 1e-2 * np.sum(np.square(action))
                 next_state = running_state(next_state)
                 path_number = i
 
