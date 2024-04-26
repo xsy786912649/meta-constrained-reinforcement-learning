@@ -107,7 +107,7 @@ def update_params(batch,batch_extra,batch_size):
 
     q_values=update_advantage_function()
 
-    print(q_values.std())
+    print("q_values.std", q_values.std())
     #print(q_values.mean())
     q_values = (q_values - q_values.mean())
     
@@ -142,13 +142,15 @@ def update_params(batch,batch_extra,batch_size):
         for i in range(100):
             action_means, action_log_stds, action_stds = policy_net(Variable(states))
             log_prob = normal_log_density(Variable(actions), action_means, action_log_stds, action_stds)
-            loss_inter=(log_prob-(fixed_log_prob+1.0/10.0*q_values))*torch.special.expit(2.0*torch.exp(log_prob - fixed_log_prob)-2.0)*2 #*torch.exp(log_prob - Variable(fixed_log_prob))#
+            loss_inter=(torch.clamp(log_prob-fixed_log_prob,-2.0,2.0)-1.0/5.0*q_values)*torch.special.expit(2.0*torch.exp(log_prob - fixed_log_prob)-2.0)*2 #*torch.exp(log_prob - Variable(fixed_log_prob))#
             loss11=loss_inter.mean()
             optim11.zero_grad()
             loss11.backward()
             optim11.step()
             if loss11.data.abs()>0.1:
                 break
+            #print(loss11)
+        print((log_prob-fixed_log_prob).mean())
         print(loss11)
 
     #trpo_step(policy_net, get_loss, get_kl, args.max_kl, args.damping)
