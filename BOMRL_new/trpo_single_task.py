@@ -190,7 +190,7 @@ if __name__ == "__main__":
                 action = select_action(state)
                 action = action.data[0].numpy()
                 next_state, reward, done, truncated, info = env.step(action)
-                reward=-abs(info['x_velocity']-1.5)#+1+0.05-0.5 * 1e-2 * np.sum(np.square(action))
+                reward=-abs(info['x_velocity']-1.5)
                 reward_sum += reward
                 next_state = running_state(next_state)
                 path_number = i
@@ -207,7 +207,7 @@ if __name__ == "__main__":
                 action = select_action(state)
                 action = action.data[0].numpy()
                 next_state, reward, done, truncated, info = env.step(action)
-                reward=-abs(info['x_velocity']-1.5)#+1+0.05-0.5 * 1e-2 * np.sum(np.square(action))
+                reward=-abs(info['x_velocity']-1.5)
                 next_state = running_state(next_state)
                 path_number = i
 
