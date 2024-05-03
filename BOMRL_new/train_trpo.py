@@ -191,7 +191,7 @@ def task_specific_adaptation(task_specific_policy,meta_policy_net_copy,batch,q_v
         aaaa=torch.exp(log_prob - Variable(fixed_log_prob))
         action_loss = -Variable(q_values) *  torch.special.expit(2.0*aaaa-2.0)*2 
         #action_loss = -Variable(q_values) * aaaa
-        return action_loss.mean()     
+        return action_loss.mean()  
 
     def get_kl():
         mean1, log_std1, std1 = task_specific_policy(Variable(states))
@@ -317,7 +317,7 @@ if __name__ == "__main__":
             
             q_values = compute_adavatage(batch,batch_extra,args.batch_size)
             q_values2 = q_values
-            q_values1 = (q_values - q_values.mean()) 
+            q_values1 = (q_values - q_values.mean())
 
             task_specific_policy=Policy(num_inputs, num_actions)
             meta_policy_net_copy=Policy(num_inputs, num_actions)
@@ -331,7 +331,7 @@ if __name__ == "__main__":
             print('(after adaptation) Episode {}\tAverage reward {:.2f}'.format(i_episode, after_accumulated_raward_batch)) 
 
             q_values_after = compute_adavatage(after_batch,after_batch_extra,args.batch_size*5) 
-            q_values_after = (q_values_after - q_values_after.mean()) 
+            q_values_after = (q_values_after - q_values_after.mean())
 
             kl_phi_theta=kl_divergence(meta_policy_net,task_specific_policy,batch,index)
 
@@ -394,7 +394,7 @@ if __name__ == "__main__":
             result_before[task_number_test]=accumulated_raward_batch
     
             q_values = compute_adavatage(batch,batch_extra,args.batch_size) 
-            q_values = (q_values - q_values.mean())  
+            q_values = (q_values - q_values.mean())
 
             task_specific_policy=Policy(num_inputs, num_actions)
             meta_policy_net_copy=Policy(num_inputs, num_actions)
