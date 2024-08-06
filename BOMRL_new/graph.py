@@ -17,7 +17,7 @@ from cycler import cycler
 from matplotlib.ticker import MaxNLocator
 matplotlib.rcParams['pdf.fonttype'] = 42
 matplotlib.rcParams['ps.fonttype'] = 42
-default_cycler = (cycler(color=['#295778', '#ee7663', '#62c5cc', '#f3b554', '#FF1493']) )  
+default_cycler = (cycler(color=['#295778', '#ee7663', '#62c5cc', '#f3b554', '#FF1493','#682978']) )  
 plt.rc('axes', prop_cycle=default_cycler)
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -55,9 +55,40 @@ data_cheetah_dir_ProMP= np.loadtxt("./results/result_cheetah_dir_ProMP.csv", del
 #data_ant_ProMP = np.loadtxt("./results/result_ant_ProMP.csv", delimiter=',')
 data_ant_dir_ProMP = np.loadtxt("./results/result_ant_dir_ProMP.csv", delimiter=',')
 
+data_cheetah_sgmrl = np.loadtxt("./results/result_cheetah_sgmrl.csv", delimiter=',')
+
 plt.rcParams.update({'font.size': 20})
 plt.rcParams['font.sans-serif']=['Arial']
 plt.rcParams['axes.unicode_minus']=False 
+
+
+axis=iteration_number
+plt.figure(figsize=(8*1.1,6*1.1))
+ax = plt.gca()
+plt.plot(axis,data_cheetah_1,'-',marker="o",markersize=8, linewidth=2.5 ,label="BO-MRL with $\mathcal{A l g}^{(1)}$")
+plt.plot(axis,data_cheetah_2,'-',marker="v",markersize=8, linewidth=2.5 ,label="BO-MRL with $\mathcal{A l g}^{(2)}$")
+plt.plot(axis,data_cheetah_3,'-',marker="s",markersize=8, linewidth=2.5 ,label="BO-MRL with $\mathcal{A l g}^{(3)}$")
+plt.plot(axis,data_cheetah_maml,'-',marker="1",markersize=12, linewidth=2.5 ,label="MAML-TRPO")
+plt.plot(axis,data_cheetah_ProMP,'--', linewidth=2.5 ,label="ProMP")
+plt.plot(axis,data_cheetah_emaml,'-.',marker="x", linewidth=2.5,markersize=12,label="E-MAML")
+plt.plot(axis,data_cheetah_sgmrl,'-.',marker="^", linewidth=2.5,markersize=8,label="SG-MRL")
+ax = plt.gca().xaxis.set_major_locator(MaxNLocator(integer=True))
+
+#plt.xticks(np.arange(0,iterations,40))
+plt.title('Half-cheetah, goal velocity',size=28)
+plt.xlabel('Number of policy adaptation steps',size=28)
+plt.ylabel("Accumulated reward",size=28)
+#plt.ylim(-170,-40)
+#plt.legend(loc=4)
+plt.legend(loc=0, numpoints=1)
+plt.subplots_adjust(left=0.142, right=0.993, top=0.936, bottom=0.132)
+leg = plt.gca().get_legend()
+ltext = leg.get_texts()
+#plt.setp(ltext, fontsize=18,fontweight='bold') 
+plt.savefig('./figures/cheetah_new.pdf') 
+plt.show()
+
+input()
 
 
 axis=iteration_number
